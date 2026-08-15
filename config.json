@@ -1,0 +1,4 @@
+{
+  "_comment": "Postal Rulings config. Paste your Apps Script Web app URL (ending in /exec) as the endpoint, save, and upload this file next to index.html. No rebuild needed. Leave empty for sample data.",
+  "endpoint": "https://script.google.com/macros/s/AKfycbzOgdHHSat3LJS7cM1HfLXtQ0ntjvMwxLLwxjOciRepbtIN66B6BwnYDYcjm4cGR_bB6w/exec"
+}
