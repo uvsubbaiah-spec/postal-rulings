@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://uvsubbaiah-spec.github.io/postal-rulings/sitemap.xml
