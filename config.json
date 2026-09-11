@@ -2,5 +2,5 @@
   "_comment": "Postal Rulings config. Paste your Apps Script Web app URL (ending in /exec) as the endpoint, save, and upload this file next to index.html. No rebuild needed. Leave empty for sample data.",
   "endpoint": "https://script.google.com/macros/s/AKfycbzOgdHHSat3LJS7cM1HfLXtQ0ntjvMwxLLwxjOciRepbtIN66B6BwnYDYcjm4cGR_bB6w/exec",
   "_comment_signin": "Optional. Google Cloud Console > APIs & Services > Credentials > Create credentials > OAuth client ID > Web application. Add your site origin (e.g. https://uvsubbaiah-spec.github.io) under Authorised JavaScript origins. Paste the client ID below to offer readers one-tap Google sign-in: it records their verified name and email with no typing. Leave empty to keep the app fully anonymous.",
-  "googleClientId": ""
+  "googleClientId": "397543292480-2nqoufjn74i1k0p1suq40kjikstor1qe.apps.googleusercontent.com"
 }
