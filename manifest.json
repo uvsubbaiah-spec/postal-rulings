@@ -49,12 +49,43 @@
       ]
     }
   ],
+  "note_taking": {
+    "new_note_url": "https://uvsubbaiah-spec.github.io/postal-rulings/main/"
+  },
+  "share_target": {
+    "action": "https://uvsubbaiah-spec.github.io/postal-rulings/main/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "scope_extensions": [
     {
       "origin": "https://uvsubbaiah-spec.github.io"
     },
     {
       "origin": "https://postalrulings.blogspot.com"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://uvsubbaiah-spec.github.io/postal-rulings/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Postal Rulings Home"
+    },
+    {
+      "src": "https://uvsubbaiah-spec.github.io/postal-rulings/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Postal Rulings Mobile View"
     }
   ]
 }
