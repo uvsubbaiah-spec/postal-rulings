@@ -1,31 +1,60 @@
 {
+  "id": "/postal-rulings/",
   "name": "Postal Rulings",
   "short_name": "Postal Rulings",
   "description": "Orders and Circulars of the Department of Posts",
-  "start_url": "./",
-  "scope": "./",
+  "lang": "en-US",
+  "dir": "ltr",
+  "start_url": "https://uvsubbaiah-spec.github.io/postal-rulings/main/",
+  "scope": "https://uvsubbaiah-spec.github.io/postal-rulings/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0b3d91",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
   "orientation": "portrait-primary",
+  "theme_color": "#0d47a1",
+  "background_color": "#ffffff",
+  "categories": [
+    "productivity",
+    "utilities",
+    "government"
+  ],
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "https://uvsubbaiah-spec.github.io/postal-rulings/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "https://uvsubbaiah-spec.github.io/postal-rulings/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Latest Orders & Circulars",
+      "short_name": "Circulars",
+      "description": "Access the latest departmental circulars directly",
+      "url": "https://uvsubbaiah-spec.github.io/postal-rulings/main/",
+      "icons": [
+        {
+          "src": "https://uvsubbaiah-spec.github.io/postal-rulings/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "scope_extensions": [
+    {
+      "origin": "https://uvsubbaiah-spec.github.io"
     },
     {
-      "src": "icons/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "origin": "https://postalrulings.blogspot.com"
     }
   ]
 }
