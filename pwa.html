@@ -9,12 +9,10 @@
 <meta name="theme-color" content="#B30000">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js').catch(function () {});
-setTimeout(function () { location.replace('./'); }, 1500);
-</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js').catch(function () {});</script>
 </head>
-<body style="margin:0;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fff">
-<a href="./" style="color:#B30000;font-weight:700;text-decoration:none">Opening Postal Rulings…</a>
+<body style="margin:0;font-family:system-ui,sans-serif;display:flex;flex-direction:column;gap:16px;align-items:center;justify-content:center;min-height:100vh;background:#fff">
+<img src="icons/icon-192.png" alt="" width="96" height="96">
+<a href="./" style="display:inline-flex;align-items:center;min-height:44px;padding:0 20px;background:#B30000;color:#fff;font-weight:700;border-radius:8px;text-decoration:none">Open Postal Rulings</a>
 </body>
 </html>
