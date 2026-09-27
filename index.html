@@ -5,7 +5,7 @@
   <title>Postal Rulings — Orders and Circulars of the Department of Posts</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #faf9f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     #__bundler_loading { position: fixed; bottom: 20px; right: 20px; font: 13px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; color: #666; background: #fff; padding: 8px 14px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10000; }
     #__bundler_thumbnail { position: fixed; inset: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #faf9f5; z-index: 9999; }
     #__bundler_thumbnail svg { width: 100%; height: 100%; object-fit: contain; }
@@ -19,7 +19,11 @@
   </noscript>
 </head>
 <body>
-  <div id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" sc-camel-view-box="0 0 100 100"><rect width="100" height="100" fill="#b30000"></rect><rect x="30" y="26" width="40" height="48" rx="6" fill="#fff"></rect><rect x="37" y="35" width="26" height="4" rx="2" fill="#b30000"></rect><rect x="37" y="44" width="26" height="3" rx="1.5" fill="#d8d3ca"></rect><rect x="37" y="51" width="20" height="3" rx="1.5" fill="#d8d3ca"></rect><circle cx="50" cy="65" r="4" fill="#ffcb05"></circle></svg></div>
+  <div id="__bundler_thumbnail" style="flex-direction:column;gap:18px;background:#fff">
+    <img src="icons/icon-192.png" alt="Postal Rulings" width="120" height="120" style="width:120px;height:120px;border-radius:50%;display:block;box-shadow:0 6px 24px rgba(179,0,0,.18)">
+    <div style="font:700 15px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#b30000;letter-spacing:.04em">Loading<span class="rl-dots"></span></div>
+  </div>
+  <style>#__bundler_loading{display:none!important}#__bundler_thumbnail img{animation:rlPulse 1.6s ease-in-out infinite}@keyframes rlPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.rl-dots::after{content:'';animation:rlDots 1.2s steps(4,end) infinite}@keyframes rlDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}</style>
   <div id="__bundler_loading">Unpacking...</div>
 
   <script>
