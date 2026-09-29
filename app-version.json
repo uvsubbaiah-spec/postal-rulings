@@ -1,4 +1,4 @@
 {
-  "version": "1.0.4",
-  "notes": "Scrolling no longer reloads the app. Pull down at the top to fetch the latest posts."
+  "version": "1.0.5",
+  "notes": "Updates now download straight inside the app."
 }
