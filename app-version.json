@@ -1,4 +1,4 @@
 {
-  "version": "1.0.3",
-  "notes": "Always shows the latest posts; checks for new ones each time you return to the app."
+  "version": "1.0.4",
+  "notes": "Scrolling no longer reloads the app. Pull down at the top to fetch the latest posts."
 }
