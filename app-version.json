@@ -1,4 +1,4 @@
 {
-  "version": "1.0.5",
-  "notes": "Updates now download straight inside the app."
+  "version": "1.0.6",
+  "notes": "The app reloads itself instead of closing when a large list runs short of memory."
 }
