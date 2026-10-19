@@ -1,4 +1,4 @@
 {
-  "version": "1.0.6",
-  "notes": "The app reloads itself instead of closing when a large list runs short of memory."
+  "version": "1.0.7",
+  "notes": "CGHS breakups can be saved as a PDF to Downloads."
 }
