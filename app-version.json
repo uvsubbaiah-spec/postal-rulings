@@ -1,4 +1,4 @@
 {
-  "version": "1.0.7",
-  "notes": "CGHS breakups can be saved as a PDF to Downloads."
+  "version": "1.0.8",
+  "notes": "CGHS breakup opens full screen and saves PDFs on older phones. Pay fixation statements download in Word and Excel."
 }
