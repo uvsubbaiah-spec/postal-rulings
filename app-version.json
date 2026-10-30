@@ -1,4 +1,4 @@
 {
-  "version": "1.0.8",
-  "notes": "Updates install straight after downloading. CGHS breakup opens full screen and saves PDFs on older phones. Pay fixation statements download in Word and Excel."
+  "version": "1.0.10",
+  "notes": "Notifications for new posts and new app versions. Theme choice is for signed-in profiles. Certificate links open in a new tab on CGHS hospitals and rates."
 }
