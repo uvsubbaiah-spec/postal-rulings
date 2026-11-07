@@ -36,7 +36,19 @@ A bar above the keyboard switches between **తెలుగు** (the in-app Tel
 
 In ENG, type the complete answer and press space, Enter or **పెట్టు**: the app splits it into aksharas and puts them in the selected word's squares. A full-length word always starts from the word's first square, wherever the cursor is; a shorter piece goes from the selected square. While you type, the word's squares are shown right above the box (and in the grid, dashed) so you see where each akshara will land, and the board stays visible above the phone keyboard. `kamalam` → కమలం, `sankraanti` → సంక్రాంతి, `amma` → అమ్మ. Capitals give the harder sounds (T ట, D డ, N ణ, L ళ, Sh ష, E ఏ, O ఓ) and `aa`/`ee`/`oo` give long vowels; the app also offers the likely alternatives to tap. A Telugu phone keyboard works in the same box. On a computer, just start typing letters while a puzzle is open.
 
-Answer colours follow the blog: a right letter turns grey with a green border and blue letter, a wrong one gold with a red border and red letter. The selected square has a blue frame.
+Answer colours follow the blog: a right letter turns grey with a green border and blue letter, a wrong one gold with a red border and red letter. A right letter is frozen: typing and delete pass over it. The selected square has a blue frame.
+
+A puzzle opens at the biggest zoom (200%) with the keyboard hidden; the first tap on a square brings the keyboard back. The bar above the clue scrolls the board sideways (drag it or use its arrows). On a computer the arrow keys move the selected square across and down, and the board scrolls along.
+
+## Look
+
+Settings (అమరికలు) has six Telugu font sets (బ్లాగ్ శైలి is the default: Ramabhadra in the squares, Anek Telugu for clues, as on the blog) and separate choices for the squares, the clues and the headings, from about 25 Telugu fonts on Google Fonts. Only the chosen fonts are downloaded; after the first load they work offline.
+
+The black squares show small animated scenes (a dancing peacock, the roaring sea, a roaring lion, rain with a paper boat, flowers blooming, fireflies, a cat watching the moon, koi, a bird at dusk, a butterfly, an owl, a parrot, falling leaves). Each post uses one of them in all its black squares, as the blog uses one picture; weekly posts take the scenes in turn.
+
+## Recording a game
+
+On a computer (Chrome or Edge), the red circle on the puzzle's top bar records the screen, as the blog's రికార్డు చేయండి button does. The browser asks which tab or screen to share; pick this tab. Press the red button again, or the floating "ఆపు" pill, to stop; the video is saved to Downloads named after the puzzle date (for example `180525.mp4`). Phones' browsers cannot record the screen, so on a phone use the phone's own screen recorder (Android: quick settings → Screen record). The blog's rain picture or plain black can be chosen instead. Phones set to reduce motion get still pictures.
 
 The magnifier buttons on the puzzle's top bar zoom the grid from 100% to 200% (it then scrolls sideways); pinch-zoom on the phone works too.
 
