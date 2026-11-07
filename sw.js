@@ -1,6 +1,6 @@
 // ఈ-పద వినోదం — offline support.
 // The app shell is served from cache; the blog feed and puzzles.json are fetched fresh and the last copy is kept for offline use.
-const VERSION = 'epv-0.11';
+const VERSION = 'epv-0.12';
 const SHELL = ['./', 'index.html', 'rain.webp', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -33,8 +33,10 @@ self.addEventListener('fetch', (e) => {
 
   // Fresh first, cached copy when offline
   if (isFeed || isData || req.mode === 'navigate') {
+    // the page itself is always checked with the server (GitHub Pages lets browsers reuse it for 10 minutes otherwise)
+    const fresh = req.mode === 'navigate' ? fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' }) : fetch(req);
     e.respondWith(
-      fetch(req).then((res) => keep(req, res)).catch(() =>
+      fresh.then((res) => keep(req, res)).catch(() =>
         caches.match(req, { ignoreSearch: req.mode === 'navigate' }).then((hit) => hit || (req.mode === 'navigate' ? caches.match('index.html') : Response.error()))
       )
     );
