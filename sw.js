@@ -1,6 +1,6 @@
 // ఈ-పద వినోదం — offline support.
 // The app shell is served from cache; the blog feed and puzzles.json are fetched fresh and the last copy is kept for offline use.
-const VERSION = 'epv-0.22.4';
+const VERSION = 'epv-0.22.6';
 const SHELL = ['./', 'index.html', 'rain.webp', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', (e) => {
