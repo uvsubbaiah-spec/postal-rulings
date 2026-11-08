@@ -2030,7 +2030,19 @@ html.vv-short #view.typing .tlc{min-height:38px}
   // A blog post in the blog's own layout: the latest post is the pattern (its scripts, toggle, hint bulb,
   // congratulation picture, record button); only the squares, clues, numbers and links change.
   function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function postSuffix(html) { var m = (html || '').match(/class="input(\d+)"/); return m ? m[1] : ''; }
+  function postSuffix(html) {
+    html = html || '';
+    var m = html.match(/class\s*=\s*["']input(\d+)["']/) || html.match(/\b(?:congrats|hint|finish|theme|recording-toggle)(\d+)\b/) || html.match(/\binput(\d+)\b/);
+    return m ? m[1] : '';
+  }
+  // the grid box of a blog post: its opening tag (any spacing, quotes or extra attributes) and its matching </div>
+  function findGridBox(tpl) {
+    var m = /<div\b[^>]*\bclass\s*=\s*["'][^"']*\bdiv1\b[^"']*["'][^>]*>/i.exec(tpl || '');
+    if (!m) return null;
+    var re = /<(\/?)div\b[^>]*>/gi, depth = 1, x; re.lastIndex = m.index + m[0].length;
+    while ((x = re.exec(tpl))) { depth += x[1] ? -1 : 1; if (!depth) return { start: m.index, open: m.index + m[0].length, end: x.index, after: x.index + x[0].length }; }
+    return null;
+  }
   function shortDate(d) { var m = /^(\d{2})\.(\d{2})\.\d{2}(\d{2})$/.exec(d || ''); return m ? m[1] + m[2] + m[3] : ''; }
   function slugDate(d) { var m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(d || ''); return m ? m[1] + m[2] + m[3] : ''; }
   function blogGridHTML(p, suf, idp, img) {
@@ -2058,17 +2070,26 @@ html.vv-short #view.typing .tlc{min-height:38px}
     return out.join('\n');
   }
   function blogPostHTML(tpl, p, o) {
-    var old = postSuffix(tpl), g0 = tpl.indexOf('<div class="div1">'), g1 = g0 < 0 ? -1 : tpl.indexOf('</div>', g0);
-    if (!old || g1 < 0) throw { code: 'template' };
-    var suf = o.suffix || old, grid = tpl.slice(g0, g1);
-    var img = o.img || p.blkImg || (grid.match(/<input type="image"[^>]*?src="([^"]+)"[^>]*class="btn-disabled2"/) || grid.match(/class="btn-disabled2"[^>]*?src="([^"]+)"/) || [])[1] || '';
+    var old = postSuffix(tpl), box = findGridBox(tpl);
+    if (!box) throw { code: 'template', why: 'గడి భాగం (div1) కనిపించలేదు' };
+    var suf = old ? (o.suffix || old) : '', grid = tpl.slice(box.start, box.end);
+    var img = o.img || p.blkImg || (grid.match(/<input type="image"[^>]*?src="([^"]+)"[^>]*class="btn-disabled2"/) || grid.match(/class="btn-disabled2"[^>]*?src="([^"]+)"/) || grid.match(/<input[^>]*\ssrc\s*=\s*["']([^"']+)["'][^>]*btn-disabled/i) || grid.match(/btn-disabled[^>]*\ssrc\s*=\s*["']([^"']+)["']/i) || [])[1] || '';
     var idp = shortDate(p.date) || (grid.match(/id\s*=\s*"(\d{6})-\d+"/) || [])[1] || 'epv';
-    var html = tpl.slice(0, g0) + '<div class="div1">\n' + blogGridHTML(p, suf, idp, img) + '\n\n</div>' + tpl.slice(g1 + 6);
-    if (suf !== old) html = html.replace(new RegExp('\\b(input|hint|theme|recording-toggle|congrats|finish)' + old + '\\b', 'g'), '$1' + suf);
+    var html = tpl.slice(0, box.start) + '<div class="div1">\n' + blogGridHTML(p, suf, idp, img) + '\n\n</div>' + tpl.slice(box.after);
+    if (old && suf !== old) html = html.replace(new RegExp('\\b(input|hint|theme|recording-toggle|congrats|finish)' + old + '\\b', 'g'), '$1' + suf);
     if (o.prevUrl) html = html.replace(/(<a href=")[^"]*("[^>]*class="btn-prev")/, '$1' + o.prevUrl + '$2');
     if (p.finImg) html = html.replace(/(id\s*=\s*"finish\d*"[^>]*?\ssrc\s*=\s*")[^"]*(")/, '$1' + escAttr(p.finImg) + '$2').replace(/(<(?:input|img)[^>]*\ssrc\s*=\s*")[^"]*("[^>]*id\s*=\s*"finish\d*")/, '$1' + escAttr(p.finImg) + '$2');
-    if (o.newPost) html = html.replace(/(window\.prompt\("File Name",\s*")\d{6}(")/, '$1' + idp + '$2');
+    if (o.newPost) html = html.replace(/(window\.prompt\(\s*["']File Name["'],\s*["'])\d{6}(["'])/, '$1' + idp + '$2');
     return html;
+  }
+  // the latest blog post is the pattern; if its markup cannot be used, the next older posts are tried
+  function buildFromTemplates(t, pz, mk) {
+    var list = [t].concat((t && t.more) || []), last = null;
+    for (var i = 0; i < list.length; i++) {
+      try { var html = mk(list[i]); if (html && sameAsBlog(html, pz)) return { html: html, tpl: list[i] }; last = { code: 'self_check' }; }
+      catch (e) { if (!e || e.code !== 'template') throw e; last = e; }
+    }
+    throw last || { code: 'template' };
   }
   // read the made post back with the app's own blog reader: the squares, answers and clues must come out the same
   function sameAsBlog(html, pz) {
@@ -2105,8 +2126,7 @@ html.vv-short #view.typing .tlc{min-height:38px}
     }).catch(function (e) { U.busy = ''; U.status = { kind: 'err', text: svcErr(e) }; render(); });
     function publishWith(t) {
       return Promise.resolve(t).then(function (t) {
-      var html = blogPostHTML(t.content, pz, { suffix: String((+postSuffix(t.content) || 0) + 1), prevUrl: t.url, newPost: true });
-      if (!sameAsBlog(html, pz)) throw { code: 'self_check' };
+      var built = buildFromTemplates(t, pz, function (tp) { return blogPostHTML(tp.content, pz, { suffix: String((+postSuffix(tp.content) || 0) + 1), prevUrl: t.url, newPost: true }); }), html = built.html;
       U.status = { kind: 'wait', text: draft ? 'బ్లాగ్‌లో డ్రాఫ్ట్‌గా సేవ్ చేస్తున్నాం…' : 'బ్లాగ్‌లో ప్రచురిస్తున్నాం…' }; render();
       return svc('publish', { title: title, slug: slugDate(pz.date), html: html, draft: !!draft, prevPostId: t.id });
     }).then(function (r) {
@@ -2126,11 +2146,10 @@ html.vv-short #view.typing .tlc{min-height:38px}
     if (!pz.postId) { toast('ఇది బ్లాగ్ పోస్ట్ కాదు. డ్రాఫ్ట్‌గా తెరిచి బ్లాగ్‌లో కొత్తగా ప్రచురించండి.'); return; }
     U.busy = 'publish'; U.status = { kind: 'wait', text: 'బ్లాగ్ పోస్ట్ తెచ్చుకుంటున్నాం…' }; render();
     svc('get', { postId: pz.postId }).then(function (t) {
-      if (/class="div1"/.test(t.content || '')) return blogPostHTML(t.content, pz, {});
-      // the post has lost its body: build it again on the latest post's layout
-      return svc('template').then(function (tp) { return blogPostHTML(tp.content, pz, { suffix: String((+postSuffix(tp.content) || 0) + 1), prevUrl: tp.id !== pz.postId ? tp.url : '', newPost: true }); });
+      if (/class\s*=\s*["'][^"']*\bdiv1\b/.test(t.content || '')) { try { var h0 = blogPostHTML(t.content, pz, {}); if (sameAsBlog(h0, pz)) return h0; } catch (e) { if (!e || e.code !== 'template') throw e; } }
+      // the post has lost its body (or its layout cannot be read): build it again on the latest post's layout
+      return svc('template').then(function (tp) { return buildFromTemplates(tp, pz, function (x) { return blogPostHTML(x.content, pz, { suffix: String((+postSuffix(x.content) || 0) + 1), prevUrl: tp.id !== pz.postId ? tp.url : '', newPost: true }); }).html; });
     }).then(function (html) {
-      if (!sameAsBlog(html, pz)) throw { code: 'self_check' };
       U.status = { kind: 'wait', text: 'బ్లాగ్ పోస్ట్ సరిదిద్దుతున్నాం…' }; render();
       return svc('update', { postId: pz.postId, html: html, title: (pz.title || 'ఈనాడు పద వినోదం') + ' - ' + pz.date, publish: !!pz.publishDraft });
     }).then(function (r) {
