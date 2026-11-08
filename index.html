@@ -3599,7 +3599,7 @@ html.vv-short #view.typing .tlc{min-height:38px}
     }).join('');
     var nA = D.clues.filter(function (c) { return c.d === 'A'; }).length, nD = D.clues.length - nA;
     return '<section class="play" style="overflow-y:auto" data-scroll="edit">' +
-      '<header class="ebar"><a class="ghostbtn" href="#admin" aria-label="నిర్వాహణకు వెనక్కి">' + I.back + '</a><h1>' + (D.id ? 'పోస్ట్ మార్పు' : 'కొత్త పోస్ట్ డ్రాఫ్ట్') + '</h1></header>' +
+      '<header class="ebar"><a class="ghostbtn" href="#admin" aria-label="నిర్వాహణకు వెనక్కి">' + I.back + '</a><h1>' + (D.id ? 'పోస్ట్ మార్పు' : 'కొత్త పోస్ట్ డ్రాఫ్ట్') + ' <small style="font-size:11px;opacity:.6;font-weight:400">v0.26</small></h1></header>' +
       '<div class="page gutter" style="gap:18px">' + statusBox() +
         (U.srcUrls.length ? '<details' + (U.srcOpen ? ' open' : '') + '><summary class="lbl" style="cursor:pointer">మూల చిత్రం చూడండి' + (U.srcUrls.length > 1 ? ' (పద వినోదం, జవాబులు)' : '') + '</summary><div class="srcimgs">' + U.srcUrls.map(function (u) { return '<img src="' + u + '" alt="అప్‌లోడ్ చేసిన పద వినోదం చిత్రం">'; }).join('') + '</div></details>' : '') +
         '<div class="box"><div class="row2"><div class="fld"><label class="lbl" for="d-title">శీర్షిక</label><input id="d-title" class="inp" data-df="title" value="' + esc(D.title) + '"></div><div class="fld"><label class="lbl" for="d-date">తేదీ</label><input id="d-date" class="inp" data-df="date" inputmode="numeric" placeholder="DD.MM.YYYY" value="' + esc(D.date) + '"></div></div>' +
