@@ -2158,7 +2158,7 @@ html.vv-short #view.typing .tlc{min-height:38px}
     });
     }
   }
-  function blogUpdate(pz, okMsg, after) {
+  function blogUpdate(pz, okMsg, after, retried) {
     if (!pz.postId) { toast('ఇది బ్లాగ్ పోస్ట్ కాదు. డ్రాఫ్ట్‌గా తెరిచి బ్లాగ్‌లో కొత్తగా ప్రచురించండి.'); return; }
     U.busy = 'publish'; U.status = { kind: 'wait', text: 'బ్లాగ్ పోస్ట్ తెచ్చుకుంటున్నాం…' }; render();
     svc('get', { postId: pz.postId }).then(function (t) {
@@ -2172,7 +2172,19 @@ html.vv-short #view.typing .tlc{min-height:38px}
       BLOGPOSTS = BLOGPOSTS.map(function (p) { return p.postId === pz.postId ? Object.assign({}, p, pz, { src: 'blog', url: r.url || p.url }) : p; }); mergePuzzles();
       U.busy = ''; U.status = { kind: 'ok', text: okMsg + ' పాత రూపం Blogger డ్రాఫ్ట్‌లలో “బ్యాకప్ ·” పేరుతో ఉంది.', link: r.url || '' };
       if (after) after(); render(); toast(okMsg);
-    }, function (e) { U.busy = ''; U.status = { kind: 'err', text: svcErr(e) }; render(); });
+    }, function (e) {
+      // the saved post number no longer exists on the blog (deleted, or an old draft): look the date up again
+      if (!retried && e && /Blogger 404/.test(e.error || '')) {
+        U.status = { kind: 'wait', text: 'ఈ పోస్ట్ నంబర్ బ్లాగ్‌లో లేదు. తేదీతో మళ్ళీ వెతుకుతున్నాం…' }; render();
+        svc('find', { date: pz.date }).then(function (f) {
+          var same = (f.items || []).filter(function (x) { return x.id !== pz.postId; })[0];
+          if (same) { U.busy = ''; blogUpdate(Object.assign({}, pz, { postId: same.id, publishDraft: same.status === 'draft' }), okMsg, after, true); }
+          else { U.busy = ''; blogPublish(Object.assign({}, pz, { postId: '' }), false); }
+        }, function (e2) { U.busy = ''; U.status = { kind: 'err', text: svcErr(e2) }; render(); });
+        return;
+      }
+      U.busy = ''; U.status = { kind: 'err', text: svcErr(e) }; render();
+    });
   }
   function blogUnpublish(p) {
     U.busy = 'publish'; U.status = { kind: 'wait', text: 'బ్లాగ్‌లో డ్రాఫ్ట్‌గా మారుస్తున్నాం…' }; render();
