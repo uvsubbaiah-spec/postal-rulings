@@ -2124,11 +2124,11 @@ html.vv-short #view.typing .tlc{min-height:38px}
   }
   // after publishing, the draft stays in the saved drafts (marked) — nothing is lost if the blog side goes wrong
   function keepPublished(d, url) { if (!d) return; d.published = Date.now(); d.pubUrl = url || ''; keepDraft(d, true); }
-  function blogPublish(pz, draft) {
+  function blogPublish(pz, draft, noFind) {
     U.busy = 'publish'; U.status = { kind: 'wait', text: 'ఈ తేదీ పోస్ట్ బ్లాగ్‌లో ఇప్పటికే ఉందో చూస్తున్నాం…' }; render();
     var title = (pz.title || 'ఈనాడు పద వినోదం') + ' - ' + pz.date;
     // an older admin script (before version 5) lost post bodies: do not publish through it
-    svc('find', { date: pz.date }).then(function (f) {
+    (noFind ? Promise.resolve({ items: [] }) : svc('find', { date: pz.date })).then(function (f) {
       var same = (f.items || [])[0];
       if (same && !draft) {   // already there (perhaps empty): correct that post instead of making a second one
         U.busy = ''; blogUpdate(Object.assign({}, pz, { postId: same.id, publishDraft: same.status === 'draft' }), pz.date + ' పోస్ట్ బ్లాగ్‌లో ఇప్పటికే ఉంది — దాన్నే సరిచేశాం.', function () { keepPublished(D, same.url); D = null; S.draft = null; delete S.prog.draft; save(); location.hash = '#admin'; });
@@ -2173,13 +2173,16 @@ html.vv-short #view.typing .tlc{min-height:38px}
       U.busy = ''; U.status = { kind: 'ok', text: okMsg + ' పాత రూపం Blogger డ్రాఫ్ట్‌లలో “బ్యాకప్ ·” పేరుతో ఉంది.', link: r.url || '' };
       if (after) after(); render(); toast(okMsg);
     }, function (e) {
-      // the saved post number no longer exists on the blog (deleted, or an old draft): look the date up again
-      if (!retried && e && /Blogger 404/.test(e.error || '')) {
+      // the post number no longer exists on the blog (deleted, or a draft that cannot be opened): look the date up
+      // once more; if no other post is there, publish it as a new post (without looking the date up again)
+      if (e && /Blogger 404/.test(e.error || '')) {
+        var fresh = function () { U.busy = ''; blogPublish(Object.assign({}, pz, { postId: '' }), false, true); };
+        if (retried) { fresh(); return; }
         U.status = { kind: 'wait', text: 'ఈ పోస్ట్ నంబర్ బ్లాగ్‌లో లేదు. తేదీతో మళ్ళీ వెతుకుతున్నాం…' }; render();
         svc('find', { date: pz.date }).then(function (f) {
           var same = (f.items || []).filter(function (x) { return x.id !== pz.postId; })[0];
           if (same) { U.busy = ''; blogUpdate(Object.assign({}, pz, { postId: same.id, publishDraft: same.status === 'draft' }), okMsg, after, true); }
-          else { U.busy = ''; blogPublish(Object.assign({}, pz, { postId: '' }), false); }
+          else fresh();
         }, function (e2) { U.busy = ''; U.status = { kind: 'err', text: svcErr(e2) }; render(); });
         return;
       }
