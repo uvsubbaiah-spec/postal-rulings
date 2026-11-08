@@ -1882,7 +1882,7 @@ html.vv-short #view.typing .tlc{min-height:38px}
       session: 'మళ్ళీ ప్రవేశించండి.', cancelled: 'ఆపేశాం.',
       blogger_api_off: 'Google Cloud ప్రాజెక్ట్‌లో Blogger API ఆన్ కాలేదు. సెటప్ దశ 1 చూడండి (README).',
       self_check: 'తయారుచేసిన పోస్ట్ మళ్ళీ చదివితే గడి సరిపోలలేదు — అందుకే ప్రచురించలేదు. డ్రాఫ్ట్ చూసి మళ్ళీ ప్రయత్నించండి.',
-      template: 'బ్లాగ్ పోస్ట్ రూపం అర్థం కాలేదు, ప్రచురించలేదు.',
+      template: 'బ్లాగ్ పోస్ట్ రూపం అర్థం కాలేదు, ప్రచురించలేదు.' + (e && e.why ? ' [v0.24: ' + e.why + ']' : ''),
       no_images: 'చిత్రం (JPG/PNG) లేదా PDF ఎంచుకోండి.', invalid_json: 'చదివిన సమాచారం సరిగ్గా రాలేదు. మళ్ళీ ప్రయత్నించండి.',
       no_gemini: 'Gemini కీ ఇంకా సేవ్ చేయలేదు — కింది సెట్టింగ్‌లలో ఇవ్వండి, లేదా “ఫోన్‌లోనే చదవండి” వాడండి.',
       rate_limited: 'Gemini ఉచిత పరిమితి ఈ నిమిషానికి అయిపోయింది. ఒక నిమిషం ఆగి ప్రయత్నించండి.',
@@ -2035,6 +2035,21 @@ html.vv-short #view.typing .tlc{min-height:38px}
     var m = html.match(/class\s*=\s*["']input(\d+)["']/) || html.match(/\b(?:congrats|hint|finish|theme|recording-toggle)(\d+)\b/) || html.match(/\binput(\d+)\b/);
     return m ? m[1] : '';
   }
+  // no usable div1 box: take everything from the first square (or number label) to the last square
+  function findGridRegion(tpl) {
+    tpl = tpl || '';
+    var re = /<input\b[^>]*>/gi, x, first = -1, last = -1, n = 0;
+    while ((x = re.exec(tpl))) {
+      if (/btn-disabled|type\s*=\s*["']?text/i.test(x[0]) && !/btn-(?:finish|next|prev)|recording|theme|hint/i.test(x[0])) {
+        if (first < 0) first = x.index; last = x.index + x[0].length; n++;
+      }
+    }
+    if (n < 2) return null;
+    var lab = tpl.slice(0, first).match(/<label\b[^>]*>(?:(?!<\/label>)[\s\S])*<\/label>\s*$/i);
+    if (lab) first -= lab[0].length;
+    var br = /^(?:\s*<br\s*\/?>)+/i.exec(tpl.slice(last)); if (br) last += br[0].length;
+    return { start: first, end: last, after: last };
+  }
   // the grid box of a blog post: its opening tag (any spacing, quotes or extra attributes) and its matching </div>
   function findGridBox(tpl) {
     var m = /<div\b[^>]*\bclass\s*=\s*["'][^"']*\bdiv1\b[^"']*["'][^>]*>/i.exec(tpl || '');
@@ -2071,7 +2086,8 @@ html.vv-short #view.typing .tlc{min-height:38px}
   }
   function blogPostHTML(tpl, p, o) {
     var old = postSuffix(tpl), box = findGridBox(tpl);
-    if (!box) throw { code: 'template', why: 'గడి భాగం (div1) కనిపించలేదు' };
+    if (!box) box = findGridRegion(tpl);
+    if (!box) throw { code: 'template', why: 'గడి భాగం కనిపించలేదు · ' + String(tpl || '').length + ' అక్షరాలు · div1: ' + (/div1/.test(tpl || '') ? 'ఉంది' : 'లేదు') + ' · ' + String(tpl || '').replace(/\s+/g, ' ').slice(0, 120) };
     var suf = old ? (o.suffix || old) : '', grid = tpl.slice(box.start, box.end);
     var img = o.img || p.blkImg || (grid.match(/<input type="image"[^>]*?src="([^"]+)"[^>]*class="btn-disabled2"/) || grid.match(/class="btn-disabled2"[^>]*?src="([^"]+)"/) || grid.match(/<input[^>]*\ssrc\s*=\s*["']([^"']+)["'][^>]*btn-disabled/i) || grid.match(/btn-disabled[^>]*\ssrc\s*=\s*["']([^"']+)["']/i) || [])[1] || '';
     var idp = shortDate(p.date) || (grid.match(/id\s*=\s*"(\d{6})-\d+"/) || [])[1] || 'epv';
