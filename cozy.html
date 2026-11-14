@@ -38,6 +38,9 @@ h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance}
 .summary{font-size:15px;color:var(--ink-soft);margin:0 0 12px}
 .pdf{display:inline-flex;align-items:center;height:40px;padding:0 18px;border-radius:999px;background:var(--accent-fill);color:var(--accent-ink);font:700 13.5px var(--font-body);text-decoration:none;margin:0 0 16px}
 .pdf:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sec .count{font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--ink-soft);margin-left:8px}
+.more{display:block;margin:22px auto 0;height:42px;padding:0 22px;border-radius:999px;border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:700 13.5px var(--font-body);cursor:pointer}
+.more:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 :root{--paper:#FBF1DF;--card:#FFF8EC;--paper-2:#F5E4C6;--ink:#2E1F1A;--ink-soft:#6B5346;--plum:#6A2C5A;--plum-ink:#FFF8EC;--marigold:#E9A23B;--sage:#6F8F6A;--rule:#E2CBA8;--accent:#6A2C5A;--accent-fill:#6A2C5A;--accent-ink:#FFF8EC;--focus:rgba(106,44,90,.25);--nav-bg:#FFF8EC;--search-r:999px;--font-display:'Fraunces',Georgia,serif;--font-body:'Figtree',system-ui,sans-serif;--shadow:0 10px 24px -14px rgba(106,44,90,.35);color-scheme:light}
 body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transparent 0);background-size:22px 22px}
@@ -215,11 +218,22 @@ window.RL_THEME = {
   }
 
   function homeView() {
-    var recent = C.sortedByDate(C.state.items).slice(0, 12);
+    var cat = C.state.cat, items, heading, more = '';
+    if (cat) {
+      var all = C.sortedByDate(C.filtered());
+      var lim = C.state.limit || 40;
+      items = all.slice(0, lim);
+      heading = esc(cat) + ' <span class="count">' + all.length + (all.length === 1 ? ' ruling' : ' rulings') + '</span>';
+      if (all.length > lim) more = '<button class="more" data-act="more">Show more (' + (all.length - lim) + ' left)</button>';
+    } else {
+      items = C.sortedByDate(C.state.items).slice(0, 12);
+      heading = 'Recently added';
+    }
     return T.header() +
       '<label class="sr" for="q">Search rulings</label>' +
       '<input id="q" class="search" type="search" placeholder="Search a subject or ruling" value="' + esc(C.state.query) + '" data-act="q">' +
-      chips() + '<h2 class="sec">Recently added</h2>' + status() + list(recent, 'No rulings yet.');
+      chips() + '<h2 class="sec">' + heading + '</h2>' + status() +
+      list(items, cat ? 'No rulings in this department yet.' : 'No rulings yet.') + more;
   }
   function searchView() {
     var hits = C.filtered();
@@ -260,6 +274,8 @@ window.RL_THEME = {
     else view = homeView();
     app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route);
     document.body.setAttribute('data-route', route);
+    var on = document.querySelector('.chip[aria-pressed="true"]');
+    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
     var q = document.getElementById('q');
     if (q && r === 'search') { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
@@ -284,7 +300,8 @@ window.RL_THEME = {
     var act = el.getAttribute('data-act'), go_ = el.getAttribute('data-go');
     if (go_) { e.preventDefault(); go(go_); return; }
     if (act === 'open') { go('#read/' + encodeURIComponent(el.getAttribute('data-id'))); }
-    else if (act === 'cat') { C.state.cat = el.getAttribute('data-cat') || ''; render(); }
+    else if (act === 'cat') { C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; render(); var h = document.querySelector('.sec'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+    else if (act === 'more') { C.state.limit = (C.state.limit || 40) + 40; render(); }
     else if (act === 'back') { history.length > 1 ? history.back() : go('#home'); }
     else if (act === 'save') { var id = el.getAttribute('data-id'); C.toggleSaved(id); render(); }
   });
