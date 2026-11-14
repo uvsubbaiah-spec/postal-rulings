@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Postal Rulings · Cozy</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font-body);font-size:15px;line-height:1.5;color:var(--ink);background:var(--paper);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:20px;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));min-height:100vh}
+.wrap{max-width:960px;margin:0 auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance}
+.search{display:block;width:100%;height:50px;margin:0 0 14px;padding:0 18px;border-radius:var(--search-r);border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:500 15px var(--font-body);outline:none}
+.search:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--focus)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.chip{height:36px;padding:0 16px;border-radius:999px;border:1.5px solid var(--rule);background:transparent;color:var(--ink);font:700 13px var(--font-body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
+.chip:focus-visible,.back:focus-visible,.save:focus-visible,.nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sec{font-size:20px;font-weight:700;margin:4px 0 14px}
+.page{font-size:clamp(26px,6vw,36px);font-weight:800;margin:6px 0 10px}
+.note{font-size:12.5px;color:var(--ink-soft);margin:4px 2px 16px}
+.empty{display:none;text-align:center;padding:30px 10px;color:var(--ink-soft)}
+.empty.show{display:block}
+.rack{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.env,.letter,.arch{min-width:0;text-align:left;cursor:pointer;color:inherit;font:inherit;border:0;width:100%}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px}
+.back,.save{height:38px;padding:0 16px;border-radius:999px;border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:700 13px var(--font-body);cursor:pointer}
+.save[aria-pressed="true"]{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
+.doc{white-space:pre-wrap;word-wrap:break-word;font:400 15px/1.7 var(--font-body);color:var(--ink);background:var(--card);border-radius:14px;padding:18px;margin:0;box-shadow:var(--shadow)}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-around;gap:6px;padding:10px max(14px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));background:var(--nav-bg);border-top:1px solid var(--rule);z-index:50}
+.nav a{flex:1;text-align:center;text-decoration:none;font:700 12.5px var(--font-body);color:var(--ink-soft);padding:8px 6px;border-radius:999px}
+.nav a[aria-current="page"]{background:var(--accent-fill);color:var(--accent-ink)}
+
+:root{--paper:#FBF1DF;--card:#FFF8EC;--paper-2:#F5E4C6;--ink:#2E1F1A;--ink-soft:#6B5346;--plum:#6A2C5A;--plum-ink:#FFF8EC;--marigold:#E9A23B;--sage:#6F8F6A;--rule:#E2CBA8;--accent:#6A2C5A;--accent-fill:#6A2C5A;--accent-ink:#FFF8EC;--focus:rgba(106,44,90,.25);--nav-bg:#FFF8EC;--search-r:999px;--font-display:'Fraunces',Georgia,serif;--font-body:'Figtree',system-ui,sans-serif;--shadow:0 10px 24px -14px rgba(106,44,90,.35);color-scheme:light}
+body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transparent 0);background-size:22px 22px}
+.mast{display:flex;flex-wrap:wrap;gap:16px 20px;align-items:center;background:var(--card);border-radius:22px;padding:22px;box-shadow:var(--shadow);margin-bottom:22px}
+.stamp{flex:0 0 auto;width:92px;height:110px;background:var(--plum);color:var(--plum-ink);border-radius:6px;display:grid;place-items:center;text-align:center;-webkit-mask:radial-gradient(circle 4px at 50% 0,#0000 98%,#000) 0 0/12px 51% repeat-x,radial-gradient(circle 4px at 50% 100%,#0000 98%,#000) 0 100%/12px 51% repeat-x;mask:radial-gradient(circle 4px at 50% 0,#0000 98%,#000) 0 0/12px 51% repeat-x,radial-gradient(circle 4px at 50% 100%,#0000 98%,#000) 0 100%/12px 51% repeat-x}
+.stamp b{display:block;font-family:var(--font-display);font-size:30px;font-weight:800;line-height:1}
+.stamp span{font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.mast h1{font-size:clamp(26px,6vw,38px);font-weight:800;line-height:1.05}
+.mast p{margin:6px 0 0;color:var(--ink-soft);max-width:46ch}
+.env{position:relative;background:var(--card);border-radius:14px;padding:22px 20px 18px;box-shadow:var(--shadow);border-top:12px solid transparent;display:block;transition:transform .2s ease}
+.env:hover{transform:translateY(-2px)}
+.pm{position:absolute;top:14px;right:14px;width:54px;height:54px;border-radius:50%;border:2px solid var(--sage);color:var(--sage);display:grid;place-items:center;font:800 9px/1.1 'JetBrains Mono',monospace;text-align:center;transform:rotate(-12deg)}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--paper-2);color:var(--ink-soft)}
+.env h2{font-size:20px;font-weight:600;margin:12px 0 6px;padding-right:60px;line-height:1.2;color:var(--ink)}
+.meta{font:500 12px 'JetBrains Mono',monospace;color:var(--ink-soft);display:flex;gap:10px;flex-wrap:wrap}
+.saved{color:var(--plum);font-weight:700}
+.open{display:inline-flex;align-items:center;margin-top:14px;height:38px;padding:0 16px;border-radius:999px;background:var(--plum);color:var(--plum-ink);font:700 13px var(--font-body)}
+
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>window.RL_CONFIG = { endpoint: "https://script.google.com/macros/s/AKfycbzOgdHHSat3LJS7cM1HfLXtQ0ntjvMwxLLwxjOciRepbtIN66B6BwnYDYcjm4cGR_bB6w/exec" };</script>
+<script>
+/* Postal Rulings: shared core (data, search, reader, saved). Theme files supply markup. */
+(function (global) {
+  var ENDPOINT = (global.RL_CONFIG && global.RL_CONFIG.endpoint) || '';
+  var KEY_IDX = 'rl_index_v2', KEY_SAVED = 'rl_saved';
+  var state = { items: [], cats: [], loaded: false, error: '', query: '', cat: '', saved: [], text: {}, route: 'home' };
+
+  function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function fetchJson(url) {
+    return fetch(url, { redirect: 'follow', cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status); return r.json();
+    });
+  }
+  function loadSaved() { try { state.saved = JSON.parse(localStorage.getItem(KEY_SAVED) || '[]') || []; } catch (e) { state.saved = []; } }
+  function toggleSaved(id) {
+    var i = state.saved.indexOf(id);
+    if (i >= 0) state.saved.splice(i, 1); else state.saved.push(id);
+    store(KEY_SAVED, state.saved);
+  }
+  function isSaved(id) { return state.saved.indexOf(id) >= 0; }
+
+  function cleanName(n) { return String(n || '').replace(/\.pdf$/i, '').trim(); }
+  function shortDate(d) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || ''));
+    if (m) return m[3] + '.' + m[2] + '.' + m[1];
+    return String(d || '');
+  }
+  function sortedByDate(items) {
+    return items.slice().sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+  }
+  function norm(s) { return String(s || '').toLowerCase(); }
+
+  function applyIndex(d) {
+    var items = (d && d.items) || [];
+    state.items = items.filter(function (x) { return x && x.id; }).map(function (x) {
+      return { id: String(x.id), name: cleanName(x.name), date: x.date || '', category: x.category || 'Other' };
+    });
+    var seen = {}; state.cats = [];
+    state.items.forEach(function (x) { if (!seen[x.category]) { seen[x.category] = 1; state.cats.push(x.category); } });
+    state.cats.sort();
+    state.loaded = true; state.error = '';
+  }
+  function loadIndex() {
+    // Show the saved copy at once, then refresh from the backend.
+    try { var cached = JSON.parse(localStorage.getItem(KEY_IDX) || 'null'); if (cached) applyIndex(cached); } catch (e) {}
+    if (!ENDPOINT) { if (!state.loaded) state.error = 'No backend endpoint configured.'; return Promise.resolve(); }
+    return fetchJson(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'export=index&t=' + Date.now())
+      .then(function (d) { applyIndex(d); store(KEY_IDX, d); })
+      .catch(function (e) { if (!state.loaded) state.error = 'Could not reach the rulings service. ' + (e.message || ''); });
+  }
+  function loadText(id) {
+    if (state.text[id] !== undefined) return Promise.resolve(state.text[id]);
+    if (!ENDPOINT) return Promise.resolve('');
+    return fetchJson(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'text=' + encodeURIComponent(id))
+      .then(function (d) { var t = (d && d.text) || ''; state.text[id] = t; return t; });
+  }
+  function filtered() {
+    var q = norm(state.query).trim(), toks = q ? q.split(/\s+/) : [];
+    return state.items.filter(function (x) {
+      if (state.cat && x.category !== state.cat) return false;
+      if (!toks.length) return true;
+      var hay = norm(x.name + ' ' + x.category + ' ' + x.date);
+      return toks.every(function (t) { return hay.indexOf(t) >= 0; });
+    });
+  }
+  function savedItems() { return state.saved.map(function (id) { return state.items.filter(function (x) { return x.id === id; })[0]; }).filter(Boolean); }
+
+  global.RLCore = {
+    state: state, loadIndex: loadIndex, loadText: loadText, toggleSaved: toggleSaved, isSaved: isSaved,
+    loadSaved: loadSaved, filtered: filtered, savedItems: savedItems, sortedByDate: sortedByDate, shortDate: shortDate
+  };
+})(window);
+
+</script>
+<script>
+window.RL_THEME = {
+  header: function () {
+    return '<header class="mast"><div class="stamp" aria-hidden="true"><div><b>R</b><span>Rulings<br>Dept of Posts</span></div></div>' +
+      '<div style="min-width:0"><h1>Postal Rulings</h1><p>Orders and circulars of the Department of Posts, kept tidy and easy to find.</p></div></header>';
+  },
+  card: function (x, saved) {
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    var d = (x.date || '').replace(/^(\d{4})-(\d{2})-(\d{2}).*$/, '$3.$2.$1');
+    var pm = /^\d{2}\.\d{2}\.\d{4}$/.test(d) ? d.slice(0, 5) : '';
+    return '<article class="env" data-act="open" data-id="' + esc(x.id) + '" role="button" tabindex="0">' +
+      (pm ? '<span class="pm">' + esc(pm) + '</span>' : '') +
+      '<span class="tag">' + esc(x.category) + '</span>' +
+      '<h2>' + esc(x.name) + '</h2>' +
+      '<div class="meta"><span>' + esc(d || '') + '</span>' + (saved ? '<span class="saved">Saved</span>' : '') + '</div>' +
+      '<span class="open">Open ruling</span></article>';
+  },
+  nav: function (route) {
+    var a = function (r, label, href) { return '<a href="' + href + '"' + (route === r ? ' aria-current="page"' : '') + '>' + label + '</a>'; };
+    return '<nav class="nav" aria-label="Main">' + a('home', 'Home', '#home') + a('search', 'Search', '#search') + a('saved', 'Saved', '#saved') + '</nav>';
+  }
+};
+
+</script>
+<script>
+/* Postal Rulings: shared screens. Each theme supplies THEME.header, THEME.card, THEME.nav(route). */
+(function () {
+  var C = window.RLCore, T = window.RL_THEME;
+  var app = document.getElementById('app');
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function go(hash) { location.hash = hash; }
+
+  function chips() {
+    var out = '<div class="chips" role="group" aria-label="Departments">';
+    out += '<button class="chip" data-act="cat" data-cat="" aria-pressed="' + (!C.state.cat) + '">All</button>';
+    C.state.cats.forEach(function (c) {
+      out += '<button class="chip" data-act="cat" data-cat="' + esc(c) + '" aria-pressed="' + (C.state.cat === c) + '">' + esc(c) + '</button>';
+    });
+    return out + '</div>';
+  }
+  function list(items, empty) {
+    if (!items.length) return '<p class="empty show">' + esc(empty) + '</p>';
+    return '<div class="rack">' + items.map(function (x) { return T.card(x, C.isSaved(x.id)); }).join('') + '</div>';
+  }
+  function status() {
+    if (C.state.error && !C.state.loaded) return '<p class="empty show">' + esc(C.state.error) + '</p>';
+    if (!C.state.loaded) return '<p class="empty show">Loading rulings…</p>';
+    return '';
+  }
+
+  function homeView() {
+    var recent = C.sortedByDate(C.state.items).slice(0, 12);
+    return T.header() +
+      '<label class="sr" for="q">Search rulings</label>' +
+      '<input id="q" class="search" type="search" placeholder="Search a subject or ruling" value="' + esc(C.state.query) + '" data-act="q">' +
+      chips() + '<h2 class="sec">Recently added</h2>' + status() + list(recent, 'No rulings yet.');
+  }
+  function searchView() {
+    var hits = C.filtered();
+    return '<h1 class="page">Search</h1>' +
+      '<label class="sr" for="q">Search rulings</label>' +
+      '<input id="q" class="search" type="search" placeholder="Search a subject or ruling" value="' + esc(C.state.query) + '" data-act="q" autofocus>' +
+      chips() + '<p class="note">' + hits.length + (hits.length === 1 ? ' ruling' : ' rulings') + '</p>' +
+      status() + list(hits.slice(0, 80), 'Nothing matches that search.');
+  }
+  function savedView() {
+    var items = C.savedItems();
+    return '<h1 class="page">Saved</h1>' + status() + list(items, 'You have not saved any rulings yet. Open a ruling and tap Save.');
+  }
+  function readView(id) {
+    var x = C.state.items.filter(function (i) { return i.id === id; })[0];
+    var title = x ? x.name : 'Ruling';
+    var body = '<div class="reader" id="reader"><p class="empty show">Loading text…</p></div>';
+    C.loadText(id).then(function (t) {
+      var el = document.getElementById('reader'); if (!el) return;
+      el.innerHTML = t ? '<pre class="doc">' + esc(t) + '</pre>' : '<p class="empty show">Text for this ruling is not available yet.</p>';
+    }).catch(function () {
+      var el = document.getElementById('reader'); if (el) el.innerHTML = '<p class="empty show">Could not load the text. Check your connection and try again.</p>';
+    });
+    return '<div class="topbar"><button class="back" data-act="back">Back</button>' +
+      '<button class="save" data-act="save" data-id="' + esc(id) + '" aria-pressed="' + C.isSaved(id) + '">' + (C.isSaved(id) ? 'Saved' : 'Save') + '</button></div>' +
+      '<h1 class="page">' + esc(title) + '</h1>' + (x ? '<p class="note">' + esc(x.category) + ' · ' + esc(C.shortDate(x.date)) + '</p>' : '') + body;
+  }
+
+  function render() {
+    var r = (location.hash || '#home').replace(/^#/, '');
+    var view, route = 'home';
+    if (r.indexOf('read/') === 0) { route = 'home'; view = readView(decodeURIComponent(r.slice(5))); }
+    else if (r === 'search') { route = 'search'; view = searchView(); }
+    else if (r === 'saved') { route = 'saved'; view = savedView(); }
+    else view = homeView();
+    app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route);
+    document.body.setAttribute('data-route', route);
+    var q = document.getElementById('q');
+    if (q && r === 'search') { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  }
+
+  var typing = null;
+  document.addEventListener('input', function (e) {
+    if (e.target && e.target.getAttribute('data-act') === 'q') {
+      C.state.query = e.target.value;
+      clearTimeout(typing);
+      typing = setTimeout(function () {
+        var r = (location.hash || '#home').replace(/^#/, '');
+        if (r === 'home' || r === '' || r === 'search') {
+          if (r !== 'search' && C.state.query.trim()) go('#search');
+          else render();
+        }
+      }, 180);
+    }
+  });
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-act], [data-go]');
+    if (!el) return;
+    var act = el.getAttribute('data-act'), go_ = el.getAttribute('data-go');
+    if (go_) { e.preventDefault(); go(go_); return; }
+    if (act === 'open') { go('#read/' + encodeURIComponent(el.getAttribute('data-id'))); }
+    else if (act === 'cat') { C.state.cat = el.getAttribute('data-cat') || ''; render(); }
+    else if (act === 'back') { history.length > 1 ? history.back() : go('#home'); }
+    else if (act === 'save') { var id = el.getAttribute('data-id'); C.toggleSaved(id); render(); }
+  });
+  window.addEventListener('hashchange', render);
+  C.loadSaved();
+  render();
+  C.loadIndex().then(render);
+})();
+
+</script>
+</body>
+</html>
