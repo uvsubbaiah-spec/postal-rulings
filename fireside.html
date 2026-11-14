@@ -167,6 +167,9 @@ body[data-route="read"]{padding-bottom:40px}
 .dk-arrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .dk-count{font:700 12.5px var(--font-body);color:var(--ink);white-space:nowrap}
 .dk-msg.me:focus{outline:2px solid var(--accent);outline-offset:3px}
+.saved-bk summary{cursor:pointer;font:700 15px var(--font-display);color:var(--ink)}
+.bk{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--rule);flex-wrap:wrap}
+.bk b{display:block}.bk small{color:var(--ink-soft)}
 
 :root{--night:#17110F;--wall:#221915;--letter:#F3E2C4;--ember:#E8934A;--wax:#9E2F2A;--ink:#F3E2C4;--ink-soft:#A8917B;--paper:#17110F;--card:#221915;--rule:#3A2C25;--accent:#E8934A;--accent-fill:#E8934A;--accent-ink:#17110F;--focus:rgba(232,147,74,.3);--nav-bg:#1B1411;--search-r:4px;--font-display:'Cormorant Garamond',Georgia,serif;--font-body:'Lora',Georgia,serif;--shadow:0 18px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%) var(--night)}
@@ -1036,22 +1039,26 @@ window.RL_THEME = {
   function cacheGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function cachePut(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function loadHosp() {
-    if (CG.hosp || CG.hospBusy) return;
+    if (CG.hosp || CG.hospBusy || CG.hospTried) return;
+    CG.hospTried = true;
     var c = cacheGet('rl_cghs_hosp_v2'); if (c && c.rows) CG.hosp = c.rows;
     CG.hospBusy = true;
     allPages('cghsList').then(function (parts) {
       var rows = []; parts.forEach(function (p) { rows = rows.concat(p.rows || []); });
       if (rows.length) { CG.hosp = rows; cachePut('rl_cghs_hosp_v2', { at: parts[0].at, rows: rows }); }
+      else if (!CG.hosp) CG.hospErr = 'The hospital list is empty on the server right now. Try again later.';
     }).catch(function (e) { if (!CG.hosp) CG.hospErr = 'Could not load the hospital list (' + String(e.message || e).slice(0, 80) + '). Check your connection and try again.'; })
       .then(function () { CG.hospBusy = false; var r = (location.hash || '').replace('#', ''); if (r === 'cghs' || r === 'rates') render(); });
   }
   function loadRates() {
-    if (CG.rates || CG.ratesBusy) return;
+    if (CG.rates || CG.ratesBusy || CG.ratesTried) return;
+    CG.ratesTried = true;
     var c = cacheGet('rl_cghs_rates_v2'); if (c && c.items) CG.rates = c;
     CG.ratesBusy = true;
     allPages('cghsRates').then(function (parts) {
       var items = []; parts.forEach(function (p) { items = items.concat(p.items || []); });
       if (items.length) { CG.rates = { cols: parts[0].cols || [], items: items, at: parts[0].at }; cachePut('rl_cghs_rates_v2', CG.rates); }
+      else if (!CG.rates) CG.ratesErr = 'The rate list is empty on the server right now. Try again later.';
     }).catch(function (e) { if (!CG.rates) CG.ratesErr = 'Could not load the rate list (' + String(e.message || e).slice(0, 80) + '). Check your connection and try again.'; })
       .then(function () { CG.ratesBusy = false; if ((location.hash || '') === '#rates') render(); });
   }
@@ -1069,7 +1076,7 @@ window.RL_THEME = {
     loadHosp();
     var h = '<div class="topbar"><button class="back" data-act="back">Back</button></div><h1 class="page">CGHS empanelled hospitals</h1>' +
       '<p class="note">From the CGHS site\'s own hospital list, refreshed every night.</p>';
-    if (!CG.hosp) return h + '<p class="empty show">' + esc(CG.hospErr || 'Loading hospitals…') + '</p>';
+    if (!CG.hosp) return h + '<p class="empty show">' + esc(CG.hospErr || 'Loading hospitals…') + '</p>' + (CG.hospErr ? '<button class="more" data-act="cg-retry">Try again</button>' : '');
     var recs = CG.hosp.map(hRec);
     var states = {}, cities = {}, accs = {};
     recs.forEach(function (r) { var s = stateOf(r.cs); if (s) states[s] = 1; if (!HS.state || s === HS.state) { var c = cityOf(r.cs); if (c) cities[c] = 1; } if (r.a) accs[r.a] = 1; });
@@ -1155,7 +1162,7 @@ window.RL_THEME = {
     } else loadHosp();
     h += '<div class="fl"><span>City tier</span>' + seg('rt-tier', [['i', 'Tier I'], ['ii', 'Tier II'], ['iii', 'Tier III']], RT.tier) + '</div>' +
       '<div class="fl"><span>Ward</span>' + seg('rt-ward', [['general', 'General'], ['semi_private', 'Semi-private'], ['private', 'Private']], RT.ward) + '</div>';
-    if (!CG.rates) return h + '</div><p class="empty show">' + esc(CG.ratesErr || 'Loading the rate list…') + '</p>';
+    if (!CG.rates) return h + '</div><p class="empty show">' + esc(CG.ratesErr || 'Loading the rate list…') + '</p>' + (CG.ratesErr ? '<button class="more" data-act="cg-retry">Try again</button>' : '');
     var sps = {}; CG.rates.items.forEach(function (it) { if (it[2]) sps[it[2]] = 1; });
     h += '<label class="fl" for="rtSp"><span>Speciality</span><select id="rtSp" data-act="rt-sp"><option value="">All specialities</option>' + Object.keys(sps).sort().map(function (s2) { return '<option' + (s2 === RT.sp ? ' selected' : '') + '>' + esc(s2) + '</option>'; }).join('') + '</select></label>' +
       '<label class="sr" for="rtQ">Search treatment</label><input id="rtQ" class="search" type="search" data-act="rt-q" placeholder="Search treatment, procedure or code" value="' + esc(RT.q) + '"></div>';
@@ -1169,8 +1176,16 @@ window.RL_THEME = {
       var lines = RT.cart.map(function (code) { var it = CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return ''; var v = rtVal(it); total += v || 0;
         return '<li><span>' + esc(it[1]) + '</span><b>' + inr(v) + '</b><button class="x" data-act="rt-del" data-code="' + esc(code) + '" aria-label="Remove">×</button></li>'; }).join('');
       h += '<section class="pcard"><h2 class="rsec-h">Your breakup</h2><ul class="cart">' + lines + '</ul><p class="carttotal">Total <b>' + inr(total) + '</b></p>' +
-        '<div class="pbtns"><button class="pdf" data-act="rt-copy">Copy breakup</button><button class="back" data-act="rt-clear">Clear</button></div></section>';
+        '<label class="sr" for="rtName">Breakup name</label><input id="rtName" class="search" data-act="rt-name" placeholder="Name this breakup, e.g. patient or bill" value="' + esc(RT.name || '') + '">' +
+        '<div class="pbtns"><button class="pdf" data-act="rt-pdf">Download PDF</button><button class="back" data-act="rt-save">Save breakup</button><button class="back" data-act="rt-copy">Copy</button><button class="back" data-act="rt-clear">Clear</button></div>' +
+        '<p class="muted small" id="rtNote"' + (RT.note ? '' : ' hidden') + '>' + esc(RT.note || '') + '</p></section>';
     }
+    var sb = savedBreakups();
+    h += '<details class="pcard saved-bk"' + (RT.savedOpen ? ' open' : '') + '><summary data-act="rt-savedtoggle">Saved breakups (' + sb.length + ')</summary>' +
+      (sb.length ? sb.map(function (b, i) {
+        return '<div class="bk"><div style="min-width:0"><b>' + esc(b.name) + '</b><small>' + b.codes.length + ' item' + (b.codes.length === 1 ? '' : 's') + ' · Tier ' + esc(String(b.tier).toUpperCase()) + (b.city ? ', ' + esc(b.city) : '') + '</small></div>' +
+          '<div class="pbtns" style="margin:0"><button class="hlink" data-act="rt-bk-load" data-i="' + i + '">Load</button><button class="hlink" data-act="rt-bk-pdf" data-i="' + i + '">PDF</button><button class="hlink" data-act="rt-bk-del" data-i="' + i + '">Delete</button></div></div>';
+      }).join('') : '<p class="muted">No saved breakups yet. Add packages, name the breakup and tap Save breakup.</p>') + '</details>';
     h += '<p class="note">' + hits.length + ' rates · ' + (RT.city ? esc(RT.city) + ' · ' : '') + 'Tier ' + RT.tier.toUpperCase() + ' · ' + { nabh: 'NABH', non_nabh: 'Non-NABH', superspeciality: 'Super Speciality' }[RT.type] + ' · ' + { general: 'General', semi_private: 'Semi-private', private: 'Private' }[RT.ward] + ' ward</p>';
     h += '<div class="srows">' + hits.slice(0, RT.show).map(function (it) {
       var inCart = RT.cart.indexOf(it[0]) >= 0;
@@ -1197,7 +1212,111 @@ window.RL_THEME = {
     if (/super/i.test(r.a)) RT.type = 'superspeciality'; else if (/non/i.test(r.a)) RT.type = 'non_nabh'; else if (/nabh/i.test(r.a)) RT.type = 'nabh';
     rtSave(); return true;
   }
+
+  // ---- Breakup PDF: the classic app's own PDF writer (no library), same layout ----
+  function makePdf(title, sub, rows, total, missing) {
+    const W = 595, H = 842, M = 40, RW = 96;
+    const clean = (t) => String(t == null ? '' : t).replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"').replace(/[\u2013\u2014]/g, '-').replace(/\u20b9/g, 'Rs.').replace(/\u00b7/g, '-').replace(/[^\x20-\x7e]/g, '?');
+    const esc = (t) => clean(t).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+    const cw = (c) => /[0-9]/.test(c) ? 0.556 : /[ ,.:;'|!ijlI]/.test(c) ? 0.278 : /[mMW]/.test(c) ? 0.85 : /[A-Z]/.test(c) ? 0.68 : 0.52;
+    const tw = (t, sz, bold) => clean(t).split('').reduce((a, c) => a + cw(c), 0) * sz * (bold ? 1.06 : 1);
+    const wrap = (t, sz, maxW, bold) => {
+      const out = []; let line = '';
+      clean(t).split(/\s+/).filter(Boolean).forEach(w => {
+        const tryL = line ? line + ' ' + w : w;
+        if (tw(tryL, sz, bold) <= maxW || !line) line = tryL; else { out.push(line); line = w; }
+      });
+      if (line) out.push(line);
+      return out.length ? out : [''];
+    };
+    const pages = [[]]; let y = H - M;
+    const op = (s) => pages[pages.length - 1].push(s);
+    const T = (x, yy, t, sz, bold, grey) => op('BT /F' + (bold ? 2 : 1) + ' ' + sz + ' Tf ' + (grey ? '0.38 g ' : '0 g ') + x.toFixed(1) + ' ' + yy.toFixed(1) + ' Td (' + esc(t) + ') Tj ET');
+    const line = (yy) => op('0.8 G 0.5 w ' + M + ' ' + yy.toFixed(1) + ' m ' + (W - M) + ' ' + yy.toFixed(1) + ' l S');
+    const need = (h) => { if (y - h < M + 28) { pages.push([]); y = H - M; } };
+    T(M, y - 14, 'CGHS package rates - breakup', 16, true); y -= 24;
+    wrap(title, 11, W - 2 * M, true).forEach(l => { T(M, y - 11, l, 11, true); y -= 15; });
+    T(M, y - 10, sub, 9.5, false, true); y -= 14;
+    T(M, y - 10, new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }), 9.5, false, true); y -= 12;
+    line(y); y -= 8;
+    rows.forEach(r => {
+      const nl = wrap(r.name, 10, W - 2 * M - 26 - RW - 8, true), ml = r.meta ? wrap(r.meta, 8.5, W - 2 * M - 26 - RW - 8, false) : [];
+      const h = nl.length * 13 + ml.length * 11 + 8;
+      need(h);
+      T(M, y - 10, r.no, 10, false, true);
+      nl.forEach((l, i) => T(M + 26, y - 10 - i * 13, l, 10, true));
+      ml.forEach((l, i) => T(M + 26, y - 10 - nl.length * 13 - i * 11 + 1, l, 8.5, false, true));
+      const rw = tw(r.rate, 10, true); T(W - M - rw, y - 10, r.rate, 10, true);
+      y -= h; line(y + 3);
+    });
+    need(40); y -= 6;
+    const tl = 'Grand total', tv = total;
+    T(M + 26, y - 13, tl, 12, true); T(W - M - tw(tv, 12, true), y - 13, tv, 12, true); y -= 20;
+    if (missing) { wrap(missing + ' selected item' + (missing === 1 ? ' has' : 's have') + ' no rate for this combination and ' + (missing === 1 ? 'is' : 'are') + ' left out of the total.', 8.5, W - 2 * M, false).forEach(l => { T(M, y - 9, l, 8.5, false, true); y -= 11; }); }
+    const n = pages.length;
+    pages.forEach((p, i) => { pages[i] = p.concat(['BT /F1 8 Tf 0.38 g ' + M + ' 24 Td (' + esc('Source: CGHS rate list, Ministry of Health and Family Welfare') + ') Tj ET', 'BT /F1 8 Tf 0.38 g ' + (W - M - 50) + ' 24 Td (' + esc('Page ' + (i + 1) + ' of ' + n) + ') Tj ET']); });
+    const objs = ['<< /Type /Catalog /Pages 2 0 R >>', null, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>', '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];
+    const kids = [];
+    pages.forEach((p, i) => {
+      const pid = 5 + i * 2, cid = 6 + i * 2, body = p.join('\n');
+      kids.push(pid + ' 0 R');
+      objs[pid - 1] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + cid + ' 0 R >>';
+      objs[cid - 1] = '<< /Length ' + body.length + ' >>\nstream\n' + body + '\nendstream';
+    });
+    objs[1] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + pages.length + ' >>';
+    let out = '%PDF-1.4\n'; const offs = [];
+    objs.forEach((o, i) => { offs.push(out.length); out += (i + 1) + ' 0 obj\n' + o + '\nendobj\n'; });
+    const xr = out.length;
+    out += 'xref\n0 ' + (objs.length + 1) + '\n0000000000 65535 f \n' + offs.map(o => String(o).padStart(10, '0') + ' 00000 n \n').join('') + 'trailer\n<< /Size ' + (objs.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xr + '\n%%EOF';
+    const bytes = new Uint8Array(out.length); for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
+    return bytes;
+  }
+  function breakupRows(codes, type, tier, ward) {
+    var cols = (CG.rates && CG.rates.cols) || [], ci = cols.indexOf('tier_' + tier + '_' + type + '_' + ward + '_ward');
+    var by = {}; ((CG.rates && CG.rates.items) || []).forEach(function (x) { by[x[0]] = x; });
+    var total = 0, missing = 0, fmt = function (v) { return 'Rs. ' + Number(v).toLocaleString('en-IN', { maximumFractionDigits: 2 }); };
+    var rows = codes.map(function (k, i) {
+      var x = by[k], v = x && ci >= 0 && x[4] ? x[4][ci] : null;
+      if (v == null) missing++; else total += Number(v);
+      return { no: (i + 1) + '.', name: x ? x[1] : k, meta: x ? [x[0], x[2]].filter(Boolean).join(' - ') : '', rate: v == null ? 'No rate' : fmt(v) };
+    });
+    return { rows: rows, total: fmt(total), missing: missing };
+  }
+  function rtNote(m) { RT.note = m || ''; var el = document.getElementById('rtNote'); if (el) { el.textContent = RT.note; el.hidden = !RT.note; } }
+  function breakupPdf(b) {
+    try {
+      var r = breakupRows(b.codes, b.type, b.tier, b.ward);
+      var typeName = { nabh: 'NABH', non_nabh: 'Non-NABH', superspeciality: 'Super Speciality' }[b.type] || b.type;
+      var wardName = { general: 'General', semi_private: 'Semi-private', private: 'Private' }[b.ward] || b.ward;
+      var sub = typeName + ' - Tier ' + String(b.tier).toUpperCase() + ' - ' + wardName + ' ward' + (b.city ? ' - ' + b.city : '');
+      var title = b.name || 'CGHS breakup';
+      var bytes = makePdf(title, sub, r.rows, r.total, r.missing);
+      var name = (String(title).replace(/[^A-Za-z0-9._ -]+/g, ' ').replace(/\s+/g, ' ').trim() || 'CGHS breakup') + '.pdf';
+      // Inside the Android app: saved to Downloads through the app (a browser download does nothing there).
+      try {
+        if (window.RLApp && typeof window.RLApp.savePdf === 'function') {
+          var bin = ''; for (var i = 0; i < bytes.length; i += 8192) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+          if (window.RLApp.savePdf(name, btoa(bin))) { rtNote('PDF saved to your Downloads folder.'); return; }
+        }
+      } catch (e0) {}
+      if (/PostalRulingsApp/.test(navigator.userAgent || '')) { rtNote('Could not save the PDF. Update the app from the menu (About › Update) and try again.'); return; }
+      var blob = new Blob([bytes], { type: 'application/pdf' });
+      var download = function () {
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.rel = 'noopener';
+        document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+        rtNote('PDF downloaded: ' + name);
+      };
+      var file = null; try { file = new File([blob], name, { type: 'application/pdf' }); } catch (e1) {}
+      var phone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+      if (phone && file && navigator.canShare && navigator.canShare({ files: [file] })) navigator.share({ files: [file], title: title }).catch(download);
+      else download();
+    } catch (e) { rtNote('Could not make the PDF: ' + ((e && e.message) || e)); }
+  }
+  function savedBreakups() { try { return JSON.parse(localStorage.getItem('rl_rt_saved_v2') || '[]') || []; } catch (e) { return []; } }
+  function putBreakups(l) { try { localStorage.setItem('rl_rt_saved_v2', JSON.stringify(l)); } catch (e) {} }
+
   function screens2Click(act, el) {
+    if (act === 'cg-retry') { CG.hospTried = CG.ratesTried = false; CG.hospErr = CG.ratesErr = ''; render(); return true; }
     if (act === 'sumsort') { var k = el.getAttribute('data-k'); if (SUM.sort === k) SUM.dir = -SUM.dir; else { SUM.sort = k; SUM.dir = k === 'date' ? -1 : 1; } render(); return true; }
     if (act === 'sumcat') { SUM.cat = el.getAttribute('data-cat') || ''; SUM.cap = 100; render(); return true; }
     if (act === 'summore') { SUM.cap += 100; render(); return true; }
@@ -1209,6 +1328,13 @@ window.RL_THEME = {
     if (act === 'rt-del') { RT.cart = RT.cart.filter(function (x) { return x !== el.getAttribute('data-code'); }); rtSave(); render(); return true; }
     if (act === 'rt-clear') { RT.cart = []; rtSave(); render(); return true; }
     if (act === 'rt-copy') { rtCopy(); return true; }
+    if (act === 'rt-pdf') { if (RT.cart.length) breakupPdf({ name: (RT.name || '').trim() || 'CGHS breakup', codes: RT.cart.slice(), type: RT.type, tier: RT.tier, ward: RT.ward, city: RT.city }); return true; }
+    if (act === 'rt-save') { var nm = (RT.name || '').trim(); if (!nm) { rtNote('Type a name for the breakup first.'); var ni = document.getElementById('rtName'); if (ni) ni.focus(); return true; }
+      var l = savedBreakups().filter(function (b) { return b.name !== nm; }); l.unshift({ name: nm, codes: RT.cart.slice(), type: RT.type, tier: RT.tier, ward: RT.ward, city: RT.city, at: Date.now() }); putBreakups(l.slice(0, 50)); RT.note = 'Saved "' + nm + '".'; RT.savedOpen = true; render(); return true; }
+    if (act === 'rt-bk-load') { var b = savedBreakups()[+el.getAttribute('data-i')]; if (b) { RT.cart = b.codes.slice(); RT.type = b.type; RT.tier = b.tier; RT.ward = b.ward; RT.city = b.city || ''; RT.name = b.name; RT.note = 'Loaded "' + b.name + '".'; rtSave(); render(); } return true; }
+    if (act === 'rt-bk-pdf') { var b2 = savedBreakups()[+el.getAttribute('data-i')]; if (b2) breakupPdf(b2); return true; }
+    if (act === 'rt-bk-del') { var l2 = savedBreakups(); l2.splice(+el.getAttribute('data-i'), 1); putBreakups(l2); render(); return true; }
+    if (act === 'rt-savedtoggle') { RT.savedOpen = !el.parentNode.open; return false; }
     if (act === 'rt-hosp') { hospPick(el.getAttribute('data-n')); return false; }
     return false;
   }
@@ -1220,6 +1346,7 @@ window.RL_THEME = {
     if (act === 'rt-q') { RT.q = el.value; RT.show = 40; rerender('rtQ'); return true; }
     if (act === 'rt-city') { var v = el.value.trim(); var hit = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === rtKey(v); })[0]; if (hit || !v) { rtPickCity(hit || '', hit ? null : RT.tier); RT.msg = ''; render(); } else { RT.city = v; } return true; }
     if (act === 'rt-hospin') { if (hospPick(el.value)) render(); return true; }
+    if (act === 'rt-name') { RT.name = el.value; return true; }
     return false;
   }
   function screens2Change(act, el) {
