@@ -34,8 +34,9 @@ h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance}
 .back,.save{height:38px;padding:0 16px;border-radius:999px;border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:700 13px var(--font-body);cursor:pointer}
 .save[aria-pressed="true"]{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
 .doc{white-space:pre-wrap;word-wrap:break-word;font:400 15px/1.7 var(--font-body);color:var(--ink);background:var(--card);border-radius:14px;padding:18px;margin:0;box-shadow:var(--shadow)}
-.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:6px;padding:10px max(14px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));background:var(--nav-bg);border-top:1px solid var(--rule);z-index:50}
-.nav a{flex:1;max-width:180px;text-align:center;text-decoration:none;font:700 12.5px var(--font-body);color:var(--ink-soft);padding:8px 6px;border-radius:999px}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:2px;padding:6px max(8px,env(safe-area-inset-left,0px)) calc(6px + env(safe-area-inset-bottom,0px));background:var(--nav-bg);border-top:1px solid var(--rule);z-index:50}
+.nav a{flex:1;max-width:120px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;text-decoration:none;font:700 10.5px var(--font-body);color:var(--ink-soft);padding:6px 2px;border-radius:12px}
+.nav a span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .nav a[aria-current="page"]{background:var(--accent-fill);color:var(--accent-ink)}
 .summary{font-size:15px;color:var(--ink-soft);margin:0 0 12px}
 .pdf{display:inline-flex;align-items:center;height:40px;padding:0 18px;border-radius:999px;background:var(--accent-fill);color:var(--accent-ink);font:700 13.5px var(--font-body);text-decoration:none;margin:0 0 16px}
@@ -102,6 +103,64 @@ body[data-route="read"]{padding-bottom:40px}
 .sumbox p{margin:0 0 8px}
 .sumbox ul{margin:0;padding-left:20px}
 .sumbox li{margin:4px 0}
+.pbar{display:flex;justify-content:flex-end;margin:0 0 8px}
+.pbtn{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--accent-fill);color:var(--accent-ink);font:800 16px var(--font-body);text-decoration:none}
+.pbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pcard{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin:0 0 16px}
+.prow{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.pavatar{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--accent-fill);color:var(--accent-ink);font:800 22px var(--font-display);flex:0 0 auto}
+.pname{font-family:var(--font-display);font-size:20px;font-weight:700}
+.pcontact{font-size:13px;color:var(--ink-soft);overflow-wrap:anywhere}
+.plink{display:inline-block;color:var(--accent);font-weight:700;text-decoration:none}
+.pbtns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.sheet-wrap.center{align-items:center}
+.sheet .search{margin-bottom:10px}
+.wide{display:flex;justify-content:center;width:100%;margin-top:8px;border:0;cursor:pointer}
+.dk-log{display:flex;flex-direction:column;gap:12px;margin:0 0 14px}
+.dk-msg{max-width:92%;border-radius:16px;padding:12px 14px;line-height:1.55;overflow-wrap:anywhere}
+.dk-msg.me{align-self:flex-end;background:var(--accent-fill);color:var(--accent-ink)}
+.dk-msg.bot{align-self:flex-start;background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.dk-msg p{margin:0 0 8px}.dk-msg ul{margin:4px 0 8px;padding-left:20px}
+.dk-msg blockquote{margin:8px 0;padding:8px 12px;border-left:3px solid var(--accent);color:var(--ink-soft)}
+.dk-h{font-family:var(--font-display);font-size:16px;margin:10px 0 4px}
+.dk-ref{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;border:0;background:var(--accent-fill);color:var(--accent-ink);font:800 11px var(--font-body);cursor:pointer;vertical-align:1px}
+.dk-srcs{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.dk-src{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--rule);background:transparent;color:var(--ink);border-radius:10px;padding:8px 10px;cursor:pointer;font:inherit}
+.dk-src small{color:var(--ink-soft)}
+.dk-faq{border-top:1px solid var(--rule)}
+.dk-q{display:block;width:100%;text-align:left;border:0;background:transparent;color:var(--ink);font:600 15px var(--font-body);padding:12px 0;cursor:pointer}
+.dk-a{padding:0 0 12px}
+.dk-ask{position:sticky;bottom:calc(70px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;padding:8px 0;background:var(--paper)}
+.dk-ask .search{margin:0}
+.dk-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:55;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:var(--accent-fill);color:var(--accent-ink);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.dk-fab:focus-visible,.dk-q:focus-visible,.dk-src:focus-visible,.dk-ref:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dlbar ~ .dk-fab{bottom:calc(160px + env(safe-area-inset-bottom,0px))}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.dcell{display:flex;flex-direction:column;gap:2px;text-align:left;padding:14px;border-radius:12px;border:0;background:var(--card);color:var(--ink);box-shadow:var(--shadow);cursor:pointer;font:inherit}
+.dcell b{font-family:var(--font-display);font-size:16px}.dcell small{color:var(--ink-soft)}
+.tablewrap{overflow-x:auto;border-radius:12px;box-shadow:var(--shadow);background:var(--card)}
+.sumtable{border-collapse:collapse;width:100%;min-width:860px;font-size:13px}
+.sumtable th,.sumtable td{padding:8px 10px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top;color:var(--ink)}
+.sumtable tbody tr{cursor:pointer}.sumtable tbody tr:hover{background:var(--paper)}
+.sumtable .tt{font-weight:700;min-width:200px}.sumtable .sm{min-width:260px;color:var(--ink-soft)}.mono{font-family:ui-monospace,Consolas,monospace;white-space:nowrap}
+.th{border:0;background:transparent;color:var(--ink);font:800 11px var(--font-body);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:0}
+.filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 12px}
+.fl{display:flex;flex-direction:column;gap:6px;margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.fl select,.pcard select{height:44px;border-radius:10px;border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:500 14px var(--font-body);padding:0 10px;text-transform:none;letter-spacing:0;max-width:100%}
+.seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--paper)}
+.segb{flex:1;min-width:0;height:38px;border:0;border-radius:9px;background:transparent;color:var(--ink);font:700 13px var(--font-body);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.segb[aria-pressed="true"]{background:var(--accent-fill);color:var(--accent-ink)}
+.hcard,.rate{background:var(--card);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.hmeta{margin:4px 0 0;font-size:13px;color:var(--ink-soft);overflow-wrap:anywhere}.hsp{margin:6px 0 0;font-size:13px;color:var(--ink)}
+.hlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.hlink{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:999px;border:1.5px solid var(--rule);background:transparent;color:var(--ink);font:700 12.5px var(--font-body);text-decoration:none;cursor:pointer}
+.hlink.sel{user-select:all;cursor:text}.hlink[aria-pressed="true"]{background:var(--accent-fill);color:var(--accent-ink);border-color:var(--accent-fill)}
+.rate{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.rate-l{min-width:0}.rate-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px;white-space:nowrap}
+.rate-r b{font-size:16px;color:var(--ink)}
+.cart{list-style:none;margin:0;padding:0}.cart li{display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)}.cart li span{flex:1;min-width:0}
+.cart .x{border:0;background:transparent;color:var(--ink-soft);font-size:20px;cursor:pointer;width:30px;height:30px}
+.carttotal{display:flex;justify-content:space-between;margin:10px 0 0;font-size:16px}
+.small{font-size:12.5px;margin:4px 0 10px}
 
 :root{--night:#17110F;--wall:#221915;--letter:#F3E2C4;--ember:#E8934A;--wax:#9E2F2A;--ink:#F3E2C4;--ink-soft:#A8917B;--paper:#17110F;--card:#221915;--rule:#3A2C25;--accent:#E8934A;--accent-fill:#E8934A;--accent-ink:#17110F;--focus:rgba(232,147,74,.3);--nav-bg:#1B1411;--search-r:4px;--font-display:'Cormorant Garamond',Georgia,serif;--font-body:'Lora',Georgia,serif;--shadow:0 18px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%) var(--night)}
@@ -118,7 +177,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 .letter:nth-child(3n+2){transform:rotate(.5deg)}
 .letter:nth-child(3n){transform:rotate(-.25deg)}
 .letter:hover{transform:rotate(0) translateY(-3px)}
-.seal{position:absolute;top:-12px;right:18px;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#C9463F,var(--wax) 60%,#6B1C18);color:#F8E6CF;display:grid;place-items:center;text-align:center;font:700 12px/1 'Cormorant Garamond',serif;box-shadow:0 4px 8px rgba(0,0,0,.4)}
+.seal{position:absolute;top:-12px;right:18px;width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#C9463F,var(--wax) 60%,#6B1C18);color:#F8E6CF;display:grid;place-items:center;text-align:center;font:700 12px/1 'Cormorant Garamond',serif;box-shadow:0 4px 8px rgba(0,0,0,.4)}
 .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#7A5A3E}
 .letter h2{font:700 23px/1.2 'Cormorant Garamond',serif;margin:8px 0 10px;color:#3A2A1E}
 .sig{font-style:italic;font-size:13px;color:#7A5A3E;border-top:1px dashed #C9AE8A;padding-top:10px}
@@ -128,6 +187,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 .hbtn{border-color:#4A3A30}
 .lamp .logo{width:72px;height:72px;margin:0}
 .lamp .hbtns{justify-content:center}
+.seal{font-size:11px}
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -148,11 +208,43 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
       if (!r.ok) throw new Error('HTTP ' + r.status); return r.json();
     });
   }
-  function loadSaved() { try { state.saved = JSON.parse(localStorage.getItem(KEY_SAVED) || '[]') || []; } catch (e) { state.saved = []; } }
+  // Same storage as the classic app, so saved rulings, profile and reading history carry across.
+  function profile() { try { return JSON.parse(localStorage.getItem('rl_profile') || '{}') || {}; } catch (e) { return {}; } }
+  function profileKey() { var p = profile(); var k = String(p.email || p.mobile || p.name || '').trim().toLowerCase(); return k || 'guest'; }
+  function readMap(k) { try { return JSON.parse(localStorage.getItem(k) || '{}') || {}; } catch (e) { return {}; } }
+  function loadSaved() {
+    var m = readMap('rl_saved_' + profileKey());
+    // Saved on an earlier version of these pages: carry over once.
+    try { var old = JSON.parse(localStorage.getItem(KEY_SAVED) || '[]') || []; if (old.length) { old.forEach(function (id) { m[id] = true; }); store('rl_saved_' + profileKey(), m); localStorage.removeItem(KEY_SAVED); } } catch (e) {}
+    state.saved = Object.keys(m).filter(function (id) { return m[id]; });
+  }
   function toggleSaved(id) {
-    var i = state.saved.indexOf(id);
-    if (i >= 0) state.saved.splice(i, 1); else state.saved.push(id);
-    store(KEY_SAVED, state.saved);
+    var k = 'rl_saved_' + profileKey(), m = readMap(k);
+    if (m[id]) delete m[id]; else m[id] = true;
+    store(k, m); state.saved = Object.keys(m).filter(function (x) { return m[x]; });
+  }
+  function saveProfile(p) {
+    var before = profileKey();
+    store('rl_profile', p || {});
+    var after = profileKey();
+    if (before !== after) {
+      var mine = readMap('rl_saved_' + after), cur = readMap('rl_saved_' + before);
+      Object.keys(cur).forEach(function (id) { if (cur[id]) mine[id] = true; });
+      store('rl_saved_' + after, mine);
+      var aOld = readMap('rl_affinity_' + before), aNew = readMap('rl_affinity_' + after);
+      Object.keys(aOld).forEach(function (k2) { aNew[k2] = (aNew[k2] || 0) + aOld[k2]; });
+      store('rl_affinity_' + after, aNew);
+    }
+    loadSaved();
+  }
+  function signOut() {
+    try { localStorage.removeItem('rl_profile'); localStorage.removeItem('rl_idasked'); } catch (e) {}
+    loadSaved();
+  }
+  function affinity() { return readMap('rl_affinity_' + profileKey()); }
+  function bumpAffinity(cat) {
+    if (!cat || profileKey() === 'guest') return;
+    var a = affinity(); a[cat] = (a[cat] || 0) + 1; store('rl_affinity_' + profileKey(), a);
   }
   function isSaved(id) { return state.saved.indexOf(id) >= 0; }
 
@@ -272,7 +364,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 
   global.RLCore = {
     state: state, loadIndex: loadIndex, loadText: loadText, toggleSaved: toggleSaved, isSaved: isSaved,
-    loadSaved: loadSaved, loadOverrides: loadOverrides, loadOv: loadOv, view: view, filtered: filtered, savedItems: savedItems, sortedByDate: sortedByDate, shortDate: shortDate
+    loadSaved: loadSaved, profile: profile, profileKey: profileKey, saveProfile: saveProfile, signOut: signOut, affinity: affinity, bumpAffinity: bumpAffinity, loadOverrides: loadOverrides, loadOv: loadOv, view: view, filtered: filtered, savedItems: savedItems, sortedByDate: sortedByDate, shortDate: shortDate
   };
 })(window);
 
@@ -287,17 +379,14 @@ window.RL_THEME = {
   card: function (x, saved) {
     var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
     var d = (x.date || '').replace(/^(\d{4})-(\d{2})-(\d{2}).*$/, '$3.$2.$1');
-    var seal = /^\d{2}\.\d{2}\.\d{4}$/.test(d) ? d.slice(3, 5) + '<br>' + d.slice(6) : '';
-    return '<article class="letter" data-act="open" data-id="' + esc(x.id) + '" role="button" tabindex="0">' +
-      (seal ? '<span class="seal">' + seal + '</span>' : '') +
+    var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']; var mm = /^(\d{4})-(\d{2})-(\d{2})/.exec(x.date || ''); var stampTxt = mm ? (+mm[3]) + ' ' + MON[+mm[2] - 1] + '<br>' + mm[1] : ''; var stampLbl = mm ? 'Added ' + (+mm[3]) + ' ' + MON[+mm[2] - 1] + ' ' + mm[1] : '';
+        return '<article class="letter" data-act="open" data-id="' + esc(x.id) + '" role="button" tabindex="0">' +
+      (stampTxt ? '<span class="seal" title="' + stampLbl + '" aria-label="' + stampLbl + '">' + stampTxt + '</span>' : '') +
       '<div class="kicker">' + esc(x.category) + '</div>' +
       '<h2>' + esc(x.name) + '</h2>' +
       '<div class="sig">' + esc([x.omNo, d, x.status, saved ? 'Saved' : ''].filter(Boolean).join(' · ')) + '</div></article>';
   },
-  nav: function (route) {
-    var a = function (r, label, href) { return '<a href="' + href + '"' + (route === r ? ' aria-current="page"' : '') + '>' + label + '</a>'; };
-    return '<nav class="nav" aria-label="Main">' + a('home', 'Home', '#home') + a('search', 'Search', '#search') + a('saved', 'Saved', '#saved') + '</nav>';
-  }
+  nav: function (route) { return window.RL_NAV(route); }
 };
 
 </script>
@@ -313,6 +402,217 @@ window.RL_THEME = {
     if (!st) return '';
     var k = String(st).toLowerCase().replace(/[^a-z]/g, '');
     return '<span class="st st-' + esc(k) + '">' + esc(st) + '</span>';
+  }
+
+
+
+  var ICON = {
+    home: '<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    depts: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    summary: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/>',
+    saved: '<path d="M6 3h12v18l-6-4-6 4z"/>',
+    alerts: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/>',
+    profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>' };
+  window.RL_NAV = function (route) {
+    var items = [['home', 'Home'], ['search', 'Search'], ['depts', 'Departments'], ['summary', 'Summary'], ['saved', 'Saved'], ['alerts', 'Alerts'], ['profile', 'Profile']];
+    return '<nav class="nav" aria-label="Main">' + items.map(function (x) {
+      return '<a href="#' + x[0] + '"' + (route === x[0] ? ' aria-current="page"' : '') + '><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[x[0]] + '</svg><span>' + x[1] + '</span></a>';
+    }).join('') + '</nav>';
+  };
+
+  // ---- Profile (same details, saved list and reading history as the classic app) ----
+  function initials(p) { var n = String(p.name || p.email || p.mobile || '').trim(); return n ? n.charAt(0).toUpperCase() : ''; }
+  function profileBtn() {
+    var p = C.profile(), ini = initials(p);
+    return '<div class="pbar"><a class="pbtn" href="#profile" aria-label="Profile">' + (ini ? esc(ini) :
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>') + '</a></div>';
+  }
+  var PAGES = { classic: { label: 'Classic', href: 'index.html' }, cozy: { label: 'Cozy', href: 'cozy.html' }, fireside: { label: 'Fireside', href: 'fireside.html' } };
+  function currentTheme() { return /fireside/i.test(location.pathname) ? 'fireside' : 'cozy'; }
+  function profileView() {
+    var p = C.profile(), has = !!(p.name || p.mobile || p.email);
+    var h = '<h1 class="page">Profile</h1>';
+    if (has) {
+      var aff = C.affinity(), depts = Object.keys(aff).sort(function (a, b) { return aff[b] - aff[a]; }).slice(0, 4);
+      var n = C.state.saved.length;
+      h += '<section class="pcard"><div class="prow"><span class="pavatar">' + esc(initials(p)) + '</span><div style="min-width:0"><div class="pname">' + esc(p.name || 'Reader') + '</div>' +
+        '<div class="pcontact">' + esc([p.mobile, p.email].filter(Boolean).join(' · ')) + '</div></div></div>' +
+        '<a class="plink" href="#saved">' + (n ? n + (n === 1 ? ' saved ruling' : ' saved rulings') : 'Nothing saved yet') + '</a>' +
+        (depts.length ? '<div class="mk" style="margin:14px 0 8px">Departments you read</div><div class="chips">' + depts.map(function (d) { return '<button class="chip" data-act="fav" data-cat="' + esc(d) + '">' + esc(d) + '</button>'; }).join('') + '</div>' : '') +
+        '<div class="pbtns"><button class="back" data-act="id-edit">Edit details</button><button class="back" data-act="signout">Log out</button></div></section>';
+    } else {
+      h += '<section class="pcard"><p class="muted" style="margin-bottom:12px">Add your mobile number or email to keep your saved rulings and the departments you read on this device.</p>' +
+        '<button class="pdf" data-act="id-edit">Add your details</button></section>';
+    }
+    h += '<section class="pcard"><h2 class="rsec-h">App theme</h2>';
+    if (has) {
+      var cur = currentTheme();
+      h += '<div class="chips">' + Object.keys(PAGES).map(function (k) {
+        return '<button class="chip" data-act="theme" data-theme="' + k + '" aria-pressed="' + (k === cur) + '">' + PAGES[k].label + '</button>'; }).join('') + '</div>' +
+        '<p class="muted">Classic is the original design. Your choice is remembered on this device.</p>';
+    } else h += '<p class="muted">Add your details to choose a theme.</p>';
+    h += '</section>';
+    h += '<section class="pcard"><h2 class="rsec-h">App</h2><div class="pbtns">' +
+      '<a class="hbtn" href="https://github.com/uvsubbaiah-spec/postal-rulings/releases/latest/download/postal-rulings.apk" rel="noopener">Get App <span class="ver">v' + esc(window.RL_VERSION || '') + '</span></a>' +
+      '<button class="hbtn" data-act="iphone">iPhone app</button></div></section>';
+    return h;
+  }
+  function idSheet() {
+    if (document.querySelector('.sheet-wrap')) return;
+    var p = C.profile();
+    var wrap = document.createElement('div');
+    wrap.className = 'sheet-wrap center';
+    wrap.innerHTML = '<form class="sheet" role="dialog" aria-modal="true" aria-label="Your details" data-form="id">' +
+      '<h2 class="rsec-h">Your details</h2><p class="sheet-title">Kept on this device and shared with the repository administrator alongside your visit. All three fields are optional.</p>' +
+      '<label class="sr" for="idName">Name</label><input id="idName" class="search" autocomplete="name" placeholder="Name" value="' + esc(p.name || '') + '">' +
+      '<label class="sr" for="idMobile">Mobile number</label><input id="idMobile" class="search" type="tel" inputmode="tel" autocomplete="tel" placeholder="Mobile number" value="' + esc(p.mobile || '') + '">' +
+      '<label class="sr" for="idEmail">Email address</label><input id="idEmail" class="search" type="email" autocomplete="email" placeholder="Email address" value="' + esc(p.email || '') + '">' +
+      '<p class="muted" id="idErr" hidden></p>' +
+      '<button class="pdf wide" type="submit">Save</button><button class="back wide" type="button" data-act="id-later">Not now</button></form>';
+    document.body.appendChild(wrap);
+  }
+  function closeSheet() { var w = document.querySelector('.sheet-wrap'); if (w) w.remove(); }
+  document.addEventListener('submit', function (e) {
+    if (!e.target || e.target.getAttribute('data-form') !== 'id') return;
+    e.preventDefault();
+    var name = document.getElementById('idName').value.trim(), mobile = document.getElementById('idMobile').value.trim(), email = document.getElementById('idEmail').value.trim();
+    var err = document.getElementById('idErr');
+    if (mobile && !/^[+0-9 -]{8,15}$/.test(mobile)) { err.textContent = 'Enter a mobile number with 10 digits.'; err.hidden = false; return; }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Enter an email address like name@example.com.'; err.hidden = false; return; }
+    var p = C.profile(); p.name = name; p.mobile = mobile; p.email = email;
+    C.saveProfile(p);
+    try { localStorage.setItem('rl_idasked', '1'); } catch (x) {}
+    closeSheet(); visitPing(); render();
+  });
+
+
+  // ---- DakSi: the same assistant and FAQ as the classic app, on the same backend ----
+  var DK = { msgs: [], busy: false, faq: null, faqOpen: '' };
+  try { DK.msgs = JSON.parse(localStorage.getItem('rl_daksi_chat_v2') || '[]') || []; } catch (e) {}
+  function dkStore() { try { localStorage.setItem('rl_daksi_chat_v2', JSON.stringify(DK.msgs.slice(-30))); } catch (e) {} }
+  function ep() { return (window.RL_CONFIG && window.RL_CONFIG.endpoint) || ''; }
+  function dkLoadFaq() {
+    if (DK.faq !== null || !ep()) return;
+    DK.faq = [];
+    fetch(ep() + (ep().indexOf('?') >= 0 ? '&' : '?') + 'faq=1').then(function (r) { return r.json(); })
+      .then(function (d) { DK.faq = (d && d.items) || []; if ((location.hash || '') === '#daksi') renderDk(); }).catch(function () {});
+  }
+  function dkText(t, sources, key) {
+    // "[1]" and "[1, 3]" in the answer become links to those sources, as in the app.
+    var byN = {}; (sources || []).forEach(function (x) { byN[x.n] = x; });
+    return esc(t).replace(/\[(\d+(?:\s*[,–-]\s*\d+)*)\]/g, function (all, grp) {
+      return grp.split(/\s*[,–-]\s*/).map(function (n) { return byN[n] ? '<button class="dk-ref" data-act="dk-src" data-key="' + esc(key) + '" data-n="' + n + '">' + n + '</button>' : n; }).join(' ');
+    });
+  }
+  function dkAnswer(m, key) {
+    var h = '';
+    if (m.answer) h += '<p>' + dkText(m.answer, m.sources, key).replace(/\n/g, '<br>') + '</p>';
+    (m.sections || []).forEach(function (x) {
+      if (x.heading) h += '<h3 class="dk-h">' + esc(x.heading) + '</h3>';
+      if ((x.items || []).length) h += '<ul>' + x.items.map(function (it) { return '<li>' + dkText(it, m.sources, key) + '</li>'; }).join('') + '</ul>';
+    });
+    (m.quotes || []).forEach(function (q) { h += '<blockquote>' + esc(q.text) + (q.source ? ' <span class="muted">[' + esc(q.source) + ']</span>' : '') + '</blockquote>'; });
+    if ((m.sources || []).length) {
+      h += '<div class="dk-srcs"><div class="mk">Sources</div>' + m.sources.map(function (x) {
+        var sub = x.cghs ? ['Full list in the classic app', x.date] : x.web ? ['Official website', x.category, x.date] : [x.date, x.orderNo, x.category];
+        return '<button class="dk-src" data-act="dk-src" data-key="' + esc(key) + '" data-n="' + esc(x.n) + '"><b>' + esc(x.n) + '. ' + esc(x.title || 'Ruling') + '</b><small>' + esc(sub.filter(Boolean).join(' · ')) + '</small></button>';
+      }).join('') + '</div>';
+    }
+    return h;
+  }
+  function daksiView() {
+    dkLoadFaq();
+    var h = '<div class="topbar"><button class="back" data-act="back">Back</button>' + (DK.msgs.length ? '<button class="save" data-act="dk-clear">New chat</button>' : '') + '</div>' +
+      '<h1 class="page">Ask DakSi</h1><p class="note">Ask about any order, circular or ruling. DakSi answers from the rulings in this repository and shows its sources.</p>';
+    h += '<div class="dk-log" id="dklog">';
+    if (!DK.msgs.length) {
+      h += '<div class="pcard"><h2 class="rsec-h">Frequently asked</h2>';
+      if (DK.faq === null || (DK.faq && !DK.faq.length)) h += '<p class="muted">' + (DK.faq === null || !ep() ? 'Loading questions…' : 'No questions yet. Ask the first one below.') + '</p>';
+      else h += DK.faq.slice(0, 12).map(function (e) {
+        var open = DK.faqOpen === e.id;
+        return '<div class="dk-faq"><button class="dk-q" data-act="dk-faq" data-id="' + esc(e.id) + '" aria-expanded="' + open + '">' + esc(e.q) + '</button>' +
+          (open ? '<div class="dk-a">' + dkAnswer(e, 'f' + e.id) + '<button class="pdf" data-act="dk-ask-faq" data-q="' + esc(e.q) + '">Ask DakSi this</button></div>' : '') + '</div>';
+      }).join('');
+      h += '</div>';
+    }
+    DK.msgs.forEach(function (m, i) {
+      if (m.role === 'user') h += '<div class="dk-msg me">' + esc(m.text) + '</div>';
+      else if (m.role === 'error') h += '<div class="dk-msg bot err"><p>' + esc(m.text) + '</p><button class="pdf" data-act="dk-retry" data-q="' + esc(m.q) + '">Retry</button></div>';
+      else h += '<div class="dk-msg bot">' + dkAnswer(m, 'm' + i) + '</div>';
+    });
+    if (DK.busy) h += '<div class="dk-msg bot"><p class="muted">DakSi is reading the rulings…</p></div>';
+    h += '</div><form class="dk-ask" data-form="dk"><label class="sr" for="dkq">Your question</label><input id="dkq" class="search" placeholder="Ask about a ruling, rate or rule" autocomplete="off"' + (DK.busy ? ' disabled' : '') + '>' +
+      '<button class="pdf" type="submit"' + (DK.busy ? ' disabled' : '') + '>Ask</button></form>';
+    return h;
+  }
+  function renderDk() { if ((location.hash || '') === '#daksi') { render(); var l = document.getElementById('dklog'); if (l) { var last = l.lastElementChild; if (last && last.scrollIntoView) last.scrollIntoView({ block: 'start' }); } } }
+  function dkAsk(q) {
+    q = String(q || '').trim(); if (!q || DK.busy) return;
+    var prior = DK.msgs.filter(function (m) { return m.role !== 'error'; });
+    var history = prior.slice(-8).map(function (m) { return { role: m.role === 'user' ? 'user' : 'model', text: m.role === 'user' ? m.text : [m.answer || ''].concat((m.sections || []).map(function (x) { return (x.heading ? x.heading + ':\n' : '') + (x.items || []).map(function (t) { return '- ' + t; }).join('\n'); })).join('\n') }; });
+    DK.msgs = prior.concat([{ role: 'user', text: q }]); DK.busy = true; renderDk();
+    var t0 = Date.now();
+    var once = function (ms) {
+      var c = window.AbortController ? new AbortController() : null; if (c) setTimeout(function () { c.abort(); }, ms);
+      return fetch(ep(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, signal: c ? c.signal : undefined, body: JSON.stringify({ action: 'ask', question: q, history: history }) })
+        .then(function (r) { return r.text(); }).then(function (t) { return JSON.parse(t); });
+    };
+    var p = ep() ? once(50000).catch(function () { return new Promise(function (r) { setTimeout(r, 1200); }).then(function () { return once(45000); }); }) : Promise.reject(new Error('no server'));
+    p.then(function (d) {
+      if (!d || !d.ok) throw new Error((d && d.error) || 'Could not get an answer.');
+      if (!prior.length && d.covered !== false && !d.busy) fetch(ep(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'faqLog', q: q, ms: Date.now() - t0, cached: !!d.cached }) }).catch(function () {});
+      DK.msgs.push({ role: 'bot', q: q, covered: d.covered !== false, answer: d.answer || '', sections: d.sections || [], quotes: d.quotes || [], sources: d.sources || [] });
+    }).catch(function (e) {
+      var sec = Math.round((Date.now() - t0) / 1000);
+      DK.msgs.push({ role: 'error', q: q, text: (e && e.name === 'AbortError' ? 'DakSi took too long to reply (' + sec + ' s).' : 'DakSi could not be reached (' + String((e && e.message) || e).slice(0, 90) + ').') + ' Tap Retry.' });
+    }).then(function () { DK.busy = false; dkStore(); noteSearch('DakSi: ' + q); renderDk(); });
+  }
+  function dkOpenSource(src) {
+    if (!src) return;
+    if (src.cghs) { location.href = 'index.html'; return; }
+    if (src.id) { go('#read/' + encodeURIComponent(src.id)); return; }
+    if (src.url) window.open(src.url, '_blank', 'noopener');
+  }
+  document.addEventListener('submit', function (e) {
+    if (!e.target || e.target.getAttribute('data-form') !== 'dk') return;
+    e.preventDefault(); var i = document.getElementById('dkq'); dkAsk(i ? i.value : '');
+  });
+
+  // ---- Visit log for the administrator, as the classic app sends it ----
+  var visit = { sid: 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), start: Date.now(), opened: [], searched: [], geo: null };
+  function visitorId() {
+    var v = ''; try { v = localStorage.getItem('rl_visitor') || ''; } catch (e) {}
+    if (!v) { v = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); try { localStorage.setItem('rl_visitor', v); } catch (e) {} }
+    return v;
+  }
+  function deviceInfo() {
+    var ua = navigator.userAgent || '';
+    var browser = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Chrome\//.test(ua) ? 'Chrome' : /Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'Other';
+    var device = /iPad/.test(ua) ? 'iPad' : /iPhone/.test(ua) ? 'iPhone' : /Android/.test(ua) ? (/Mobile/.test(ua) ? 'Android phone' : 'Android tablet') : /Windows/.test(ua) ? 'Windows' : /Mac OS X/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux' : 'Unknown';
+    var scr = ''; try { scr = screen.width + '×' + screen.height; } catch (e) {}
+    return { device: device, browser: browser, screen: scr };
+  }
+  function visitPing(final) {
+    var url = (window.RL_CONFIG && window.RL_CONFIG.endpoint) || ''; if (!url) return;
+    var p = C.profile(), g = visit.geo || {}, d = deviceInfo(), tz = '';
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+    var body = JSON.stringify({ action: 'logVisit', visit: { visitor: visitorId(), session: visit.sid, seconds: Math.round((Date.now() - visit.start) / 1000),
+      opened: visit.opened.slice(-30).join(' · '), searched: visit.searched.slice(-30).join(' · '),
+      name: p.name || '', mobile: p.mobile || '', email: p.email || '', lat: g.lat || '', lng: g.lng || '', acc: g.acc || '',
+      ipPlace: '', ip: '', net: '', device: d.device, browser: d.browser, screen: d.screen, admin: false, ref: document.referrer || '', tz: tz,
+      page: currentTheme() } });
+    try {
+      if (final && navigator.sendBeacon) { navigator.sendBeacon(url, new Blob([body], { type: 'text/plain;charset=utf-8' })); return; }
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body, keepalive: true }).catch(function () {});
+    } catch (e) {}
+  }
+  function noteOpened(title) { if (title && visit.opened[visit.opened.length - 1] !== title) visit.opened.push(title); }
+  var searchLogT = null;
+  function noteSearch(term) {
+    term = String(term || '').trim(); if (term.length < 3) return;
+    clearTimeout(searchLogT);
+    searchLogT = setTimeout(function () { var last = visit.searched[visit.searched.length - 1] || ''; if (last.toLowerCase() === term.toLowerCase()) return; visit.searched.push(term); visitPing(); }, 2500);
   }
 
   // Same summary the app writes when no admin summary exists (copied from the app).
@@ -402,11 +702,11 @@ window.RL_THEME = {
       return '<a class="tool" href="' + href + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '><b>' + title + '</b><small>' + sub + '</small></a>';
     };
     return '<nav class="tools" aria-label="Tools">' +
-      t('index.html', 'CGHS empanelled hospitals', 'Opens in the classic app') +
-      t('index.html', 'CGHS package rates', 'Opens in the classic app') +
+      t('#cghs', 'CGHS empanelled hospitals', 'By state, city and accreditation') +
+      t('#rates', 'CGHS package rates', 'By hospital type, city tier and ward') +
       t('pay-fixation.html', 'Pay fixation', '7th CPC pay fixation') +
       t('https://postalrulings.blogspot.com/', 'Blog of Postal Rulings', 'Summaries of every ruling', true) +
-      t('index.html', 'Ask DakSi', 'Opens in the classic app') +
+      t('#daksi', 'Ask DakSi', 'Ask about any ruling') +
       t('index.html', 'Admin', 'PIN sign-in in the classic app') +
       '</nav>';
   }
@@ -447,7 +747,7 @@ window.RL_THEME = {
       items = C.sortedByDate(C.state.items).slice(0, 12);
       heading = 'Recently added';
     }
-    return T.header() +
+    return profileBtn() + T.header() +
       '<label class="sr" for="q">Search rulings</label>' +
       '<input id="q" class="search" type="search" placeholder="Search a subject, OM No. or ruling" value="' + esc(C.state.query) + '" data-act="q">' +
       toolsRow() + chips() + '<h2 class="sec">' + heading + '</h2>' + status() +
@@ -574,6 +874,8 @@ window.RL_THEME = {
   }
 
   function readView(id) {
+    var rx = C.state.byId[id];
+    if (rx && readView.last !== id) { readView.last = id; C.bumpAffinity(C.view(rx).depts[0] || rx.category); noteOpened(C.view(rx).title); }
     var cached = C.state.ovFull && C.state.ovFull[id];
     var html = '<div class="topbar"><button class="back" data-act="back">Back</button><div class="tb-right">' +
       '<button class="save share" data-act="share" data-id="' + esc(id) + '">Share</button>' +
@@ -611,14 +913,310 @@ window.RL_THEME = {
     var inp = document.getElementById('share-url'); if (inp) inp.select();
   }
 
+  // ===== Departments, Summary table, Alerts, CGHS hospitals, CGHS package rates =====
+  function ago(ms) {
+    var s = Math.max(0, (Date.now() - ms) / 1000);
+    if (s < 3600) return Math.max(1, Math.round(s / 60)) + ' min ago';
+    if (s < 86400) return Math.round(s / 3600) + ' h ago';
+    if (s < 86400 * 2) return 'Yesterday';
+    return Math.round(s / 86400) + ' days ago';
+  }
+  function deptsView() {
+    var counts = {};
+    C.state.items.forEach(function (x) { counts[x.category] = (counts[x.category] || 0) + 1; });
+    var h = '<h1 class="page">Departments</h1><p class="note">' + C.state.cats.length + ' departments. Tap one to see its rulings.</p>' + status();
+    if (!C.state.loaded) return h;
+    return h + '<div class="dgrid">' + C.state.cats.map(function (c) {
+      return '<button class="dcell" data-act="fav" data-cat="' + esc(c) + '"><b>' + esc(c) + '</b><small>' + counts[c] + (counts[c] === 1 ? ' ruling' : ' rulings') + '</small></button>';
+    }).join('') + '</div>';
+  }
+
+  // Summary: the app's table of every ruling (title, OM No., dates, status, department, summary).
+  var SUM = { cat: '', sort: 'date', dir: -1, cap: 100, q: '' };
+  function summaryRows() {
+    var q = SUM.q.toLowerCase().trim();
+    var rows = C.state.items.map(function (x) {
+      var v = C.view(x);
+      return { id: x.id, t: v.title, om: v.omNo, d: v.issueDate || x.date, e: v.effective, s: v.status || 'Active', c: v.depts.join(', '), m: v.summary };
+    }).filter(function (r) {
+      if (SUM.cat && r.c.split(', ').indexOf(SUM.cat) < 0) return false;
+      return !q || (r.t + ' ' + r.om + ' ' + r.m + ' ' + r.c).toLowerCase().indexOf(q) >= 0;
+    });
+    var key = { date: 'd', title: 't', om: 'om', eff: 'e', status: 's', dept: 'c' }[SUM.sort] || 'd';
+    rows.sort(function (a, b) { return String(a[key] || '').localeCompare(String(b[key] || '')) * SUM.dir; });
+    return rows;
+  }
+  function summaryView() {
+    var h = '<h1 class="page">Summary</h1><p class="note">Every ruling at a glance. Tap a column to sort, tap a row to open it.</p>' + status();
+    if (!C.state.loaded) return h;
+    var rows = summaryRows();
+    h += '<label class="sr" for="sumq">Filter the summary</label><input id="sumq" class="search" type="search" data-act="sumq" placeholder="Filter by title, OM No. or summary" value="' + esc(SUM.q) + '">';
+    h += '<div class="chips"><button class="chip" data-act="sumcat" data-cat="" aria-pressed="' + (!SUM.cat) + '">All</button>' +
+      C.state.cats.map(function (c) { return '<button class="chip" data-act="sumcat" data-cat="' + esc(c) + '" aria-pressed="' + (SUM.cat === c) + '">' + esc(c) + '</button>'; }).join('') + '</div>';
+    var th = function (k, label) { return '<th scope="col"><button class="th" data-act="sumsort" data-k="' + k + '">' + label + (SUM.sort === k ? (SUM.dir > 0 ? ' ▲' : ' ▼') : '') + '</button></th>'; };
+    h += '<p class="note">' + rows.length + (rows.length === 1 ? ' ruling' : ' rulings') + '</p><div class="tablewrap"><table class="sumtable"><thead><tr>' +
+      th('title', 'Title') + th('om', 'OM No.') + th('date', 'OM Date') + th('eff', 'Effective') + th('status', 'Status') + th('dept', 'Dept.') + '<th scope="col">Summary</th></tr></thead><tbody>' +
+      rows.slice(0, SUM.cap).map(function (r) {
+        return '<tr data-act="open" data-id="' + esc(r.id) + '" tabindex="0"><td class="tt">' + esc(r.t) + '</td><td class="mono">' + esc(r.om) + '</td><td>' + esc(fmtDate(r.d)) + '</td><td>' + esc(r.e ? fmtDate(r.e) : '') + '</td><td>' + statusPill(r.s) + '</td><td>' + esc(r.c) + '</td><td class="sm">' + esc(r.m) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+    if (rows.length > SUM.cap) h += '<button class="more" data-act="summore">Show more (' + (rows.length - SUM.cap) + ' left)</button>';
+    return h;
+  }
+
+  // Alerts: newly added rulings and rulings the administrator has corrected, newest first.
+  function alertsView() {
+    var h = '<h1 class="page">Alerts</h1><p class="note">New and amended rulings synced from Drive.</p>' + status();
+    if (!C.state.loaded) return h;
+    var list = [];
+    C.sortedByDate(C.state.items).slice(0, 25).forEach(function (x) { var t = Date.parse(x.date) || 0; list.push({ kind: 'New', id: x.id, t: t }); });
+    var full = C.state.ovFull || {};
+    Object.keys(full).forEach(function (id) { var e = Date.parse(full[id].editedAt || '') || +full[id].updatedAt || 0; if (e && C.state.byId[id]) list.push({ kind: 'Amended', id: id, t: e }); });
+    list.sort(function (a, b) { return b.t - a.t; });
+    var seen = {};
+    list = list.filter(function (a) { var k = a.kind + a.id; if (seen[k]) return false; seen[k] = 1; return true; }).slice(0, 40);
+    try { localStorage.setItem('rl_alerts_seen', String(Date.now())); } catch (e) {}
+    return h + '<div class="srows">' + list.map(function (a) {
+      var v = C.view(C.state.byId[a.id]);
+      return '<article class="srow" data-act="open" data-id="' + esc(a.id) + '" role="button" tabindex="0"><div class="srow-top"><span class="st ' + (a.kind === 'New' ? '' : 'st-superseded') + '">' + a.kind + '</span><span class="dept">' + esc(v.depts[0] || '') + '</span></div>' +
+        '<div class="srow-title">' + esc(v.title) + '</div><div class="srow-meta">' + esc(a.t ? ago(a.t) : '') + '</div></article>';
+    }).join('') + '</div>';
+  }
+
+  // ---- CGHS data (same backend calls as the app) ----
+  var CG = { hosp: null, hospBusy: false, hospErr: '', rates: null, ratesBusy: false, ratesErr: '' };
+  function postEp(action, extra) {
+    var url = ep(); if (!url) return Promise.reject(new Error('Not connected to the rulings server.'));
+    var body = { action: action }; Object.keys(extra || {}).forEach(function (k) { body[k] = extra[k]; });
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.text(); }).then(function (t) { try { return JSON.parse(t); } catch (e) { throw new Error('the server sent an error page'); } });
+  }
+  function allPages(action) {
+    var part = function (page) {
+      var tryN = 0;
+      var once = function () { return postEp(action, { page: page }).then(function (r) { if (r && r.ok) return r; throw new Error((r && r.error) || 'no reply'); })
+        .catch(function (e) { if (++tryN >= 3) throw e; return new Promise(function (res) { setTimeout(res, 800 * tryN); }).then(once); }); };
+      return once();
+    };
+    return part(0).then(function (first) {
+      var pages = first.pages || 1, reqs = [];
+      for (var i = 1; i < pages; i++) reqs.push(part(i));
+      return Promise.all(reqs).then(function (rest) { return [first].concat(rest); });
+    });
+  }
+  function cacheGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function cachePut(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function loadHosp() {
+    if (CG.hosp || CG.hospBusy) return;
+    var c = cacheGet('rl_cghs_hosp_v2'); if (c && c.rows) CG.hosp = c.rows;
+    CG.hospBusy = true;
+    allPages('cghsList').then(function (parts) {
+      var rows = []; parts.forEach(function (p) { rows = rows.concat(p.rows || []); });
+      if (rows.length) { CG.hosp = rows; cachePut('rl_cghs_hosp_v2', { at: parts[0].at, rows: rows }); }
+    }).catch(function (e) { if (!CG.hosp) CG.hospErr = 'Could not load the hospital list (' + String(e.message || e).slice(0, 80) + '). Check your connection and try again.'; })
+      .then(function () { CG.hospBusy = false; var r = (location.hash || '').replace('#', ''); if (r === 'cghs' || r === 'rates') render(); });
+  }
+  function loadRates() {
+    if (CG.rates || CG.ratesBusy) return;
+    var c = cacheGet('rl_cghs_rates_v2'); if (c && c.items) CG.rates = c;
+    CG.ratesBusy = true;
+    allPages('cghsRates').then(function (parts) {
+      var items = []; parts.forEach(function (p) { items = items.concat(p.items || []); });
+      if (items.length) { CG.rates = { cols: parts[0].cols || [], items: items, at: parts[0].at }; cachePut('rl_cghs_rates_v2', CG.rates); }
+    }).catch(function (e) { if (!CG.rates) CG.ratesErr = 'Could not load the rate list (' + String(e.message || e).slice(0, 80) + '). Check your connection and try again.'; })
+      .then(function () { CG.ratesBusy = false; if ((location.hash || '') === '#rates') render(); });
+  }
+  // Hospital row: [id, name, category, address, city/state, phone, specialities, from, to, validity, status, map, NABH cert, NABL cert]
+  function hRec(r) { return { id: r[0], n: r[1], a: r[2], ad: r[3], cs: r[4], ph: r[5], sp: r[6], f: r[7], t: r[8], v: r[9], st: r[10], m: r[11], nabh: r[12], nabl: r[13] }; }
+  function cityOf(cs) { var p = String(cs || '').split(','); return p.length > 1 ? p.slice(0, -1).join(',').trim() : String(cs || '').trim(); }
+  function stateOf(cs) { var p = String(cs || '').split(','); return p.length > 1 ? p[p.length - 1].trim() : ''; }
+  function certLink(c, label) {
+    var u = Array.isArray(c) ? c.filter(function (x) { return /^https?:/.test(String(x)); })[0] : (/^https?:/.test(String(c || '')) ? c : '');
+    return u ? '<a class="hlink" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + ' certificate</a>' : '';
+  }
+
+  var HS = { state: '', city: '', acc: '', q: '', show: 30 };
+  function cghsView() {
+    loadHosp();
+    var h = '<div class="topbar"><button class="back" data-act="back">Back</button></div><h1 class="page">CGHS empanelled hospitals</h1>' +
+      '<p class="note">From the CGHS site\'s own hospital list, refreshed every night.</p>';
+    if (!CG.hosp) return h + '<p class="empty show">' + esc(CG.hospErr || 'Loading hospitals…') + '</p>';
+    var recs = CG.hosp.map(hRec);
+    var states = {}, cities = {}, accs = {};
+    recs.forEach(function (r) { var s = stateOf(r.cs); if (s) states[s] = 1; if (!HS.state || s === HS.state) { var c = cityOf(r.cs); if (c) cities[c] = 1; } if (r.a) accs[r.a] = 1; });
+    var q = HS.q.toLowerCase().trim();
+    var hits = recs.filter(function (r) {
+      if (HS.state && stateOf(r.cs) !== HS.state) return false;
+      if (HS.city && cityOf(r.cs) !== HS.city) return false;
+      if (HS.acc && r.a !== HS.acc) return false;
+      return !q || (r.n + ' ' + r.ad + ' ' + r.sp + ' ' + r.cs).toLowerCase().indexOf(q) >= 0;
+    });
+    var sel = function (id, act, label, val, opts) {
+      return '<label class="fl"><span>' + label + '</span><select id="' + id + '" data-act="' + act + '"><option value="">All</option>' +
+        opts.sort().map(function (o) { return '<option' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select></label>';
+    };
+    h += '<div class="filters">' + sel('hsState', 'hs-state', 'State', HS.state, Object.keys(states)) + sel('hsCity', 'hs-city', 'City', HS.city, Object.keys(cities)) +
+      sel('hsAcc', 'hs-acc', 'Accreditation', HS.acc, Object.keys(accs)) + '</div>' +
+      '<label class="sr" for="hsq">Search hospitals</label><input id="hsq" class="search" type="search" data-act="hsq" placeholder="Search hospital, area or speciality" value="' + esc(HS.q) + '">' +
+      '<p class="note">' + hits.length + (hits.length === 1 ? ' hospital' : ' hospitals') + (CG.hospBusy ? ' · updating…' : '') + '</p>';
+    h += '<div class="srows">' + hits.slice(0, HS.show).map(function (r) {
+      var valid = r.f || r.t ? (r.f || '?') + ' to ' + (r.t || '?') : (r.v || '');
+      return '<article class="hcard"><div class="srow-top">' + (r.a ? '<span class="st">' + esc(r.a) + '</span>' : '') + (r.st ? '<span class="dept">' + esc(r.st) + '</span>' : '') + '</div>' +
+        '<h2 class="srow-title">' + esc(r.n) + '</h2><p class="hmeta">' + esc(r.ad) + (r.cs ? ' · ' + esc(r.cs) : '') + '</p>' +
+        (r.sp ? '<p class="hsp">' + esc(String(r.sp).slice(0, 260)) + (String(r.sp).length > 260 ? '…' : '') + '</p>' : '') +
+        (valid ? '<p class="hmeta">Valid ' + esc(valid) + '</p>' : '') +
+        '<div class="hlinks">' + (r.ph ? '<span class="hlink sel">' + esc(r.ph) + '</span>' : '') + (r.m && /^https?:/.test(r.m) ? '<a class="hlink" href="' + esc(r.m) + '" target="_blank" rel="noopener">Map</a>' : '') +
+        certLink(r.nabh, 'NABH') + certLink(r.nabl, 'NABL') + '<a class="hlink" href="#rates" data-act="rt-hosp" data-n="' + esc(r.n) + '">Package rates</a></div></article>';
+    }).join('') + '</div>';
+    if (hits.length > HS.show) h += '<button class="more" data-act="hs-more">Show more (' + (hits.length - HS.show) + ' left)</button>';
+    return h;
+  }
+
+  // ---- Package rates with the city tier set from the city, the hospital or the reader's location ----
+  var RT_T1 = ["Ahmedabad","Bengaluru","Chennai","Delhi","Hyderabad","Kolkata","Mumbai","Pune"], RT_T2 = ["Agra","Ajmer","Aligarh","Amravati","Amritsar","Anand","Asansol","Aurangabad","Bareilly","Belagavi","Bhavnagar","Bhilai","Bhiwandi","Bhopal","Bhubaneswar","Bikaner","Bilaspur","Bokaro Steel City","Burdwan","Chandigarh","Coimbatore","Cuttack","Dahod","Dehradun","Dhanbad","Dombivli","Durgapur","Erode","Faridabad","Ghaziabad","Gorakhpur","Guntur","Gurugram","Guwahati","Gwalior","Hamirpur","Hubballi-Dharwad","Indore","Jabalpur","Jaipur","Jalandhar","Jalgaon","Jammu","Jamnagar","Jamshedpur","Jhansi","Jodhpur","Kakinada","Kannur","Kanpur","Karnal","Kochi","Kolhapur","Kollam","Kota","Kozhikode","Kurnool","Lucknow","Ludhiana","Madurai","Malappuram","Mangaluru","Mathura","Meerut","Moradabad","Mysuru","Nadiad","Nagpur","Nanded","Nashik","Nellore","Noida","Palakkad","Patna","Puducherry","Prayagraj","Raipur","Rajahmundry","Rajkot","Ranchi","Ratlam","Rourkela","Salem","Sangli","Shimla","Siliguri","Solapur","Srinagar","Surat","Thanjavur","Thiruvananthapuram","Thrissur","Tiruchirappalli","Tirunelveli","Tiruvannamalai","Ujjain","Vadodara","Varanasi","Vasai-Virar","Vellore","Vijayapura","Vijayawada","Visakhapatnam","Warangal"], RT_ALIAS = {"bangalore":"bengaluru","gurgaon":"gurugram","allahabad":"prayagraj","trivandrum":"thiruvananthapuram","calicut":"kozhikode","cochin":"kochi","ernakulam":"kochi","mysore":"mysuru","mangalore":"mangaluru","pondicherry":"puducherry","vizag":"visakhapatnam","bombay":"mumbai","navimumbai":"mumbai","thane":"mumbai","newdelhi":"delhi","delhincr":"delhi","calcutta":"kolkata","madras":"chennai","secunderabad":"hyderabad","belgaum":"belagavi","hubli":"hubballidharwad","hubballi":"hubballidharwad","bijapur":"vijayapura","trichy":"tiruchirappalli","tiruchirapalli":"tiruchirappalli","baroda":"vadodara","benaras":"varanasi","banaras":"varanasi","rajamahendravaram":"rajahmundry","gautambuddhanagar":"noida","greaternoida":"noida","bhubaneshwar":"bhubaneswar","bardhaman":"burdwan","bokaro":"bokarosteelcity","kalyan":"dombivli"};
+  
+  
+  var rtKey = function (c) { var k = String(c || '').toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z]/g, ''); return RT_ALIAS[k] || k; };
+  var rtTierOf = function (c) { var k = rtKey(c); if (RT_T1.some(function (x) { return rtKey(x) === k; })) return 'i'; if (RT_T2.some(function (x) { return rtKey(x) === k; })) return 'ii'; return 'iii'; };
+  var RT = { type: 'nabh', tier: 'i', ward: 'general', sp: '', q: '', city: '', hosp: '', show: 40, msg: '', auto: false, cart: [] };
+  try { var rsv = JSON.parse(localStorage.getItem('rl_rt_pref_v2') || 'null'); if (rsv) { RT.city = rsv.city || ''; RT.tier = rsv.tier || RT.tier; RT.type = rsv.type || RT.type; RT.ward = rsv.ward || RT.ward; } } catch (e) {}
+  try { RT.cart = JSON.parse(localStorage.getItem('rl_rt_cart_v2') || '[]') || []; } catch (e) {}
+  function rtSave() { try { localStorage.setItem('rl_rt_pref_v2', JSON.stringify({ city: RT.city, tier: RT.tier, type: RT.type, ward: RT.ward })); localStorage.setItem('rl_rt_cart_v2', JSON.stringify(RT.cart)); } catch (e) {} }
+  function rtPickCity(c, t) { RT.city = c; RT.tier = c ? (t || rtTierOf(c)) : RT.tier; rtSave(); }
+  function rtLocate(silent) {
+    if (!navigator.geolocation) { if (!silent) { RT.msg = 'Location is not available on this device. Type your city instead.'; render(); } return; }
+    if (!silent) { RT.msg = 'Finding your city…'; render(); }
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&accept-language=en&lat=' + pos.coords.latitude + '&lon=' + pos.coords.longitude, { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); }).then(function (j) {
+          var a = j.address || {}, name = a.city || a.town || a.municipality || a.county || a.state_district || '';
+          if (!name) throw new Error('none');
+          if (silent && RT.city) return;
+          var hit = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === rtKey(name); })[0];
+          if (hit) { rtPickCity(hit); RT.msg = 'Tier set from your location: ' + hit + '.'; }
+          else { rtPickCity(name, 'iii'); RT.msg = name + ' is not in Tier I or II, so Tier III applies. Change the city if needed.'; }
+        }).catch(function () { if (!silent) RT.msg = 'Could not look up your location. Type your city instead.'; })
+        .then(function () { if ((location.hash || '') === '#rates') render(); });
+    }, function () { if (!silent) { RT.msg = 'Location permission was denied. Type your city instead.'; render(); } }, { timeout: 15000, maximumAge: 600000 });
+  }
+  function rtVal(it) {
+    var cols = (CG.rates && CG.rates.cols) || [], key = 'tier_' + RT.tier + '_' + RT.type + '_' + RT.ward + '_ward', ci = cols.indexOf(key);
+    var v = ci >= 0 ? (it[4] || [])[ci] : null;
+    return v == null || v === '' ? null : +v;
+  }
+  function inr(n) { return n == null || isNaN(n) ? '—' : '₹' + Math.round(n).toLocaleString('en-IN'); }
+  function seg(act, opts, cur) {
+    return '<div class="seg" role="group">' + opts.map(function (o) { return '<button class="segb" data-act="' + act + '" data-v="' + o[0] + '" aria-pressed="' + (o[0] === cur) + '">' + o[1] + '</button>'; }).join('') + '</div>';
+  }
+  function ratesView() {
+    loadRates();
+    if (!RT.auto) { RT.auto = true; if (!RT.city) rtLocate(true); }
+    var h = '<div class="topbar"><button class="back" data-act="back">Back</button></div><h1 class="page">CGHS package rates</h1>' +
+      '<p class="note">By hospital type, city tier, ward and speciality. Source: CGHS rate list, Ministry of Health and Family Welfare (cghs.mohfw.gov.in). Rates in rupees; check the current CGHS orders before claiming.</p>';
+    h += '<div class="pcard">' +
+      '<div class="fl"><span>Hospital type</span>' + seg('rt-type', [['nabh', 'NABH'], ['non_nabh', 'Non-NABH'], ['superspeciality', 'Super Speciality']], RT.type) + '</div>' +
+      '<label class="fl" for="rtCity"><span>City</span></label><button class="hlink" data-act="rt-loc" type="button">Use my location</button>' +
+      '<input id="rtCity" class="search" list="rtCities" data-act="rt-city" placeholder="Type a city name" value="' + esc(RT.city) + '"><datalist id="rtCities">' +
+      RT_T1.concat(RT_T2).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>' +
+      '<p class="muted small">' + esc(RT.msg || 'Choosing a city sets its tier. Tier III covers every city not in Tier I or Tier II.') + '</p>' +
+      '<label class="fl" for="rtHosp"><span>Hospital (optional)</span></label><input id="rtHosp" class="search" list="rtHosps" data-act="rt-hospin" placeholder="Search a hospital' + (RT.city ? ' in ' + esc(RT.city) : '') + '" value="' + esc(RT.hosp) + '">';
+    if (CG.hosp) {
+      var rc = rtKey(RT.city);
+      h += '<datalist id="rtHosps">' + CG.hosp.map(hRec).filter(function (r) { return !RT.city || rtKey(cityOf(r.cs)) === rc; }).slice(0, 300).map(function (r) { return '<option value="' + esc(r.n) + '">'; }).join('') + '</datalist>';
+    } else loadHosp();
+    h += '<div class="fl"><span>City tier</span>' + seg('rt-tier', [['i', 'Tier I'], ['ii', 'Tier II'], ['iii', 'Tier III']], RT.tier) + '</div>' +
+      '<div class="fl"><span>Ward</span>' + seg('rt-ward', [['general', 'General'], ['semi_private', 'Semi-private'], ['private', 'Private']], RT.ward) + '</div>';
+    if (!CG.rates) return h + '</div><p class="empty show">' + esc(CG.ratesErr || 'Loading the rate list…') + '</p>';
+    var sps = {}; CG.rates.items.forEach(function (it) { if (it[2]) sps[it[2]] = 1; });
+    h += '<label class="fl" for="rtSp"><span>Speciality</span><select id="rtSp" data-act="rt-sp"><option value="">All specialities</option>' + Object.keys(sps).sort().map(function (s2) { return '<option' + (s2 === RT.sp ? ' selected' : '') + '>' + esc(s2) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="sr" for="rtQ">Search treatment</label><input id="rtQ" class="search" type="search" data-act="rt-q" placeholder="Search treatment, procedure or code" value="' + esc(RT.q) + '"></div>';
+    var q = RT.q.toLowerCase().trim();
+    var hits = CG.rates.items.filter(function (it) {
+      if (RT.sp && it[2] !== RT.sp) return false;
+      return !q || (it[0] + ' ' + it[1]).toLowerCase().indexOf(q) >= 0;
+    });
+    if (RT.cart.length) {
+      var total = 0;
+      var lines = RT.cart.map(function (code) { var it = CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return ''; var v = rtVal(it); total += v || 0;
+        return '<li><span>' + esc(it[1]) + '</span><b>' + inr(v) + '</b><button class="x" data-act="rt-del" data-code="' + esc(code) + '" aria-label="Remove">×</button></li>'; }).join('');
+      h += '<section class="pcard"><h2 class="rsec-h">Your breakup</h2><ul class="cart">' + lines + '</ul><p class="carttotal">Total <b>' + inr(total) + '</b></p>' +
+        '<div class="pbtns"><button class="pdf" data-act="rt-copy">Copy breakup</button><button class="back" data-act="rt-clear">Clear</button></div></section>';
+    }
+    h += '<p class="note">' + hits.length + ' rates · ' + (RT.city ? esc(RT.city) + ' · ' : '') + 'Tier ' + RT.tier.toUpperCase() + ' · ' + { nabh: 'NABH', non_nabh: 'Non-NABH', superspeciality: 'Super Speciality' }[RT.type] + ' · ' + { general: 'General', semi_private: 'Semi-private', private: 'Private' }[RT.ward] + ' ward</p>';
+    h += '<div class="srows">' + hits.slice(0, RT.show).map(function (it) {
+      var inCart = RT.cart.indexOf(it[0]) >= 0;
+      return '<article class="rate"><div class="rate-l"><span class="omno">' + esc(it[0]) + '</span><div class="srow-title">' + esc(it[1]) + '</div><div class="srow-meta">' + esc(it[2]) + '</div></div>' +
+        '<div class="rate-r"><b>' + inr(rtVal(it)) + '</b><button class="hlink" data-act="rt-add" data-code="' + esc(it[0]) + '" aria-pressed="' + inCart + '">' + (inCart ? 'Added' : 'Add') + '</button></div></article>';
+    }).join('') + '</div>';
+    if (hits.length > RT.show) h += '<button class="more" data-act="rt-more">Show more (' + (hits.length - RT.show) + ' left)</button>';
+    return h;
+  }
+  function rtCopy() {
+    if (!CG.rates) return;
+    var total = 0, lines = RT.cart.map(function (code) { var it = CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return ''; var v = rtVal(it); total += v || 0; return it[0] + '  ' + it[1] + '  ' + inr(v); }).filter(Boolean);
+    var txt = 'CGHS rate breakup (' + (RT.city ? RT.city + ', ' : '') + 'Tier ' + RT.tier.toUpperCase() + ', ' + RT.type.replace('_', '-') + ', ' + RT.ward.replace('_', '-') + ' ward)\n' + lines.join('\n') + '\nTotal  ' + inr(total);
+    var b = document.querySelector('[data-act="rt-copy"]');
+    var ok = function () { if (b) b.textContent = 'Copied'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(function () {});
+  }
+  function hospPick(name) {
+    var r = (CG.hosp || []).map(hRec).filter(function (x) { return x.n === name; })[0];
+    if (!r) return false;
+    RT.hosp = r.n;
+    var c = cityOf(r.cs);
+    if (c) { var hit = RT_T1.concat(RT_T2).filter(function (x) { return rtKey(x) === rtKey(c); })[0]; rtPickCity(hit || c); RT.msg = 'City and tier set from ' + r.n + '.'; }
+    if (/super/i.test(r.a)) RT.type = 'superspeciality'; else if (/non/i.test(r.a)) RT.type = 'non_nabh'; else if (/nabh/i.test(r.a)) RT.type = 'nabh';
+    rtSave(); return true;
+  }
+  function screens2Click(act, el) {
+    if (act === 'sumsort') { var k = el.getAttribute('data-k'); if (SUM.sort === k) SUM.dir = -SUM.dir; else { SUM.sort = k; SUM.dir = k === 'date' ? -1 : 1; } render(); return true; }
+    if (act === 'sumcat') { SUM.cat = el.getAttribute('data-cat') || ''; SUM.cap = 100; render(); return true; }
+    if (act === 'summore') { SUM.cap += 100; render(); return true; }
+    if (act === 'hs-more') { HS.show += 30; render(); return true; }
+    if (act === 'rt-type' || act === 'rt-tier' || act === 'rt-ward') { RT[act.slice(3)] = el.getAttribute('data-v'); rtSave(); render(); return true; }
+    if (act === 'rt-loc') { rtLocate(false); return true; }
+    if (act === 'rt-more') { RT.show += 40; render(); return true; }
+    if (act === 'rt-add') { var c = el.getAttribute('data-code'), i = RT.cart.indexOf(c); if (i >= 0) RT.cart.splice(i, 1); else RT.cart.push(c); rtSave(); render(); return true; }
+    if (act === 'rt-del') { RT.cart = RT.cart.filter(function (x) { return x !== el.getAttribute('data-code'); }); rtSave(); render(); return true; }
+    if (act === 'rt-clear') { RT.cart = []; rtSave(); render(); return true; }
+    if (act === 'rt-copy') { rtCopy(); return true; }
+    if (act === 'rt-hosp') { hospPick(el.getAttribute('data-n')); return false; }
+    return false;
+  }
+  var s2Typing = null;
+  function screens2Input(act, el) {
+    var rerender = function (focusId) { clearTimeout(s2Typing); s2Typing = setTimeout(function () { render(); var f = document.getElementById(focusId); if (f) { f.focus(); try { f.setSelectionRange(f.value.length, f.value.length); } catch (e) {} } }, 220); };
+    if (act === 'sumq') { SUM.q = el.value; SUM.cap = 100; rerender('sumq'); return true; }
+    if (act === 'hsq') { HS.q = el.value; HS.show = 30; rerender('hsq'); return true; }
+    if (act === 'rt-q') { RT.q = el.value; RT.show = 40; rerender('rtQ'); return true; }
+    if (act === 'rt-city') { var v = el.value.trim(); var hit = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === rtKey(v); })[0]; if (hit || !v) { rtPickCity(hit || '', hit ? null : RT.tier); RT.msg = ''; render(); } else { RT.city = v; } return true; }
+    if (act === 'rt-hospin') { if (hospPick(el.value)) render(); return true; }
+    return false;
+  }
+  function screens2Change(act, el) {
+    if (act === 'hs-state') { HS.state = el.value; HS.city = ''; HS.show = 30; render(); return true; }
+    if (act === 'hs-city') { HS.city = el.value; HS.show = 30; render(); return true; }
+    if (act === 'hs-acc') { HS.acc = el.value; HS.show = 30; render(); return true; }
+    if (act === 'rt-sp') { RT.sp = el.value; RT.show = 40; render(); return true; }
+    if (act === 'rt-city') { var v = el.value.trim(); rtPickCity(v); RT.msg = ''; render(); return true; }
+    return false;
+  }
+
   function render() {
     var r = (location.hash || '#home').replace(/^#/, '');
     var view, route = 'home';
     if (r.indexOf('read/') === 0) { route = 'read'; view = readView(decodeURIComponent(r.slice(5))); }
     else if (r === 'search') { route = 'search'; view = searchView(); }
     else if (r === 'saved') { route = 'saved'; view = savedView(); }
+    else if (r === 'profile') { route = 'profile'; view = profileView(); }
+    else if (r === 'daksi') { route = 'daksi'; view = daksiView(); }
+    else if (r === 'depts') { route = 'depts'; view = deptsView(); }
+    else if (r === 'summary') { route = 'summary'; view = summaryView(); }
+    else if (r === 'alerts') { route = 'alerts'; view = alertsView(); }
+    else if (r === 'cghs') { route = 'cghs'; view = cghsView(); }
+    else if (r === 'rates') { route = 'rates'; view = ratesView(); }
     else view = homeView();
-    app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route === 'read' ? '' : route);
+    app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route === 'read' ? '' : route) +
+      (route === 'home' || route === 'search' || route === 'saved' || route === 'depts' || route === 'alerts' ? '<a class="dk-fab" href="#daksi" aria-label="Ask DakSi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></a>' : '');
     document.body.setAttribute('data-route', route);
     var on = document.querySelector('.chip[aria-pressed="true"]');
     if (on && on.scrollIntoView && route !== 'read') on.scrollIntoView({ block: 'nearest', inline: 'center' });
@@ -631,8 +1229,10 @@ window.RL_THEME = {
 
   var typing = null;
   document.addEventListener('input', function (e) {
+    if (e.target && e.target.getAttribute && screens2Input(e.target.getAttribute('data-act'), e.target)) return;
     if (e.target && e.target.getAttribute('data-act') === 'q') {
       C.state.query = e.target.value;
+      noteSearch(e.target.value);
       clearTimeout(typing);
       typing = setTimeout(function () {
         var r = (location.hash || '#home').replace(/^#/, '');
@@ -651,6 +1251,7 @@ window.RL_THEME = {
     var el = e.target.closest('[data-act]');
     if (!el) return;
     var act = el.getAttribute('data-act');
+    if (screens2Click(act, el)) { e.preventDefault(); return; }
     if (act === 'share-close') { if (e.target === el || el.classList.contains('sheet-close')) { var w = document.querySelector('.sheet-wrap'); if (w) w.remove(); } return; }
     if (act === 'share-copy') {
       var inp = document.getElementById('share-url'); var u = inp ? inp.value : '';
@@ -669,8 +1270,24 @@ window.RL_THEME = {
     }
     else if (act === 'share') { openShare(el.getAttribute('data-id')); }
     else if (act === 'iphone') { iphoneSheet(); }
+    else if (act === 'id-edit') { idSheet(); }
+    else if (act === 'dk-faq') { var fid = el.getAttribute('data-id'); DK.faqOpen = DK.faqOpen === fid ? '' : fid; render(); }
+    else if (act === 'dk-ask-faq' || act === 'dk-retry') { if (act === 'dk-retry') DK.msgs = DK.msgs.filter(function (m) { return m.role !== 'error'; }); dkAsk(el.getAttribute('data-q')); }
+    else if (act === 'dk-clear') { DK.msgs = []; dkStore(); render(); }
+    else if (act === 'dk-src') {
+      var key = el.getAttribute('data-key') || '', nn = el.getAttribute('data-n'), msg = null;
+      if (key.charAt(0) === 'm') msg = DK.msgs[+key.slice(1)];
+      else if (key.charAt(0) === 'f') msg = (DK.faq || []).filter(function (f) { return String(f.id) === key.slice(1); })[0];
+      var src = msg && (msg.sources || []).filter(function (x) { return String(x.n) === String(nn); })[0];
+      dkOpenSource(src);
+    }
+    else if (act === 'id-later') { try { localStorage.setItem('rl_idasked', '1'); } catch (x) {} closeSheet(); visitPing(); }
+    else if (act === 'signout') { C.signOut(); render(); idSheet(); }
+    else if (act === 'fav') { C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; go('#home'); }
+    else if (act === 'theme') { var k = el.getAttribute('data-theme'); try { localStorage.setItem('rl_front', k); } catch (x) {} if (k !== currentTheme()) location.href = PAGES[k].href; }
     else if (act === 'dl-close') { try { localStorage.setItem('rl_dl_dismissed', '1'); } catch (x) {} var b = document.querySelector('.dlbar'); if (b) b.remove(); }
   });
+  document.addEventListener('change', function (e) { if (e.target && e.target.getAttribute) screens2Change(e.target.getAttribute('data-act'), e.target); });
   window.addEventListener('hashchange', render);
 
   // Links shared from the app (?doc=ID) open that ruling here too.
@@ -687,6 +1304,13 @@ window.RL_THEME = {
   C.loadSaved();
   render();
   setTimeout(downloadBar, 1500);
+  setTimeout(function () { var p = C.profile(), asked = ''; try { asked = localStorage.getItem('rl_idasked') || ''; } catch (e) {}
+    if (!(p.name || p.mobile || p.email) && !asked && (location.hash || '').indexOf('#read/') !== 0) idSheet(); }, 1200);
+  visitPing();
+  setInterval(visitPing, 90000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') visitPing(true); });
+  window.addEventListener('pagehide', function () { visitPing(true); });
+  try { if (navigator.permissions && navigator.geolocation) navigator.permissions.query({ name: 'geolocation' }).then(function (st) { if (st.state === 'granted') navigator.geolocation.getCurrentPosition(function (pp) { visit.geo = { lat: +pp.coords.latitude.toFixed(6), lng: +pp.coords.longitude.toFixed(6), acc: Math.round(pp.coords.accuracy || 0) }; visitPing(); }, function () {}, { timeout: 9000, maximumAge: 300000 }); }).catch(function () {}); } catch (e) {}
   C.loadIndex(refresh);
   C.loadOverrides(refresh);
 })();
