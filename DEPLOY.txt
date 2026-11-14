@@ -1,11 +1,16 @@
-Postal Rulings: New designs in the Profile menu
+Upload all files to the root of the postal-rulings GitHub repo (replace existing).
 
-Upload index.html to the root of the postal-rulings repo, replacing the current one.
-(The other files in this zip are the same as the last delivery; upload them too if you
-have not already.)
+This update:
+- CGHS tiers per CGHS OM dated 03.10.2025: Tier I = X, Tier II = Y, Tier III = Z class cities
+  (HRA list of MoF OM 21.07.2015 + Mathura-Vrindavan Y from 01.03.2020).
+  HCOs in the North-East, J&K and Ladakh get Tier II rates.
+- Saved layouts: a lean copy can no longer overwrite a post's saved document on the server;
+  posts that already lost it are restored from their published blog post (admin opening
+  the post in the classic app saves the restored copy back to the server).
+- Summary tab redesigned in Cozy, Fireside and Sapphire; OM date shown as a calendar block.
+- Cards in all three themes show the OM date (published date only when no OM date is known).
+- Summary box inside a post is readable in the dark Fireside theme.
 
-Then, in the Android app, pull down at the top of the home page once so it loads the
-new index.html.
-
-To switch: tap your profile icon at the top > New designs > Sapphire, Fireside or Cozy.
-The choice is remembered on that phone. Admin opens the classic app from the Admin card.
+Blogger (one-time): Theme > Edit HTML, paste just before </body>:
+<script src="https://uvsubbaiah-spec.github.io/postal-rulings/blog-omdate.js" defer></script>
+It replaces the Blogger published date on each post with the OM date.

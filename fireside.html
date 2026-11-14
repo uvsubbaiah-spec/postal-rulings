@@ -298,6 +298,57 @@ body[data-route="read"]{padding-bottom:40px}
 .cbox{display:inline-block;width:14px;height:14px;border-radius:4px;border:2px solid currentColor;opacity:.55;flex:0 0 auto}
 .chip.tick[aria-checked="true"] .cbox{opacity:1;background:currentColor;box-shadow:inset 0 0 0 2px var(--accent-fill)}
 
+/* Summary box inside a ruling: always a light paper with dark ink, whatever the theme (dark themes hid the text). */
+.sumbox.sumpaper{background:var(--doc-bg,#FFFBEB)!important;color:var(--doc-ink,#1f1a15)!important}
+.sumbox.sumpaper p,.sumbox.sumpaper li,.sumbox.sumpaper div,.sumbox.sumpaper td{color:inherit}
+.omdate{color:var(--accent);font-weight:800}
+
+/* ===== Summary tab: professional ledger ===== */
+.sumhero{position:relative;overflow:hidden;border-radius:22px;padding:26px 22px 20px;margin:4px 0 16px;color:var(--accent-ink);
+  background:radial-gradient(120% 140% at 100% 0%,color-mix(in srgb,var(--accent-fill) 60%,#fff 0%) 0%,transparent 60%),linear-gradient(135deg,var(--accent-fill),color-mix(in srgb,var(--accent-fill) 62%,#000));
+  box-shadow:0 18px 40px -22px color-mix(in srgb,var(--accent-fill) 70%,#000)}
+.sumhero-art{position:absolute;right:-14px;top:-6px;width:min(320px,62%);height:auto;color:var(--accent-ink);pointer-events:none}
+.sumhero-k{position:relative;margin:0;font:800 11px var(--font-body);letter-spacing:.2em;text-transform:uppercase;opacity:.85}
+.sumhero-h{position:relative;margin:6px 0 8px;font:700 clamp(28px,6vw,40px)/1.08 var(--font-display);color:inherit;letter-spacing:-.01em}
+.sumhero-p{position:relative;margin:0;max-width:60ch;font-size:14px;line-height:1.55;opacity:.9}
+.sumstats{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+.sumstat{min-width:0;border-radius:14px;padding:10px 12px;background:color-mix(in srgb,var(--accent-ink) 14%,transparent);border:1px solid color-mix(in srgb,var(--accent-ink) 22%,transparent);backdrop-filter:blur(4px)}
+.sumstat b{display:block;font:800 clamp(16px,3.6vw,22px)/1.15 var(--font-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sumstat span{display:block;font:700 10.5px var(--font-body);letter-spacing:.08em;text-transform:uppercase;opacity:.8;margin-top:3px}
+@media (max-width:560px){.sumstats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sumpanel{background:var(--card);border:1px solid var(--rule);border-radius:18px;padding:14px;margin:0 0 16px;box-shadow:var(--shadow)}
+.sumsearch{position:relative}.sumsearch svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--ink-soft);pointer-events:none}
+.sumsearch .search{padding-left:44px;margin:0}
+.sumlbl{margin:12px 2px 6px;font:800 10.5px var(--font-body);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.sumpanel .chips{margin:0 0 4px}
+.sumpanel .sumbar{margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--rule)}
+.tbtn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:10px;border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:700 12.5px var(--font-body);cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s}
+.tbtn:hover{border-color:var(--accent);box-shadow:0 6px 14px -10px var(--accent);transform:translateY(-1px)}
+.tbtn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.tbtn.prime{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
+.sumcard{background:var(--card);border:1px solid var(--rule);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);margin:0 0 14px}
+.sumcard-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--rule);font:700 12.5px var(--font-body);color:var(--ink-soft)}
+.sumcard-h b{color:var(--accent);font-weight:800}
+.sumcard .tablewrap{margin:0;border:0;border-radius:0;box-shadow:none}
+.sumtable thead th{background:color-mix(in srgb,var(--accent-fill) 9%,var(--card));border-bottom:2px solid var(--accent);padding:12px 10px}
+.sumtable thead .th{color:var(--accent);font-size:10.5px;letter-spacing:.1em}
+.sumtable tbody tr{transition:background .12s}
+.sumtable tbody tr:nth-child(even):not(.grp){background:color-mix(in srgb,var(--ink) 2.5%,transparent)}
+.sumtable tbody tr:not(.grp):hover{background:color-mix(in srgb,var(--accent-fill) 7%,var(--card))}
+.sumtable tbody tr:not(.grp):hover td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.sumtable td{padding:12px 10px}
+.sumtable .tt{font:700 13.5px/1.4 var(--font-body);color:var(--ink)}
+.omchip{display:inline-block;max-width:100%;padding:3px 8px;border-radius:7px;background:color-mix(in srgb,var(--ink) 6%,transparent);border:1px solid var(--rule);font:600 11.5px/1.35 ui-monospace,Consolas,monospace;color:var(--ink);overflow-wrap:anywhere}
+.dblk{display:inline-grid;grid-template-columns:auto auto;grid-template-areas:"d m" "d y";column-gap:6px;align-items:center;padding:5px 8px;border-radius:10px;background:color-mix(in srgb,var(--accent-fill) 12%,var(--card));border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);color:var(--ink);white-space:nowrap}
+.dblk b{grid-area:d;font:800 20px/1 var(--font-display);color:var(--accent)}
+.dblk i{grid-area:m;font:800 10.5px/1.1 var(--font-body);font-style:normal;text-transform:uppercase;letter-spacing:.08em}
+.dblk small{grid-area:y;font:600 10.5px/1.1 var(--font-body);color:var(--ink-soft)}
+.sumtable .eff{font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+.dtag{display:inline-block;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--accent-fill) 10%,transparent);color:var(--ink);font:700 11.5px var(--font-body)}
+.sumtable .sm .clamp{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;line-height:1.55;color:var(--ink-soft)}
+.sumtable tr.grp td{background:color-mix(in srgb,var(--accent-fill) 14%,var(--card));color:var(--ink);font:700 12.5px var(--font-body);border-top:2px solid var(--accent);padding:10px 12px}
+.sumtable .muted{color:var(--ink-soft)}
+
 :root{--night:#17110F;--wall:#221915;--letter:#F3E2C4;--ember:#E8934A;--wax:#9E2F2A;--ink:#F3E2C4;--ink-soft:#A8917B;--paper:#17110F;--card:#221915;--rule:#3A2C25;--accent:#E8934A;--accent-fill:#E8934A;--accent-ink:#17110F;--focus:rgba(232,147,74,.3);--nav-bg:#1B1411;--search-r:4px;--font-display:'Cormorant Garamond',Georgia,serif;--font-body:'Lora',Georgia,serif;--shadow:0 18px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%) var(--night)}
 .lamp{text-align:center;margin-bottom:26px}
@@ -390,6 +441,23 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || ''));
     if (m) return m[3] + '.' + m[2] + '.' + m[1];
     return String(d || '');
+  }
+  // The OM's own date as YYYY-MM-DD: the admin's "Issue date", else a date at the start of the title/file name.
+  var MONS = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
+  function isoOf(str) {
+    var t = String(str || '').trim(), m, y, mo, d;
+    if (!t || t === '-') return '';
+    if ((m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(t))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+    else if ((m = /^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{2,4})\b/.exec(t))) { d = +m[1]; mo = +m[2]; y = +m[3]; if (y < 100) y += y > 50 ? 1900 : 2000; }
+    else if ((m = /^(\d{1,2})(?:st|nd|rd|th)?[\s.,-]*(?:of\s+)?([a-z]{3,9})[\s.,-]*(\d{4})/i.exec(t)) && MONS[m[2].slice(0, 3).toLowerCase()]) { d = +m[1]; mo = MONS[m[2].slice(0, 3).toLowerCase()]; y = +m[3]; }
+    else if ((m = /^([a-z]{3,9})\.?\s+(\d{1,2})(?:st|nd|rd|th)?,?\s+(\d{4})/i.exec(t)) && MONS[m[1].slice(0, 3).toLowerCase()]) { mo = MONS[m[1].slice(0, 3).toLowerCase()]; d = +m[2]; y = +m[3]; }
+    else return '';
+    if (!(y > 1900 && y < 2100 && mo >= 1 && mo <= 12 && d >= 1 && d <= 31)) return '';
+    return y + '-' + ('0' + mo).slice(-2) + '-' + ('0' + d).slice(-2);
+  }
+  function omDate(x) {
+    var o = state.ov[x.id] || {};
+    return isoOf(o.issueDate) || isoOf(x.name) || isoOf(o.title) || '';
   }
   function sortedByDate(items) {
     return items.slice().sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
@@ -503,7 +571,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 
   global.RLCore = {
     state: state, loadIndex: loadIndex, loadText: loadText, toggleSaved: toggleSaved, isSaved: isSaved,
-    loadSaved: loadSaved, profile: profile, profileKey: profileKey, saveProfile: saveProfile, signOut: signOut, affinity: affinity, bumpAffinity: bumpAffinity, loadOverrides: loadOverrides, loadOv: loadOv, view: view, filtered: filtered, savedItems: savedItems, sortedByDate: sortedByDate, shortDate: shortDate
+    loadSaved: loadSaved, profile: profile, profileKey: profileKey, saveProfile: saveProfile, signOut: signOut, affinity: affinity, bumpAffinity: bumpAffinity, loadOverrides: loadOverrides, loadOv: loadOv, view: view, filtered: filtered, savedItems: savedItems, sortedByDate: sortedByDate, shortDate: shortDate, omDate: omDate, isoOf: isoOf
   };
 })(window);
 
@@ -518,7 +586,7 @@ window.RL_THEME = {
   card: function (x, saved) {
     var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
     var d = (x.date || '').replace(/^(\d{4})-(\d{2})-(\d{2}).*$/, '$3.$2.$1');
-    var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']; var mm = /^(\d{4})-(\d{2})-(\d{2})/.exec(x.date || ''); var stampTxt = mm ? (+mm[3]) + ' ' + MON[+mm[2] - 1] + '<br>' + mm[1] : ''; var stampLbl = mm ? 'Added ' + (+mm[3]) + ' ' + MON[+mm[2] - 1] + ' ' + mm[1] : '';
+    var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']; var mm = /^(\d{4})-(\d{2})-(\d{2})/.exec(x.date || ''); var stampTxt = mm ? (+mm[3]) + ' ' + MON[+mm[2] - 1] + '<br>' + mm[1] : ''; var stampLbl = mm ? (x.dateKind || 'Added') + ' ' + (+mm[3]) + ' ' + MON[+mm[2] - 1] + ' ' + mm[1] : '';
         return '<article class="letter" data-act="open" data-id="' + esc(x.id) + '" role="button" tabindex="0">' +
       (stampTxt ? '<span class="seal" title="' + stampLbl + '" aria-label="' + stampLbl + '">' + stampTxt + '</span>' : '') +
       '<div class="kicker">' + esc(x.category) + '</div>' +
@@ -2248,7 +2316,8 @@ window.RLDocFix = (function () {
   // Cards and rows show the corrected title, department and status, like the app.
   function cardItem(x) {
     var v = C.view(x);
-    return { id: x.id, name: v.title, category: v.depts[0] || x.category, date: x.date, status: v.status, omNo: v.omNo };
+    var od = C.omDate(x);
+    return { id: x.id, name: v.title, category: v.depts[0] || x.category, date: od || x.date, dateKind: od ? 'OM dated' : 'Added', status: v.status, omNo: v.omNo };
   }
   // Department chips: tap one, or switch on "Select several" and tick as many as you like.
   function chips() {
@@ -2387,7 +2456,8 @@ window.RLDocFix = (function () {
     var h = '';
     h += '<div class="rhead">' + statusPill(v.status) + '<span class="dept">' + esc(v.depts.join(' · ')) + '</span></div>';
     h += '<h1 class="page rtitle">' + (ov && ov.titleHtml ? sanitize(ov.titleHtml) : esc(v.title)) + '</h1>';
-    h += '<p class="note">Added ' + esc(fmtDate(x.date)) + '</p>';
+    var omd = C.omDate(x);
+    h += '<p class="note">' + (omd ? '<b class="omdate">OM dated ' + esc(fmtDate(omd)) + '</b> · ' : '') + 'Added ' + esc(fmtDate(x.date)) + '</p>';
     h += '<div class="ractions">';
     if (v.url) h += '<a class="pdf" href="' + esc(v.url) + '" target="_blank" rel="noopener">Download PDF</a>';
     if (v.blogUrl) h += '<a class="pdf ghost" href="' + esc(v.blogUrl) + '" target="_blank" rel="noopener">Read on the blog</a>';
@@ -2399,7 +2469,8 @@ window.RLDocFix = (function () {
       (sum ? '<div class="sumbox sumpaper" data-rl-doc="1">' + sum + '</div>' : cachedSum ? sumHtml(cachedSum.text) : '<p class="muted">Preparing a summary…</p>') + '</div></section>';
     h += '<section class="rsec"><div class="rsec-row"><h2 class="rsec-h">Document text</h2>' + fontBar() + '</div><div id="docbody">';
     var tx = C.state.text && C.state.text[id];
-    if (tx && tx.html) h += docPaper(tx.html);
+    if (BLOGDOC[id]) h += docPaper(BLOGDOC[id]);
+    else if (tx && tx.html) h += docPaper(tx.html);
     else if (ov && ov.html) h += docPaper(ov.html);
     else if (ov && ov.text) h += plainPaper(ov.text);
     else if (tx && tx.text) h += plainPaper(tx.text);
@@ -2474,9 +2545,44 @@ window.RLDocFix = (function () {
       '<span id="fontPct">' + Math.round(fontScale() * 100) + '%</span><button class="hlink" data-act="font" data-d="1" aria-label="Larger text">A+</button>' +
       (fontScale() !== 1 ? '<button class="hlink" data-act="font" data-d="0">Reset</button>' : '') + '</div>';
   }
+  // When the server's saved copy has lost its layout (a lean copy without the document HTML), the
+  // copy last published to the blog still has the admin's layout, so the document is taken from there.
+  var BLOGDOC = {};
+  function blogDoc(pid) {
+    return new Promise(function (res) {
+      if (!pid) return res('');
+      var cb = '__rlBlog' + Date.now() + Math.floor(Math.random() * 1e4), s = document.createElement('script'), over = false;
+      var done = function (v) { if (over) return; over = true; try { delete window[cb]; } catch (e) { window[cb] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); res(v || ''); };
+      window[cb] = function (j) {
+        var raw = ''; try { raw = j.entry.content.$t || ''; } catch (e) {}
+        var out = '';
+        try {
+          var d = new DOMParser().parseFromString('<div>' + raw + '</div>', 'text/html');
+          var sec = d.querySelector('[data-rl-sec="document"]');
+          if (sec) { var kids = sec.children, last = kids[kids.length - 1]; if (last && kids.length > 1) out = last.innerHTML; }
+        } catch (e) {}
+        done(out.replace(/^\s+|\s+$/g, '').length > 40 ? out : '');
+      };
+      s.onerror = function () { done(''); };
+      setTimeout(function () { done(''); }, 15000);
+      s.src = 'https://postalrulings.blogspot.com/feeds/posts/default/' + encodeURIComponent(pid) + '?alt=json-in-script&callback=' + cb;
+      document.head.appendChild(s);
+    });
+  }
+  function healFromBlog(id, ov) {
+    if (!ov || ov.html || !ov.blogPostId || BLOGDOC[id] === '') return;
+    if (BLOGDOC[id]) return;
+    blogDoc(ov.blogPostId).then(function (h) {
+      BLOGDOC[id] = h || '';
+      if (!h) return;
+      var el = document.getElementById('docbody');
+      if (el && (location.hash || '').indexOf(id) >= 0) { el.innerHTML = docPaper(h); el.setAttribute('data-done', '1'); el.setAttribute('data-blog', '1'); }
+    });
+  }
   function fillText(id) {
     C.loadText(id).then(function (t) {
       var el = document.getElementById('docbody'); if (!el) return;
+      if (BLOGDOC[id] || el.getAttribute('data-blog')) { fillSummary(id, (t && t.text) || plainOf((t && t.html) || '')); return; }
       var known = C.state.byId[id];
       if (t && t.html) { el.innerHTML = docPaper(t.html); el.setAttribute('data-done', '1'); }
       else if (el.getAttribute('data-done')) { /* keep the saved formatted copy */ }
@@ -2508,6 +2614,7 @@ window.RLDocFix = (function () {
       if (seq !== readView.seq || !ov) return;
       var rb = document.getElementById('rbody'); if (!rb) return;
       rb.innerHTML = readerBody(id, ov);
+      healFromBlog(id, ov);
       if (ov.html || ov.text) { var d = document.getElementById('docbody'); var tx2 = C.state.text && C.state.text[id]; if (d && !(tx2 && tx2.html)) d.setAttribute('data-done', '1'); fillSummary(id, ov.text || plainOf(ov.html)); }
     }).catch(function () {});
     return html;
@@ -2578,13 +2685,13 @@ window.RLDocFix = (function () {
     var q = SUM.q.toLowerCase().trim();
     var rows = C.state.items.map(function (x) {
       var v = C.view(x);
-      return { id: x.id, t: v.title, om: v.omNo, d: v.issueDate || x.date, e: v.effective, s: v.status || 'Active', c: v.depts.join(', '), m: v.summary, b: v.blogUrl };
+      return { id: x.id, t: v.title, om: v.omNo, d: v.issueDate || C.omDate(x) || x.date, od: C.omDate(x), di: C.omDate(x) || String(x.date || '').slice(0, 10), ei: C.isoOf(v.effective) || v.effective, e: v.effective, s: v.status || 'Active', c: v.depts.join(', '), m: v.summary, b: v.blogUrl };
     }).filter(function (r) {
       if (SUM.cat && r.c.split(', ').indexOf(SUM.cat) < 0) return false;
       if (SUM.om && omKey(r.om) !== omKey(SUM.om)) return false;
       return !q || (r.t + ' ' + r.om + ' ' + r.m + ' ' + r.c).toLowerCase().indexOf(q) >= 0;
     });
-    var key = { date: 'd', title: 't', om: 'om', eff: 'e', status: 's', dept: 'c', summary: 'm' }[SUM.sort] || 'd';
+    var key = { date: 'di', title: 't', om: 'om', eff: 'ei', status: 's', dept: 'c', summary: 'm' }[SUM.sort] || 'di';
     rows.sort(function (a, b) { return String(a[key] || '').localeCompare(String(b[key] || '')) * SUM.dir; });
     if (SUM.group) {
       // Same OM No.: only posts that share an OM No., grouped under it.
@@ -2604,18 +2711,43 @@ window.RLDocFix = (function () {
     C.state.items.forEach(function (x) { var v = C.view(x), k = omKey(v.omNo); if (k.length >= 3) { by[k] = by[k] || { om: v.omNo, n: 0 }; by[k].n++; } });
     return Object.keys(by).map(function (k) { return by[k]; }).filter(function (o) { return o.n > 1; }).sort(function (a, b) { return b.n - a.n; });
   }
+  // The OM date as a small calendar block, so it reads first in the row.
+  function dateBlk(iso, raw) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+    if (!m) return raw ? '<span class="eff">' + esc(fmtDate(raw)) + '</span>' : '<span class="muted">—</span>';
+    var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '<span class="dblk" title="OM dated ' + esc(m[3] + '.' + m[2] + '.' + m[1]) + '"><b>' + m[3] + '</b><i>' + MON[+m[2] - 1] + '</i><small>' + m[1] + '</small></span>';
+  }
   function summaryView() {
-    var h = '<h1 class="page">Summary</h1><p class="note">Every ruling at a glance. Tap a column to sort, drag a column edge to resize, tap a row to open it.</p>' + status();
-    if (!C.state.loaded) return h;
+    var ico = function (d) { return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>'; };
+    var hero = function (stats) {
+      return '<section class="sumhero"><svg class="sumhero-art" viewBox="0 0 320 180" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.2" opacity=".35">' +
+        '<rect x="150" y="18" width="150" height="104" rx="10"/><path d="M150 46h150M150 72h150M150 98h150M200 18v104M250 18v104"/>' +
+        '<rect x="120" y="58" width="150" height="104" rx="10" opacity=".7"/><path d="M120 86h150M120 112h150M120 138h150M170 58v104M220 58v104" opacity=".7"/></g></svg>' +
+        '<p class="sumhero-k">Ready reckoner</p><h1 class="sumhero-h">Summary of Rulings</h1>' +
+        '<p class="sumhero-p">Every order and circular at a glance, with its OM No., OM date, status and gist. Sort by any column, resize columns, export to PDF, or tap a row to open the ruling.</p>' +
+        (stats || '') + '</section>';
+    };
+    var h = '';
+    if (!C.state.loaded) return hero('') + status();
     var rows = summaryRows(), real = rows.filter(function (r) { return !r.head; }).length;
     var allDepts = !SUM.cat;
-    h += '<label class="sr" for="sumq">Filter the summary</label><input id="sumq" class="search" type="search" data-act="sumq" placeholder="Filter by title, OM No. or summary" value="' + esc(SUM.q) + '">';
-    h += '<div class="chips"><button class="chip" data-act="sumcat" data-cat="" aria-pressed="' + (!SUM.cat) + '">All</button>' +
+    var real2 = rows.filter(function (r) { return !r.head; });
+    var active = real2.filter(function (r) { return /^active/i.test(r.s || ''); }).length;
+    var latest = real2.reduce(function (m, r) { return r.di && r.di > m ? r.di : m; }, '');
+    var stat = function (n, l) { return '<div class="sumstat"><b>' + n + '</b><span>' + l + '</span></div>'; };
+    h += hero('<div class="sumstats">' + stat(real.toLocaleString('en-IN'), real === 1 ? 'Ruling' : 'Rulings') + stat(SUM.cat ? esc(SUM.cat) : C.state.cats.length, SUM.cat ? 'Department' : 'Departments') +
+      stat(active.toLocaleString('en-IN'), 'Active') + stat(latest ? esc(fmtDate(latest)) : '—', 'Latest OM date') + '</div>') + status();
+    h += '<div class="sumpanel"><div class="sumsearch">' + ico('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>') +
+      '<label class="sr" for="sumq">Filter the summary</label><input id="sumq" class="search" type="search" data-act="sumq" placeholder="Filter by title, OM No. or summary" value="' + esc(SUM.q) + '"></div>';
+    h += '<p class="sumlbl">Department</p><div class="chips"><button class="chip" data-act="sumcat" data-cat="" aria-pressed="' + (!SUM.cat) + '">All</button>' +
       C.state.cats.map(function (c) { return '<button class="chip" data-act="sumcat" data-cat="' + esc(c) + '" aria-pressed="' + (SUM.cat === c) + '">' + esc(c) + '</button>'; }).join('') + '</div>';
     h += '<div class="sumbar"><div class="seg" role="group" aria-label="View"><button class="segb" data-act="sumview" data-v="list" aria-pressed="' + !SUM.group + '">All posts</button>' +
       '<button class="segb" data-act="sumview" data-v="group" aria-pressed="' + SUM.group + '" title="Posts that share an OM No., grouped together">Same OM No.</button></div>' +
-      '<div class="sumtools"><button class="hlink" data-act="sumpdf">PDF</button><button class="hlink" data-act="sumw" data-f="0.85" title="Make all columns narrower">Columns −</button>' +
-      '<button class="hlink" data-act="sumw" data-f="1.15" title="Make all columns wider">Columns +</button>' + (sumCols() ? '<button class="hlink" data-act="sumwreset" title="Back to the default widths">Reset widths</button>' : '') + '</div></div>';
+      '<div class="sumtools"><button class="tbtn prime" data-act="sumpdf">' + ico('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 12v6M9 15l3 3 3-3"/>') + 'Export PDF</button>' +
+      '<button class="tbtn" data-act="sumw" data-f="0.85" title="Make all columns narrower">' + ico('<path d="M4 12h6M14 12h6M8 9l-3 3 3 3M16 9l3 3-3 3"/>') + 'Narrower</button>' +
+      '<button class="tbtn" data-act="sumw" data-f="1.15" title="Make all columns wider">' + ico('<path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/>') + 'Wider</button>' +
+      (sumCols() ? '<button class="tbtn" data-act="sumwreset" title="Back to the default widths">' + ico('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>') + 'Reset</button>' : '') + '</div></div></div>';
     if (SUM.group) {
       var ch = omChoices();
       h += '<div class="ompick"><label for="sumOm">Posts with OM No.</label><input id="sumOm" class="search" list="sumOms" data-act="sumom" placeholder="Type or pick an OM No." value="' + esc(SUM.om) + '">' +
@@ -2629,15 +2761,15 @@ window.RLDocFix = (function () {
       return '<th scope="col" data-sum-col="' + k + '"><button class="th" data-act="sumsort" data-k="' + sortKey + '">' + label + (SUM.sort === sortKey ? (SUM.dir > 0 ? ' ▲' : ' ▼') : '') + '</button>' +
         '<span class="rz" data-rz="' + k + '" role="separator" aria-orientation="vertical" aria-label="Resize ' + label + ' column" tabindex="0"></span></th>';
     };
-    h += '<p class="note">' + real + (real === 1 ? ' ruling' : ' rulings') + '</p><div class="tablewrap"><table class="sumtable" style="width:' + tblW + ';min-width:' + (c ? '0' : '860px') + '"><colgroup>' +
+    h += '<div class="sumcard"><div class="sumcard-h"><span>' + (SUM.group ? 'Grouped by OM No.' : 'All rulings') + (SUM.cat ? ' · ' + esc(SUM.cat) : '') + '</span><b>' + real.toLocaleString('en-IN') + (real === 1 ? ' ruling' : ' rulings') + '</b></div><div class="tablewrap"><table class="sumtable" style="width:' + tblW + ';min-width:' + (c ? '0' : '860px') + '"><colgroup>' +
       keys.map(function (k) { return '<col data-col="' + k + '" style="width:' + colw(k) + '">'; }).join('') + '</colgroup><thead><tr>' +
       th('title', 'title', 'Title') + th('om', 'om', 'OM No.') + th('omDate', 'date', 'OM Date') + th('eff', 'eff', 'Effective') + th('status', 'status', 'Status') +
       (allDepts ? th('dept', 'dept', 'Dept.') : '') + th('summary', 'summary', 'Summary') + '</tr></thead><tbody>' +
       rows.slice(0, SUM.cap).map(function (r) {
         if (r.head) return '<tr class="grp"><td colspan="' + keys.length + '">OM No. <b>' + esc(r.om) + '</b> · ' + r.n + ' posts</td></tr>';
-        return '<tr data-act="open" data-id="' + esc(r.id) + '" tabindex="0"><td class="tt">' + esc(r.t) + '</td><td class="mono">' + esc(r.om) + '</td><td>' + esc(fmtDate(r.d)) + '</td><td>' + esc(r.e ? fmtDate(r.e) : '') + '</td><td>' + statusPill(r.s) + '</td>' +
-          (allDepts ? '<td>' + esc(r.c) + '</td>' : '') + '<td class="sm">' + esc(r.m) + '</td></tr>';
-      }).join('') + '</tbody></table></div>';
+        return '<tr data-act="open" data-id="' + esc(r.id) + '" tabindex="0"><td class="tt">' + esc(r.t) + '</td><td>' + (r.om ? '<span class="omchip">' + esc(r.om) + '</span>' : '<span class="muted">—</span>') + '</td><td>' + dateBlk(r.od, r.d) + '</td><td class="eff">' + esc(r.e && r.e !== '-' ? fmtDate(r.e) : '—') + '</td><td>' + statusPill(r.s) + '</td>' +
+          (allDepts ? '<td><span class="dtag">' + esc(r.c) + '</span></td>' : '') + '<td class="sm"><div class="clamp" title="' + esc(r.m) + '">' + esc(r.m) + '</div></td></tr>';
+      }).join('') + '</tbody></table></div></div>';
     if (rows.length > SUM.cap) h += '<button class="more" data-act="summore">Show more (' + (rows.length - SUM.cap) + ' left)</button>';
     if (SUM.group && !rows.length) h += '<p class="empty show">No posts share an OM No.' + (SUM.cat ? ' in this department' : '') + '.</p>';
     return h;
@@ -2931,11 +3063,15 @@ window.RLDocFix = (function () {
   }
 
   // ---- Package rates with the city tier set from the city, the hospital or the reader's location ----
-  var RT_T1 = ["Ahmedabad","Bengaluru","Chennai","Delhi","Hyderabad","Kolkata","Mumbai","Pune"], RT_T2 = ["Agra","Ajmer","Aligarh","Amravati","Amritsar","Anand","Asansol","Aurangabad","Bareilly","Belagavi","Bhavnagar","Bhilai","Bhiwandi","Bhopal","Bhubaneswar","Bikaner","Bilaspur","Bokaro Steel City","Burdwan","Chandigarh","Coimbatore","Cuttack","Dahod","Dehradun","Dhanbad","Dombivli","Durgapur","Erode","Faridabad","Ghaziabad","Gorakhpur","Guntur","Gurugram","Guwahati","Gwalior","Hamirpur","Hubballi-Dharwad","Indore","Jabalpur","Jaipur","Jalandhar","Jalgaon","Jammu","Jamnagar","Jamshedpur","Jhansi","Jodhpur","Kakinada","Kannur","Kanpur","Karnal","Kochi","Kolhapur","Kollam","Kota","Kozhikode","Kurnool","Lucknow","Ludhiana","Madurai","Malappuram","Mangaluru","Mathura","Meerut","Moradabad","Mysuru","Nadiad","Nagpur","Nanded","Nashik","Nellore","Noida","Palakkad","Patna","Puducherry","Prayagraj","Raipur","Rajahmundry","Rajkot","Ranchi","Ratlam","Rourkela","Salem","Sangli","Shimla","Siliguri","Solapur","Srinagar","Surat","Thanjavur","Thiruvananthapuram","Thrissur","Tiruchirappalli","Tirunelveli","Tiruvannamalai","Ujjain","Vadodara","Varanasi","Vasai-Virar","Vellore","Vijayapura","Vijayawada","Visakhapatnam","Warangal"], RT_ALIAS = {"bangalore":"bengaluru","gurgaon":"gurugram","allahabad":"prayagraj","trivandrum":"thiruvananthapuram","calicut":"kozhikode","cochin":"kochi","ernakulam":"kochi","mysore":"mysuru","mangalore":"mangaluru","pondicherry":"puducherry","vizag":"visakhapatnam","bombay":"mumbai","navimumbai":"mumbai","thane":"mumbai","newdelhi":"delhi","delhincr":"delhi","calcutta":"kolkata","madras":"chennai","secunderabad":"hyderabad","belgaum":"belagavi","hubli":"hubballidharwad","hubballi":"hubballidharwad","bijapur":"vijayapura","trichy":"tiruchirappalli","tiruchirapalli":"tiruchirappalli","baroda":"vadodara","benaras":"varanasi","banaras":"varanasi","rajamahendravaram":"rajahmundry","gautambuddhanagar":"noida","greaternoida":"noida","bhubaneshwar":"bhubaneswar","bardhaman":"burdwan","bokaro":"bokarosteelcity","kalyan":"dombivli"};
+  // Tiers per CGHS OM F.No.5-16/CGHS(HQ)/HEC/2024 dt 03.10.2025: Tier I = X, Tier II = Y, Tier III = Z class cities for HRA.
+  // X/Y lists: MoF OM 2/5/2014-E.II(B) dt 21.07.2015 (Census 2011), plus Mathura-Vrindavan as Y (OM 2/4/2018-E.II(B) dt 25.02.2020).
+  // HCOs in the North-East, J&K and Ladakh get Tier II rates (same CGHS OM).
+  var RT_T1 = ["Ahmedabad", "Bengaluru", "Chennai", "Delhi", "Hyderabad", "Kolkata", "Mumbai", "Pune"], RT_T2 = ["Agra", "Ajmer", "Aligarh", "Amravati", "Amritsar", "Asansol", "Aurangabad", "Bareilly", "Belagavi", "Bhavnagar", "Bhilai", "Bhiwandi", "Bhopal", "Bhubaneswar", "Bikaner", "Bokaro Steel City", "Chandigarh", "Coimbatore", "Cuttack", "Dehradun", "Dhanbad", "Durg", "Durgapur", "Erode", "Faridabad", "Firozabad", "Ghaziabad", "Gorakhpur", "Guntur", "Gurugram", "Guwahati", "Gwalior", "Hubballi-Dharwad", "Indore", "Jabalpur", "Jaipur", "Jalandhar", "Jammu", "Jamnagar", "Jamshedpur", "Jhansi", "Jodhpur", "Kalaburagi", "Kannur", "Kanpur", "Kochi", "Kolhapur", "Kollam", "Kota", "Kozhikode", "Lucknow", "Ludhiana", "Madurai", "Malappuram", "Malegaon", "Mangaluru", "Mathura", "Meerut", "Moradabad", "Mysuru", "Nagpur", "Nanded", "Nashik", "Nellore", "Noida", "Patna", "Prayagraj", "Puducherry", "Raipur", "Rajkot", "Ranchi", "Rourkela", "Saharanpur", "Salem", "Sangli", "Siliguri", "Solapur", "Srinagar", "Surat", "Thiruvananthapuram", "Thrissur", "Tiruchirappalli", "Tiruppur", "Ujjain", "Vadodara", "Varanasi", "Vasai-Virar", "Vijayawada", "Visakhapatnam", "Vrindavan", "Warangal"], RT_ALIAS = {"bangalore": "bengaluru", "bengalore": "bengaluru", "gurgaon": "gurugram", "allahabad": "prayagraj", "trivandrum": "thiruvananthapuram", "thiruvanathapuram": "thiruvananthapuram", "calicut": "kozhikode", "cochin": "kochi", "ernakulam": "kochi", "mysore": "mysuru", "mangalore": "mangaluru", "pondicherry": "puducherry", "vizag": "visakhapatnam", "visakapatnam": "visakhapatnam", "vijaywada": "vijayawada", "bezawada": "vijayawada", "bombay": "mumbai", "greatermumbai": "mumbai", "navimumbai": "mumbai", "thane": "mumbai", "kalyan": "mumbai", "dombivli": "mumbai", "mirabhayandar": "mumbai", "ulhasnagar": "mumbai", "newdelhi": "delhi", "calcutta": "kolkata", "howrah": "kolkata", "madras": "chennai", "secunderabad": "hyderabad", "cyberabad": "hyderabad", "ahmadabad": "ahmedabad", "pimprichinchwad": "pune", "belgaum": "belagavi", "hubli": "hubballidharwad", "hubballi": "hubballidharwad", "dharwad": "hubballidharwad", "gulbarga": "kalaburagi", "trichy": "tiruchirappalli", "tiruchirapalli": "tiruchirappalli", "tirupur": "tiruppur", "baroda": "vadodara", "benaras": "varanasi", "banaras": "varanasi", "gautambuddhanagar": "noida", "greaternoida": "noida", "bhubaneshwar": "bhubaneswar", "raurkela": "rourkela", "bokaro": "bokarosteelcity", "durgbhilai": "bhilai", "bhilainagar": "bhilai", "nandedwaghala": "nanded", "vasai": "vasaivirar", "virar": "vasaivirar", "hanumkonda": "warangal", "kazipet": "warangal", "mohali": "chandigarh", "panchkula": "chandigarh", "secunderabd": "hyderabad"};
+  var RT_REGION = /\b(assam|arunachal|manipur|meghalaya|mizoram|nagaland|sikkim|tripura|jammu|kashmir|ladakh|leh|kargil|gangtok|shillong|imphal|aizawl|kohima|agartala|itanagar|dimapur|silchar|dibrugarh|jorhat|tezpur)\b/i;
   
   
   var rtKey = function (c) { var k = String(c || '').toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z]/g, ''); return RT_ALIAS[k] || k; };
-  var rtTierOf = function (c) { var k = rtKey(c); if (RT_T1.some(function (x) { return rtKey(x) === k; })) return 'i'; if (RT_T2.some(function (x) { return rtKey(x) === k; })) return 'ii'; return 'iii'; };
+  var rtTierOf = function (c, region) { var k = rtKey(c); if (RT_T1.some(function (x) { return rtKey(x) === k; })) return 'i'; if (RT_T2.some(function (x) { return rtKey(x) === k; })) return 'ii'; if (RT_REGION.test(String(c || '') + ' ' + String(region || ''))) return 'ii'; return 'iii'; };
   var RT = { type: 'nabh', tier: 'i', ward: 'general', sp: '', q: '', city: '', hosp: '', show: 40, msg: '', auto: false, cart: [] };
   try { var rsv = JSON.parse(localStorage.getItem('rl_rt_pref_v2') || 'null'); if (rsv) { RT.city = rsv.city || ''; RT.tier = rsv.tier || RT.tier; RT.type = rsv.type || RT.type; RT.ward = rsv.ward || RT.ward; } } catch (e) {}
   try { RT.cart = JSON.parse(localStorage.getItem('rl_rt_cart_v2') || '[]') || []; } catch (e) {}
@@ -2951,8 +3087,10 @@ window.RLDocFix = (function () {
           if (!name) throw new Error('none');
           if (silent && RT.city) return;
           var hit = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === rtKey(name); })[0];
+          var reg = RT_REGION.test(name + ' ' + (a.state || ''));
           if (hit) { rtPickCity(hit); RT.msg = 'Tier set from your location: ' + hit + '.'; }
-          else { rtPickCity(name, 'iii'); RT.msg = name + ' is not in Tier I or II, so Tier III applies. Change the city if needed.'; }
+          else if (reg) { rtPickCity(name, 'ii'); RT.msg = name + ' is in the North-East, J&K or Ladakh, so Tier II rates apply (CGHS OM 03.10.2025).'; }
+          else { rtPickCity(name, 'iii'); RT.msg = name + ' is not an X or Y class city for HRA, so Tier III applies. Change the city if needed.'; }
         }).catch(function () { if (!silent) RT.msg = 'Could not look up your location. Type your city instead.'; })
         .then(function () { if ((location.hash || '') === '#rates') render(); });
     }, function () { if (!silent) { RT.msg = 'Location permission was denied. Type your city instead.'; render(); } }, { timeout: 15000, maximumAge: 600000 });
@@ -3071,28 +3209,37 @@ window.RLDocFix = (function () {
   // The CGHS list's "city" is often the district (e.g. "Krishna" for Vijayawada), so the real town is
   // looked for in the whole address first, then in the city field. A Tier I/II town found anywhere wins.
   function hospCity(r) {
-    var hay = ' ' + String((r.ad || '') + ' ' + (r.cs || '')).toLowerCase().replace(/[^a-z]+/g, ' ') + ' ';
-    var hit = '';
-    RT_T1.concat(RT_T2).some(function (c) {
-      var k = ' ' + c.toLowerCase().replace(/[^a-z]+/g, ' ').trim() + ' ';
-      if (hay.indexOf(k) >= 0) { hit = c; return true; }
-      return false;
-    });
-    if (!hit) Object.keys(RT_ALIAS).some(function (a) {
-      if (a.length >= 5 && hay.replace(/ /g, '').indexOf(a) >= 0) {
-        var target = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === RT_ALIAS[a]; })[0];
-        if (target) { hit = target; return true; }
-      }
-      return false;
-    });
-    return hit || cityOf(r.cs);
+    var norm = function (t) { return ' ' + String(t || '').toLowerCase().replace(/[^a-z]+/g, ' ') + ' '; };
+    var find = function (hay) {
+      var hit = '';
+      RT_T1.concat(RT_T2).some(function (c) {
+        var k = ' ' + c.toLowerCase().replace(/[^a-z]+/g, ' ').trim() + ' ';
+        if (hay.indexOf(k) >= 0) { hit = c; return true; }
+        return false;
+      });
+      if (!hit) Object.keys(RT_ALIAS).some(function (a) {
+        if (a.length >= 5 && hay.replace(/ /g, '').indexOf(a) >= 0) {
+          var target = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === RT_ALIAS[a]; })[0];
+          if (target) { hit = target; return true; }
+        }
+        return false;
+      });
+      return hit;
+    };
+    // The city field first (when it names the town), then the full address.
+    return find(norm(r.cs)) || find(norm(r.ad)) || cityOf(r.cs);
   }
   function hospPick(name) {
     var r = (CG.hosp || []).map(hRec).filter(function (x) { return x.n === name; })[0];
     if (!r) return false;
     RT.hosp = r.n;
     var c = hospCity(r);
-    if (c) { var hit = RT_T1.concat(RT_T2).filter(function (x) { return rtKey(x) === rtKey(c); })[0]; rtPickCity(hit || c); RT.msg = 'City and tier set from ' + r.n + ' (' + (hit || c) + ').'; }
+    if (c) {
+      var hit = RT_T1.concat(RT_T2).filter(function (x) { return rtKey(x) === rtKey(c); })[0];
+      var t = rtTierOf(hit || c, (r.ad || '') + ' ' + (r.cs || ''));
+      rtPickCity(hit || c, t);
+      RT.msg = 'City and tier set from ' + r.n + ' (' + (hit || c) + ', Tier ' + { i: 'I', ii: 'II', iii: 'III' }[t] + (!hit && t === 'ii' ? ': North-East / J&K / Ladakh rule' : '') + ').';
+    }
     if (/super/i.test(r.a)) RT.type = 'superspeciality'; else if (/non/i.test(r.a)) RT.type = 'non_nabh'; else if (/nabh/i.test(r.a)) RT.type = 'nabh';
     rtSave(); return true;
   }
