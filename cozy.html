@@ -9,7 +9,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <meta name="theme-color" content="#6A2C5A">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;700&family=JetBrains+Mono:wght@500&family=Literata:opsz,wght@7..72,400;7..72,700&family=Mukta:wght@400;600&display=swap">
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:var(--font-body);font-size:15px;line-height:1.5;color:var(--ink);background:var(--paper);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:20px;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));min-height:100vh}
@@ -280,6 +280,24 @@ body[data-route="read"]{padding-bottom:40px}
 @media (max-width:760px){.hf-grid{grid-template-columns:1fr;padding:12px 14px 14px}.hgrid{grid-template-columns:1fr}.phead{padding:18px}.ph-ic{width:46px;height:46px}.hact.pri{margin-left:0}}
 @media (prefers-reduced-motion:reduce){.sk{animation:none}.hcard2,.dcell{transition:none}}
 
+/* ---- Saved post paper: same reading font, size and colours as the classic reader ---- */
+.docpaper{font-family:'Literata','Mukta',Georgia,serif;font-optical-sizing:auto;line-height:1.65;color:#1f1a15;background:var(--doc-bg,#FFFFFF);border-radius:16px;padding:22px 20px;box-shadow:0 18px 40px -26px rgba(10,20,60,.45),0 0 0 1px var(--rule);overflow-wrap:break-word;overflow-x:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-kerning:normal;
+  --rl-grad:linear-gradient(120deg,var(--c-brand,#B30000),var(--c-brand-3,#E23A2E))}
+.docpaper.plain{white-space:pre-wrap}
+.docpaper img{max-width:100%;height:auto}
+[data-rl-doc] table{zoom:var(--rl-zoom,1)}
+[data-rl-doc] p,[data-rl-doc] li,[data-rl-doc] td,[data-rl-doc] th,[data-rl-doc] div,[data-rl-doc] span,[data-rl-doc] font,[data-rl-doc] b,[data-rl-doc] strong,[data-rl-doc] em,[data-rl-doc] i,[data-rl-doc] u,[data-rl-doc] a,[data-rl-doc] blockquote,[data-rl-doc] caption{font-family:inherit!important}
+.sumpaper{font-family:'Literata','Mukta',Georgia,serif;font-size:15px;line-height:1.65;color:#1f1a15;background:#FFFBEB;border-left:3px solid #FFCB05;text-align:justify;text-align-last:left;hyphens:auto}
+.rsec-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.rsec-row .rsec-h{margin:0}
+.fontbar{display:flex;align-items:center;gap:6px}.fontbar span{min-width:44px;text-align:center;font:700 12.5px var(--font-body);color:var(--ink-soft)}
+.chiprow{display:flex;align-items:flex-start;gap:8px;margin:0 0 20px;min-width:0}
+.chiprow .chips{flex:1;min-width:0;margin:0}
+.mtoggle{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;border-style:dashed}
+.mtoggle[aria-pressed="true"]{border-style:solid}
+.chip.tick{display:inline-flex;align-items:center;gap:7px}
+.cbox{display:inline-block;width:14px;height:14px;border-radius:4px;border:2px solid currentColor;opacity:.55;flex:0 0 auto}
+.chip.tick[aria-checked="true"] .cbox{opacity:1;background:currentColor;box-shadow:inset 0 0 0 2px var(--accent-fill)}
+
 :root{--paper:#FBF1DF;--card:#FFF8EC;--paper-2:#F5E4C6;--ink:#2E1F1A;--ink-soft:#6B5346;--plum:#6A2C5A;--plum-ink:#FFF8EC;--marigold:#E9A23B;--sage:#6F8F6A;--rule:#E2CBA8;--accent:#6A2C5A;--accent-fill:#6A2C5A;--accent-ink:#FFF8EC;--focus:rgba(106,44,90,.25);--nav-bg:#FFF8EC;--search-r:999px;--font-display:'Fraunces',Georgia,serif;--font-body:'Figtree',system-ui,sans-serif;--shadow:0 10px 24px -14px rgba(106,44,90,.35);color-scheme:light}
 body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transparent 0);background-size:22px 22px}
 .mast{display:flex;flex-wrap:wrap;gap:16px 20px;align-items:center;background:var(--card);border-radius:22px;padding:22px;box-shadow:var(--shadow);margin-bottom:22px}
@@ -503,6 +521,1207 @@ window.RL_THEME = {
   },
   nav: function (route) { return window.RL_NAV(route); }
 };
+
+</script>
+<script>
+/* Saved-post layout: the classic app's own reader pipeline, copied unchanged, so posts keep the
+   alignment, indents, numbering, tables and fonts the admin saved. */
+window.RLDocFix = (function () {
+  class DocFix {
+
+  styleTables(html) {
+    if (!html || html.indexOf('<table') < 0) return html || '';
+    let d;
+    try { d = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.firstChild; }
+    catch (e) { return html; }
+    const T = this.TBL();
+    d.querySelectorAll('[data-rl-tblwrap]').forEach(w => { if (!w.querySelector('table')) w.remove(); });
+    d.querySelectorAll('table').forEach(tb => {
+      // The scrolling shell is applied even to already-styled tables — without
+      // it a wide table saved by an earlier version stays clipped on a phone.
+      if (!tb.parentElement || !tb.parentElement.getAttribute('data-rl-tblwrap')) {
+        const w0 = document.createElement('div');
+        w0.setAttribute('data-rl-tblwrap', '1'); w0.setAttribute('style', T.wrap);
+        tb.replaceWith(w0); w0.appendChild(tb);
+      }
+      // A table wrapped twice (an older save, or pasted inside another table
+      // box) showed as a box inside a box: the outer shells are removed.
+      {
+        const w = tb.parentElement;
+        // Empty lines left inside a table box (or the box around it) showed
+        // as a blank strip under the table.
+        const isEmpty = (n) => n !== tb && !n.contains(tb) && !(n.textContent || '').replace(/[\s\u00a0\u200b]/g, '') && !(n.querySelector && n.querySelector('img,table,iframe,video')) && !/^(IMG|TABLE|IFRAME|VIDEO)$/.test(n.tagName);
+        const dropEmpty = (box) => { if (box) Array.from(box.childNodes).forEach(n => { if (n.nodeType === 3 ? !n.textContent.replace(/[\s\u00a0\u200b]/g, '') : (n.nodeType === 1 && isEmpty(n))) n.remove(); }); };
+        dropEmpty(w);
+        let p = w && w.parentElement;
+        const shell = (q) => (q.getAttribute('data-rl-tblwrap') || /border|box-shadow/.test(q.getAttribute('style') || '')) && !q.matches('td,th,li,[data-rl-sec]');
+        while (p && p !== d && shell(p) && (dropEmpty(p), p.children.length === 1) && (p.getAttribute('data-rl-tblwrap') || /border|box-shadow/.test(p.getAttribute('style') || '')) && !p.matches('td,th,li,[data-rl-sec]')) {
+          const up = p.parentElement; p.replaceWith(w); p = up;
+        }
+        w.querySelectorAll('[data-rl-tblwrap]').forEach(inner => { if (inner !== w && inner.contains(tb)) { inner.replaceWith(...Array.from(inner.childNodes)); } });
+      }
+      const nc = tb.rows[0] ? tb.rows[0].cells.length : 0;
+      // A table the editor sized by hand (column widths, wrap) keeps its widths.
+      const sized = tb.getAttribute('data-rl-sized') === '1';
+      if (nc >= 3 && !sized) { tb.style.width = 'max-content'; tb.style.minWidth = '100%'; }
+      if (tb.getAttribute('data-rl-styled') === '4') return;   // versioned: older passes get restyled
+      // A table pasted from Excel keeps the sheet's own fonts, fills and borders.
+      if (tb.getAttribute('data-rl-keepfmt') === '1') {
+        tb.setAttribute('data-rl-styled', '4');
+        tb.setAttribute('style', 'border-collapse:collapse;font-size:13px;' + (tb.getAttribute('style') || ''));
+        tb.querySelectorAll('colgroup').forEach(x => x.remove());
+        Array.from(tb.querySelectorAll('td,th')).forEach(cell => cell.setAttribute('style', 'padding:4px 8px;vertical-align:top;' + (cell.getAttribute('style') || '')));
+        return;
+      }
+      tb.setAttribute('data-rl-styled', '4');
+      const keepTw = sized ? (tb.style.width || '') : '', keepTl = sized ? (tb.style.tableLayout || '') : '';
+      tb.setAttribute('style', T.tbl + (sized ? (keepTw ? 'width:' + keepTw + ';min-width:0;' : '') + (keepTl ? 'table-layout:' + keepTl + ';' : '') : ''));
+      if (!sized) { tb.querySelectorAll('colgroup').forEach(x => x.remove()); tb.removeAttribute('width'); }
+      const rows = Array.from(tb.rows);
+      // A header that spans two Excel-style rows (a top cell with rowSpan=2
+      // sitting beside its own sub-column headers on row 2) is still all
+      // header — row 0's own rowSpans say how many rows that covers.
+      // A table made without a header (To table with the header box off, or
+      // No header) keeps its first row as a normal row.
+      const noHead = tb.getAttribute('data-rl-nohead') === '1' && !(rows[0] && rows[0].querySelector('th'));
+      const headRows = noHead ? 0 : (rows[0] ? Math.max(1, ...Array.from(rows[0].cells).map(c => c.rowSpan || 1)) : 1);
+      rows.forEach((tr, i) => {
+        const isHead = i < headRows;
+        tr.setAttribute('style', isHead ? T.headTr : ((i % 2 === (noHead ? 1 : 0)) ? T.zebra : ''));
+        Array.from(tr.cells).forEach((cell, j) => {
+          if (isHead) {
+            const th = document.createElement('th');
+            th.innerHTML = cell.innerHTML;
+            // A merge lives in these two attributes; recreating the cell
+            // without them silently undid every header merge on save.
+            if (cell.colSpan > 1) th.colSpan = cell.colSpan;
+            if (cell.rowSpan > 1) th.rowSpan = cell.rowSpan;
+            // The header band is always the India Post red with white type: a
+            // background the conversion guessed at is conversion noise, and
+            // honouring it left the header white-on-white.
+            th.setAttribute('style', T.th + (sized && cell.style && cell.style.width ? 'width:' + cell.style.width + ';' : '') + (sized && cell.style && cell.style.whiteSpace ? 'white-space:' + cell.style.whiteSpace + ';' : ''));
+            // OCR / pasted headers often carry a white highlight background and
+            // dark text, which is illegible on the red band — strip both.
+            th.querySelectorAll('*').forEach(k => {
+              if (k.style) { k.style.background = 'transparent'; k.style.backgroundColor = 'transparent'; k.style.color = 'inherit'; }
+              if (k.removeAttribute) { k.removeAttribute('bgcolor'); }
+            });
+            cell.replaceWith(th);
+          } else {
+            const txt = (cell.textContent || '').trim();
+            const own2 = cell.style && cell.style.background ? 'background:' + cell.style.background + ';' : '';
+            const keepW = sized && cell.style && cell.style.width ? 'width:' + cell.style.width + ';' : '';
+            const keepWs = sized && cell.style && cell.style.whiteSpace ? 'white-space:' + cell.style.whiteSpace + ';overflow-wrap:anywhere;' : '';
+            cell.removeAttribute('width');
+            cell.setAttribute('style', T.td + (j === 0 ? T.first : '') + (j > 0 && this.isNumCell(txt) && !keepWs ? T.num : '') + own2 + keepW + keepWs);
+          }
+        });
+      });
+      if (!tb.parentElement || !tb.parentElement.getAttribute('data-rl-tblwrap')) {
+        const w = document.createElement('div');
+        w.setAttribute('data-rl-tblwrap', '1'); w.setAttribute('style', T.wrap);
+        tb.replaceWith(w); w.appendChild(tb);
+      }
+    });
+    return d.innerHTML;
+  }
+
+  TBL() {
+    return {
+      wrap: 'overflow-x:auto;max-width:100%;touch-action:pan-x pan-y;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;border:1px solid #ecdcc0;border-radius:18px;background:#fff;box-shadow:0 6px 18px rgba(122,78,10,.12),0 1px 3px rgba(122,78,10,.08);margin:0 0 20px;',
+      cap: 'display:block;padding:10px 14px;background:#FFFBEB;border-bottom:1px solid #f4e6b4;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#8a6a00;',
+      // width:max-content is what gives the wrapper something to scroll: at
+      // width:100% the columns squash and the text is clipped instead.
+      tbl: 'width:max-content;min-width:100%;border-collapse:collapse;font-size:13px;',
+      th: 'background:transparent;color:#fff;font-weight:700;font-size:var(--rl-th-fs,10.5px);letter-spacing:var(--rl-th-ls,.06em);text-transform:var(--rl-th-tt,uppercase);padding:10px 12px;text-align:left;line-height:1.35;border:1px solid var(--rl-th-bd,#8F0000);border-bottom:2px solid var(--rl-th-ul,#FFCB05);-webkit-text-fill-color:#fff;',
+      headTr: 'background:var(--rl-grad,#B30000);',
+      td: 'padding:11px 14px;border:1px solid var(--rl-chip-line,#EFE2C8);vertical-align:top;line-height:1.55;color:#000;',
+      first: 'font-weight:700;color:#6e0000;',
+      num: 'text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;',
+      zebra: 'background:var(--rl-zebra,#FFF3D1);',
+    };
+  }
+
+  isNumCell(s) { return /^[\u20b9<{?(\[]?\s*[\d][\d.,oO\s\-\u2013\/]*(?:\/\-|\/)?\s*[)\]]?$/.test(String(s || '').trim()) && /\d/.test(s); }
+
+  // Build the styled table markup from a rows array. hasHeader=true promotes
+  // row 0 to the red header band; otherwise every row is a body row (safer
+  // when OCR gave us no trustworthy header line).
+  // opts (all optional, defaults keep the long-standing look):
+  //   plain    light cream header instead of the red band
+  //   grid     a rule around every cell
+  //   zebra    alternate row tint (default on)
+  //   firstCol first column emphasised (default on)
+  tableHtml(rows, caption, hasHeader, opts) {
+    if (opts && opts.cells) return this.cellsTableHtml_(opts.cells, caption);
+    if (!rows || !rows.length) return '';
+    const T = this.TBL(), esc = (x) => this.escapeHtml(x);
+    const o = opts || {};
+    const zebraOn = o.zebra !== false, firstOn = o.firstCol !== false;
+    const gridRule = o.grid ? 'border:1px solid #ece5db;' : '';
+    const thStyle = o.plain
+      ? 'background:#FFFBEB;color:#8a6a00;font-weight:800;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 12px;text-align:left;line-height:1.35;border-bottom:1px solid #f4e6b4;' + gridRule
+      : T.th;
+    rows = this.alignRows(rows);
+    const cols = rows.reduce((m, r) => Math.max(m, r.length), 0);
+    const pad = (r) => { const x = r.slice(); while (x.length < cols) x.push(''); return x; };
+    const head = hasHeader ? pad(rows[0]) : null;
+    const body = (hasHeader ? rows.slice(1) : rows).map(pad);
+    // Repeated neighbouring cells become one merged cell when asked for, which
+    // is how a table whose merged headings the conversion flattened is put back.
+    const spans = (grid, down, across) => {
+      const R = grid.length;
+      const info = grid.map(r => r.map(() => ({ rs: 1, cs: 1, skip: false })));
+      const same = (a, b) => String(a || '').trim() && String(a || '').trim() === String(b || '').trim();
+      if (across) for (let i = 0; i < R; i++) for (let j = 0; j < cols; j++) {
+        if (info[i][j].skip) continue;
+        let k = j + 1;
+        while (k < cols && !info[i][k].skip && same(grid[i][j], grid[i][k])) { info[i][k].skip = true; info[i][j].cs++; k++; }
+      }
+      if (down) for (let j = 0; j < cols; j++) for (let i = 0; i < R; i++) {
+        if (info[i][j].skip) continue;
+        let k = i + 1;
+        while (k < R && !info[k][j].skip && info[k][j].cs === info[i][j].cs && same(grid[i][j], grid[k][j])) {
+          info[k][j].skip = true; info[i][j].rs++; k++;
+        }
+      }
+      return info;
+    };
+    const hInfo = head ? spans([head], false, !!o.mergeAcross)[0] : null;
+    const bInfo = spans(body, !!o.mergeDown, !!o.mergeAcross);
+    const spanAttr = (c) => (c.rs > 1 ? ' rowspan="' + c.rs + '"' : '') + (c.cs > 1 ? ' colspan="' + c.cs + '"' : '');
+    let h = '<div style="' + T.wrap + '">';
+    if (caption) h += '<span style="' + T.cap + '">' + esc(caption) + '</span>';
+    h += '<table' + (hasHeader ? '' : ' data-rl-nohead="1"') + (o.keepRows ? ' data-rl-keep="1"' : '') + ' style="' + T.tbl + '">';
+    if (head) {
+      h += '<thead><tr' + (o.plain ? '' : ' style="' + T.headTr + '"') + '>';
+      head.forEach((c, j) => {
+        if (hInfo[j].skip) return;
+        h += '<th' + spanAttr(hInfo[j]) + ' style="' + thStyle + '">' + esc(c) + '</th>';
+      });
+      h += '</tr></thead>';
+    }
+    h += '<tbody>';
+    body.forEach((r, i) => {
+      h += '<tr' + ((zebraOn && i % 2) ? ' style="' + T.zebra + '"' : '') + '>';
+      r.forEach((c, j) => {
+        if (bInfo[i][j].skip) return;
+        const merged = bInfo[i][j].rs > 1 || bInfo[i][j].cs > 1;
+        const st = T.td + gridRule + (firstOn && j === 0 ? T.first : '')
+          + (j > 0 && this.isNumCell(c) ? T.num : '')
+          + (merged ? 'vertical-align:middle;text-align:center;' : '');
+        h += '<td' + spanAttr(bInfo[i][j]) + ' style="' + st + '">' + (esc(c) || '&nbsp;') + '</td>';
+      });
+      h += '</tr>';
+    });
+    return h + '</tbody></table></div>';
+  }
+
+  escapeHtml(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  htmlFromBlocks(blocks) {
+    let out = '', inList = false;
+    (blocks || []).forEach(b => {
+      if (b.kind === 'table') { if (inList) { out += '</ul>'; inList = false; } out += this.tableHtml(b.rows, b.caption, b.hasHeader); return; }
+      if (b.kind === 'list') { if (!inList) { out += '<ul>'; inList = true; } out += '<li>' + this.escapeHtml(b.text) + '</li>'; return; }
+      if (inList) { out += '</ul>'; inList = false; }
+      if (b.kind === 'heading') out += '<h3>' + this.escapeHtml(b.text) + '</h3>';
+      else out += '<p>' + this.escapeHtml(b.text) + '</p>';
+    });
+    if (inList) out += '</ul>';
+    return this.linkifyHtml(out) || '<p></p>';
+  }
+
+  tableHtml(rows, caption, hasHeader, opts) {
+    if (opts && opts.cells) return this.cellsTableHtml_(opts.cells, caption);
+    if (!rows || !rows.length) return '';
+    const T = this.TBL(), esc = (x) => this.escapeHtml(x);
+    const o = opts || {};
+    const zebraOn = o.zebra !== false, firstOn = o.firstCol !== false;
+    const gridRule = o.grid ? 'border:1px solid #ece5db;' : '';
+    const thStyle = o.plain
+      ? 'background:#FFFBEB;color:#8a6a00;font-weight:800;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:9px 12px;text-align:left;line-height:1.35;border-bottom:1px solid #f4e6b4;' + gridRule
+      : T.th;
+    rows = this.alignRows(rows);
+    const cols = rows.reduce((m, r) => Math.max(m, r.length), 0);
+    const pad = (r) => { const x = r.slice(); while (x.length < cols) x.push(''); return x; };
+    const head = hasHeader ? pad(rows[0]) : null;
+    const body = (hasHeader ? rows.slice(1) : rows).map(pad);
+    // Repeated neighbouring cells become one merged cell when asked for, which
+    // is how a table whose merged headings the conversion flattened is put back.
+    const spans = (grid, down, across) => {
+      const R = grid.length;
+      const info = grid.map(r => r.map(() => ({ rs: 1, cs: 1, skip: false })));
+      const same = (a, b) => String(a || '').trim() && String(a || '').trim() === String(b || '').trim();
+      if (across) for (let i = 0; i < R; i++) for (let j = 0; j < cols; j++) {
+        if (info[i][j].skip) continue;
+        let k = j + 1;
+        while (k < cols && !info[i][k].skip && same(grid[i][j], grid[i][k])) { info[i][k].skip = true; info[i][j].cs++; k++; }
+      }
+      if (down) for (let j = 0; j < cols; j++) for (let i = 0; i < R; i++) {
+        if (info[i][j].skip) continue;
+        let k = i + 1;
+        while (k < R && !info[k][j].skip && info[k][j].cs === info[i][j].cs && same(grid[i][j], grid[k][j])) {
+          info[k][j].skip = true; info[i][j].rs++; k++;
+        }
+      }
+      return info;
+    };
+    const hInfo = head ? spans([head], false, !!o.mergeAcross)[0] : null;
+    const bInfo = spans(body, !!o.mergeDown, !!o.mergeAcross);
+    const spanAttr = (c) => (c.rs > 1 ? ' rowspan="' + c.rs + '"' : '') + (c.cs > 1 ? ' colspan="' + c.cs + '"' : '');
+    let h = '<div style="' + T.wrap + '">';
+    if (caption) h += '<span style="' + T.cap + '">' + esc(caption) + '</span>';
+    h += '<table' + (hasHeader ? '' : ' data-rl-nohead="1"') + (o.keepRows ? ' data-rl-keep="1"' : '') + ' style="' + T.tbl + '">';
+    if (head) {
+      h += '<thead><tr' + (o.plain ? '' : ' style="' + T.headTr + '"') + '>';
+      head.forEach((c, j) => {
+        if (hInfo[j].skip) return;
+        h += '<th' + spanAttr(hInfo[j]) + ' style="' + thStyle + '">' + esc(c) + '</th>';
+      });
+      h += '</tr></thead>';
+    }
+    h += '<tbody>';
+    body.forEach((r, i) => {
+      h += '<tr' + ((zebraOn && i % 2) ? ' style="' + T.zebra + '"' : '') + '>';
+      r.forEach((c, j) => {
+        if (bInfo[i][j].skip) return;
+        const merged = bInfo[i][j].rs > 1 || bInfo[i][j].cs > 1;
+        const st = T.td + gridRule + (firstOn && j === 0 ? T.first : '')
+          + (j > 0 && this.isNumCell(c) ? T.num : '')
+          + (merged ? 'vertical-align:middle;text-align:center;' : '');
+        h += '<td' + spanAttr(bInfo[i][j]) + ' style="' + st + '">' + (esc(c) || '&nbsp;') + '</td>';
+      });
+      h += '</tr>';
+    });
+    return h + '</tbody></table></div>';
+  }
+
+  cellsTableHtml_(g, caption) {
+    const T = this.TBL(), esc = (x) => this.escapeHtml(x);
+    // A table read from a PDF keeps the PDF's own look: black text, black ruling lines, plain header (data-rl-keepfmt).
+    const base = 'padding:5px 8px;border:1px solid #000;color:#000;vertical-align:top;background:#fff;';
+    let nh = Math.min(g.headRows || 0, g.R - 1);
+    for (let r = 0; r < nh; r++) for (let c = 0; c < g.C; c++) { const s = g.spans[r][c]; if (!s.skip && r + s.rs > nh) nh = Math.min(g.R - 1, r + s.rs); }
+    const cell = (r, c, st) => {
+      const s = g.spans[r][c]; if (s.skip) return '';
+      const txt = esc(g.grid[r][c]).replace(/\n/g, '<br>') || '&nbsp;';
+      return '<td' + (s.rs > 1 ? ' rowspan="' + s.rs + '"' : '') + (s.cs > 1 ? ' colspan="' + s.cs + '"' : '') + ' style="' + st + (s.ghost && !g.grid[r][c] ? 'border:none;' : '') + '">' + txt + '</td>';
+    };
+    let h = '<div style="' + T.wrap + '">';
+    if (caption) h += '<span style="' + T.cap + '">' + esc(caption) + '</span>';
+    h += '<table data-rl-nohead="1" data-rl-keepfmt="1" data-rl-keep="1" style="border-collapse:collapse;width:max-content;min-width:100%;font-size:13px;">';
+    h += '<tbody>';
+    for (let r = 0; r < g.R; r++) {
+      h += '<tr>';
+      for (let c = 0; c < g.C; c++) {
+        const s = g.spans[r][c], merged = s.rs > 1 || s.cs > 1;
+        h += cell(r, c, base + (r < nh ? 'font-weight:700;text-align:center;vertical-align:middle;' : ((!merged && c > 0 && this.isNumCell(g.grid[r][c])) ? 'text-align:right;' : '') + (merged ? 'vertical-align:middle;text-align:center;' : '')));
+      }
+      h += '</tr>';
+    }
+    return h + '</tbody></table></div>';
+  }
+
+  alignRows(rows) {
+    const cols = rows.reduce((m, r) => Math.max(m, r.length), 0);
+    const full = rows.filter(r => r.length === cols).map(r => r.map(c => this.cellKind_(c)));
+    const colK = full.length >= 2 ? this.colKinds_(full, cols) : null;
+    return rows.map(r => {
+      if (colK && r.length < cols) {
+        const pos = this.alignPlace_(r.map(c => this.cellKind_(c)), colK);
+        if (pos) { const out = Array(cols).fill(''); pos.forEach((p, i) => { out[p] = r[i]; }); return out; }
+      }
+      const money = [];
+      let lead = r.slice();
+      while (lead.length && this.moneyCells(lead[lead.length - 1]).length) money.unshift(lead.pop());
+      const out = lead.slice();
+      if (!money.length && out.length < cols && /^[yn]$/.test(this.cellKind_(out[0]))) { while (out.length < cols) out.unshift(''); return out; }
+      while (out.length + money.length < cols) out.push('');
+      return out.concat(money);
+    });
+  }
+
+  moneyCells(t) {
+    const re = /(?:[\u20b9<{?(]\s?[a-zA-Z]?\s?)?\d[\d,oOlsS]*(?:,\s?[\doOlsS]+)*\s?\/\-?|\d[\d,oO]{2,}(?:\s?[\-\u2013]\s?\d[\d,oO]{2,})+/g;
+    return String(t || '').match(re) || [];
+  }
+
+  alignPlace_(kinds, colK) {
+    const k = kinds.length, cols = colK.length; if (!k || k >= cols || cols > 14) return null;
+    const fit = (a, b) => !a || !b ? 0 : a === b ? 1 : ((a === 'y' && b === 'n') || (a === 'n' && b === 'y') ? 0.3 : -0.5);
+    let best = null; const pos = [];
+    const go = (i, from, sc, sum) => {
+      if (i === k) { if (!best || sc > best.sc + 1e-9 || (Math.abs(sc - best.sc) < 1e-9 && sum > best.sum)) best = { sc: sc, sum: sum, pos: pos.slice() }; return; }
+      for (let p = from; p <= cols - (k - i); p++) { pos[i] = p; go(i + 1, p + 1, sc + fit(kinds[i], colK[p]), sum + p); }
+    };
+    go(0, 0, 0, 0);
+    return best && best.sc > 0 ? best.pos : null;
+  }
+
+  cellKind_(c) {
+    c = String(c == null ? '' : c).trim(); if (!c) return '';
+    if (/^\d{4}\s*[-\u2013\/]\s*\d{2,4}$/.test(c)) return 'y';
+    return this.isNumCell(c) || this.moneyCells(c).length ? 'n' : 't';
+  }
+
+  colKinds_(kindRows, cols) {
+    const out = [];
+    for (let j = 0; j < cols; j++) { const n = { y: 0, n: 0, t: 0 }; kindRows.forEach(r => { if (n[r[j]] != null) n[r[j]]++; }); const m = Math.max(n.y, n.n, n.t); out.push(m ? (n.y === m ? 'y' : n.n === m ? 'n' : 't') : ''); }
+    return out;
+  }
+
+  linkifyHtml(html) {
+    let s = String(html || '');
+    if (!s || !/https?:\/\/|www\./i.test(s)) return s;
+    // Text the reader explicitly unlinked is parked aside first, so the
+    // auto-linker cannot turn a bare address back into a link on every save.
+    const keep = [];
+    s = s.replace(/<span[^>]*data-nolink[^>]*>[\s\S]*?<\/span>/gi, (m) => {
+      keep.push(m); return '\u0000NL' + (keep.length - 1) + '\u0000';
+    });
+    const parts = s.split(/(<[^>]+>)/);
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 2 === 1) continue;                        // inside a tag
+      parts[i] = parts[i].replace(/(^|[\s(])((?:https?:\/\/|www\.)[^\s<>")]+[^\s<>").,;:!?])/gi,
+        (m, pre, u) => pre + '<a href="' + (u.indexOf('www.') === 0 ? 'https://' + u : u) +
+          '" target="_blank" rel="noopener" style="color:var(--c-brand);text-decoration:underline">' + u + '</a>');
+    }
+    // Do not double-wrap what was already inside an anchor.
+    return parts.join('').replace(/(<a\b[^>]*>)\s*<a\b[^>]*>([^<]*)<\/a>/gi, '$1$2')
+      .replace(/\u0000NL(\d+)\u0000/g, (m, i) => keep[+i] || '');
+  }
+
+  normalizeShortLines_(html) {
+    if (!html) return html;
+    let d;
+    try { d = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.firstChild; }
+    catch (e) { return html; }
+    try { this.stripLeakedFonts_(d); } catch (e) {}
+    d.querySelectorAll('p, div').forEach(el => { if (!el.querySelector('img, table, p, div, ul, ol') && !(el.textContent || '').replace(/[\s\u00a0\u200b]/g, '') && el.querySelector('br')) el.innerHTML = '<br>'; });
+    // Tables saved with the original red header band and cream stripes follow the chosen theme:
+    // the band is one gradient across the whole header row.
+    d.querySelectorAll('tr').forEach(tr => {
+      if (tr.closest('table[data-rl-design]')) return;   // a designed table keeps its own look
+      const cs = Array.from(tr.cells); if (!cs.length) return;
+      const band = (c) => c.tagName === 'TH' || /background[^;]*(b30000|179,\s*0,\s*0|rl-grad)/i.test(c.getAttribute('style') || '');
+      if (cs.every(band)) {
+        tr.style.background = 'var(--rl-grad,#B30000)';
+        cs.forEach(c => { c.style.background = 'transparent'; c.style.setProperty('text-transform', 'var(--rl-th-tt,uppercase)'); c.style.setProperty('font-size', 'var(--rl-th-fs,10.5px)'); c.style.setProperty('letter-spacing', 'var(--rl-th-ls,.06em)'); c.style.setProperty('border-color', 'var(--rl-th-bd,#8F0000)'); c.style.setProperty('border-bottom-color', 'var(--rl-th-ul,#FFCB05)'); });
+      } else {
+        const bg = tr.style.backgroundColor;
+        if (bg === 'rgb(252, 250, 246)') tr.style.background = 'var(--rl-chip-bg,#fcfaf6)';
+        cs.forEach(c => { if (c.style.backgroundColor === 'rgb(252, 250, 246)') c.style.background = 'var(--rl-chip-bg,#fcfaf6)'; });
+      }
+    });
+    // Grey text left over from the source document reads black.
+    d.querySelectorAll('[style*="color"], font[color]').forEach(el => {
+      const c = el.style.color || el.getAttribute('color') || ''; if (!c) return;
+      let r, g, b; const pr = document.createElement('i'); pr.style.color = c;
+      const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(pr.style.color);
+      if (m) { r = +m[1]; g = +m[2]; b = +m[3]; }
+      else { const x = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c.trim()); if (!x) { if (/gr[ae]y/i.test(c)) { el.style.color = '#000'; el.removeAttribute('color'); } return; } let v = x[1]; if (v.length === 3) v = v.replace(/./g, '$&$&'); r = parseInt(v.slice(0, 2), 16); g = parseInt(v.slice(2, 4), 16); b = parseInt(v.slice(4, 6), 16); }
+      if (Math.max(r, g, b) - Math.min(r, g, b) <= 40 && Math.max(r, g, b) < 225) { el.style.color = '#000'; el.removeAttribute('color'); }
+    });
+    d.querySelectorAll('p, div').forEach(el => {
+      if (el.querySelector('table, p, div, ul, ol, img')) return;
+      const custom = el.style.getPropertyPriority('line-height') === 'important' && el.style.getPropertyPriority('margin') === 'important';
+      if (custom) return;
+      const t = (el.textContent || '').replace(/\u00a0/g, ' ').trim();
+      if (!t) return;
+      // Top/bottom only: the shorthand wiped the left margin that holds a
+      // list item's indent, so short items jumped back to the margin.
+      if (t.length < 60) { el.style.setProperty('margin-top', '0', 'important'); el.style.setProperty('margin-bottom', '2px', 'important'); el.style.setProperty('line-height', '1.4', 'important'); }
+    });
+    // Hanging indent from Word ("padding-left:39pt; text-indent:-39pt") whose
+    // marker was followed by a space, not a tab: the text ran on right after
+    // "(1)" and only the wrapped lines sat 39pt in. The marker now gets the
+    // hanging width, so every line of the text starts at the same place. A
+    // hanging indent with no marker is dropped.
+    d.querySelectorAll('p, li, div').forEach(el => {
+      if (el.hasAttribute('data-rl-hg') || el.closest('table') || el.querySelector('p, div, table, ul, ol')) return;
+      const ti = el.style.textIndent; if (!ti || !/^-/.test(ti.trim())) return;
+      const unit = (/[a-z%]+$/i.exec(ti.trim()) || ['px'])[0], hang = Math.abs(parseFloat(ti));
+      if (!hang) return;
+      const padProp = el.style.paddingLeft ? 'padding-left' : (el.style.marginLeft ? 'margin-left' : '');
+      const pad = padProp ? parseFloat(el.style.getPropertyValue(padProp)) : 0;
+      const padUnit = padProp ? ((/[a-z%]+$/i.exec(el.style.getPropertyValue(padProp).trim()) || ['px'])[0]) : unit;
+      if (!pad || padUnit !== unit || Math.abs(pad - hang) > hang * 0.25) return;
+      const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let tn = tw.nextNode(); while (tn && !tn.nodeValue.replace(/\u00a0/g, ' ').trim()) tn = tw.nextNode();
+      if (!tn) return;
+      const m = /^(\s*)(\(?(?:\d{1,3}(?:\.\d{1,3})*|[ivxlc]{1,6}|[a-z])[.)]|\(\d{1,3}\)|\([ivxlc]{1,6}\)|\([a-z]\)|[\u2022\u25AA\u25CF\u2013\-])[\s\u00a0]+/i.exec(tn.nodeValue);
+      el.setAttribute('data-rl-hg', '1');
+      if (!m) { el.style.textIndent = '0'; el.style.setProperty(padProp, '0', el.style.getPropertyPriority(padProp)); return; }
+      const rest = tn.splitText(m[0].length);
+      const sp = document.createElement('span');
+      sp.style.cssText = 'display:inline-block;min-width:' + hang + unit + ';text-indent:0;';
+      sp.textContent = m[2];
+      tn.parentNode.insertBefore(sp, rest);
+      tn.nodeValue = m[1];
+    });
+    // Two list items run into one paragraph ("… two-wheeler ii) Copy of …"):
+    // each later marker starts its own item again, with the same indent.
+    d.querySelectorAll('[data-rl-mp]').forEach(item => {
+      const mks = Array.from(item.querySelectorAll('[data-rl-mk]'));
+      for (let k = mks.length - 1; k >= 1; k--) {
+        const mk = mks[k];
+        try {
+          const r = document.createRange(); r.setStartBefore(mk); r.setEndAfter(item.lastChild);
+          const frag = r.extractContents();
+          const ni = item.cloneNode(false); ni.removeAttribute('data-rl-start'); ni.removeAttribute('id');
+          ni.appendChild(frag);
+          item.parentNode.insertBefore(ni, item.nextSibling);
+        } catch (eS) {}
+      }
+      // Trailing spaces left where the split was.
+      const last = item.lastChild; if (last && last.nodeType === 3) last.nodeValue = last.nodeValue.replace(/[\s\u00a0]+$/, '');
+    });
+    // A (i)/(a) sub-list placed straight under a numbered paragraph but saved
+    // without its indent is set one level in, the way the order prints it.
+    {
+      const TOP = /^(decimal|upper-roman|upper-roman-paren|upper-alpha|upper-alpha-paren)$/, SUB = /^(roman|roman-rparen|roman-paren|alpha|alpha-paren|alpha-bracket)$/;
+      let lastTop = false;
+      Array.from(d.querySelectorAll('[data-rl-mp]')).filter(el => !(el.parentElement && el.parentElement.closest('[data-rl-mp]'))).forEach(el => {
+        const st = el.getAttribute('data-rl-mp') || '', lvl = parseInt(el.getAttribute('data-rl-lvl') || '0', 10) || 0;
+        const ml = parseFloat(el.style.marginLeft) || 0, ml0 = parseInt(el.getAttribute('data-rl-ml0') || '0', 10) || 0;
+        if (TOP.test(st) && lvl === 0) { lastTop = true; return; }
+        if (SUB.test(st) && lastTop && lvl === 0 && ml < 1 && ml0 === 0) {
+          el.setAttribute('data-rl-lvl', '1'); el.setAttribute('data-rl-ml0', '0');
+          if (!el.getAttribute('data-rl-base')) el.setAttribute('data-rl-base', st);
+          el.style.setProperty('margin-left', '36px', 'important');
+        }
+      });
+    }
+    // Same for plain-text sub-items (no list markup): "i) … two-wheeler ii)
+    // Copy of …" is split at the next marker in sequence, and a run of
+    // i)/(a) paragraphs right under a numbered paragraph is indented.
+    {
+      const ROM = ['i','ii','iii','iv','v','vi','vii','viii','ix','x','xi','xii','xiii','xiv','xv'];
+      const nextOf = (m) => { const r = ROM.indexOf(m); if (r >= 0 && r < ROM.length - 1 && !(m.length === 1 && m !== 'i' && m !== 'v' && m !== 'x')) return ROM[r + 1]; if (/^[a-z]$/.test(m)) return String.fromCharCode(m.charCodeAt(0) + 1); return null; };
+      const startRe = /^[\s\u00a0]*(\()?([ivx]{1,4}|[a-z])\)[\s\u00a0]/i;
+      const isBlock = (el) => !el.closest('td,th') && !(el.parentElement && el.parentElement.closest('[data-rl-mp]')) && !el.querySelector('p,div,table,ul,ol,li');
+      const queue = Array.from(d.querySelectorAll('p,div,li,[data-rl-mp]')).filter(isBlock);
+      while (queue.length) {
+        const el = queue.shift();
+        const t = (el.textContent || '');
+        const m = startRe.exec(t); if (!m) continue;
+        const open = !!m[1]; let cur = m[2].toLowerCase(); const nx = nextOf(cur); if (!nx) continue;
+        const pat = new RegExp('(\\S)[\\s\\u00a0]+(' + (open ? '\\(' : '') + nx + '\\))[\\s\\u00a0]', 'i');
+        const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let tn, done = false, seenStart = false;
+        while (!done && (tn = w.nextNode())) {
+          const v = tn.nodeValue; if (!seenStart) { if (v.trim()) seenStart = true; }
+          const mm = pat.exec(v); if (!mm) continue;
+          if (open && /\b(clause|para|paragraph|rule|sub|item|of|in|under|at|and|or)$/i.test(v.slice(0, mm.index + 1))) continue;
+          try {
+            const r = document.createRange(); r.setStart(tn, mm.index + 1); r.setEndAfter(el.lastChild);
+            const frag = r.extractContents();
+            const ni = el.cloneNode(false); ni.removeAttribute('id'); ni.appendChild(frag);
+            const f = ni.firstChild; if (f && f.nodeType === 3) f.nodeValue = f.nodeValue.replace(/^[\s\u00a0]+/, '');
+            // A numbered item: the typed "ii)" becomes the item's own marker.
+            const mk0 = el.querySelector('[data-rl-mk]');
+            if (mk0) {
+              const w2 = document.createTreeWalker(ni, NodeFilter.SHOW_TEXT); const t2 = w2.nextNode();
+              const lead = new RegExp('^[\\s\\u00a0]*' + (open ? '\\(' : '') + nx + '\\)[\\s\\u00a0]*', 'i');
+              if (t2 && lead.test(t2.nodeValue)) { t2.nodeValue = t2.nodeValue.replace(lead, ''); const mk = mk0.cloneNode(false); mk.textContent = (open ? '(' : '') + nx + ')\u00a0'; ni.insertBefore(mk, ni.firstChild); }
+              ni.removeAttribute('data-rl-start');
+            }
+            el.parentNode.insertBefore(ni, el.nextSibling);
+            queue.unshift(ni); done = true;
+          } catch (eX) { done = true; }
+        }
+      }
+      const blocks = Array.from(d.querySelectorAll('p,div,[data-rl-mp]')).filter(el => !el.closest('td,th') && !el.querySelector('p,div,table,ul,ol,li') && !(el.parentElement && el.parentElement.closest('[data-rl-mp]')));
+      let under = false;
+      blocks.forEach(el => {
+        const t = (el.textContent || '').replace(/\u00a0/g, ' ').trim(); if (!t) return;
+        const isTop = /^(\d{1,2}|[IVX]{1,4})[.)]\s/.test(t) || /^(decimal|upper-roman|upper-roman-paren)$/.test(el.getAttribute('data-rl-mp') || '');
+        const isSub = startRe.test(t) && !(parseInt(el.getAttribute('data-rl-lvl') || '0', 10) > 0);
+        if (isTop) { under = true; return; }
+        if (isSub && under) {
+          if ((parseFloat(el.style.marginLeft) || 0) < 1) el.style.setProperty('margin-left', '36px', 'important');
+          return;
+        }
+        if (!isSub && !(parseFloat(el.style.marginLeft) > 0)) under = /^(\d{1,2}|[IVX]{1,4})[.)]\s/.test(t) ? true : under && t.length > 0 && false;
+      });
+    }
+    // Indented list items whose indent was lost that way get it back from
+    // their saved level.
+    d.querySelectorAll('[data-rl-lvl],[data-rl-ml0]').forEach(el => {
+      const lvl = parseInt(el.getAttribute('data-rl-lvl') || '0', 10) || 0;
+      const want = (parseInt(el.getAttribute('data-rl-ml0') || '0', 10) || 0) + lvl * 36;
+      if (!want) return;
+      if ((parseFloat(el.style.marginLeft) || 0) < want) el.style.setProperty('margin-left', want + 'px', 'important');
+    });
+    // A letterhead/address block converted as a one-column table (each line
+    // its own row) carries a data-table's full cell padding per line — same
+    // fix as short paragraphs, applied to short table cells instead.
+    d.querySelectorAll('td, th').forEach(el => {
+      if (el.closest('table[data-rl-design]')) return;
+      const t = (el.textContent || '').replace(/\u00a0/g, ' ').trim();
+      if (t && t.length < 60) { el.style.setProperty('padding', '1px 9px', 'important'); el.style.setProperty('line-height', '1.4', 'important'); }
+    });
+    // A layout fix that trips over unusual markup must never blank the page.
+    try { this.justifyBody_(d); } catch (e) {}
+    try { this.tightAddress_(d); } catch (e) {}
+    try { this.centerLetterhead_(d); } catch (e) {}
+    // Numbers in the reader follow the items' order (a split or joined item
+    // otherwise keeps a stale "ii)" where "iii)" belongs).
+    try { if (d.querySelector('[data-rl-mk]')) this.renumberMarkers(d); } catch (e) {}
+    return d.innerHTML;
+  }
+
+  tightAddress_(root) {
+    var head = /^(to|copy\s*(?:also\s+)?(?:to|forwarded|submitted|for)|copies?\s+(?:also\s+)?(?:to|forwarded|for)|forwarded\s+to|distribution|for\s+information)\b/i;
+    var stopA = /^(subject|sub\s*[:.\-]|sir\b|madam\b|ref\b|reference\b)/i;
+    var txtA = function (x) { return x.replace(/<[^>]+>/g, '').replace(/&nbsp;|\u00a0/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim(); };
+    var tightA = function (el) {
+      if (el.hasAttribute('data-rl-ul')) return;
+      var mlA = el.style.marginLeft;
+      el.style.setProperty('margin', '0', 'important');
+      if (mlA && parseFloat(mlA)) el.style.setProperty('margin-left', mlA, 'important');
+      el.style.setProperty('line-height', '1.4', 'important');
+      if (el.tagName === 'TD') el.style.setProperty('padding', '0 9px', 'important');
+      else { el.style.setProperty('padding-top', '0', 'important'); el.style.setProperty('padding-bottom', '0', 'important'); }
+      // Blank lines inside the block: stacked <br>s, and a <br> left at the
+      // start or end of a line by the conversion.
+      var h = el.innerHTML, h0 = h;
+      if (/<br\s*\/?>(?:\s|&nbsp;|\u00a0)*$/i.test(h0.replace(/(?:<br\s*\/?>(?:\s|&nbsp;|\u00a0)*){0}$/i, '')) && /<br\s*\/?>(?:\s|&nbsp;|\u00a0)*<br\s*\/?>(?:\s|&nbsp;|\u00a0)*$/i.test(h0)) el.setAttribute('data-rl-trail', '1');
+      h = h.replace(/(<br\s*\/?>)(?:(?:\s|&nbsp;|\u00a0)*<br\s*\/?>)+((?:\s|&nbsp;|\u00a0|<(?!br\b)[^>]*>)*(?:to|copy\s*(?:also\s+)?(?:to|forwarded|submitted|for)|copies?\s+(?:also\s+)?(?:to|forwarded|for)|forwarded\s+to|distribution|for\s+information)\b)/gi, '$1\u0001<br>$2');
+      h = h.replace(/<br\s*\/?>(?:\s|&nbsp;|\u00a0)*(?=<br)/gi, '');
+      h = h.replace(/\u0001/g, '');
+      h = h.replace(/^(?:\s|&nbsp;|\u00a0|<br\s*\/?>)+|(?:\s|&nbsp;|\u00a0|<br\s*\/?>)+$/gi, '');
+      if (h !== h0) el.innerHTML = h;
+      Array.prototype.forEach.call(el.querySelectorAll('span,font,b,strong,i,em,u'), function (c) {
+        c.style.setProperty('line-height', 'inherit', 'important');
+        c.style.setProperty('margin', '0', 'important');
+      });
+    };
+    // Addressee lines that open with a bullet, number or (i)/(a) marker are set
+    // as real bullets: the marker in a fixed gutter, wrapped text aligned
+    // under the text, continuation lines indented to match.
+    var mark = /^((?:\s|&nbsp;|\u00a0|<(?!br|\/)[^>]+>)*)([\u2022\u25AA\u25CF\u25E6\u25CB\u2023\u2043\u27A2\u27A4\u25BA\u2713\u00B7\uF0B7\uF0D8\uF0A7\uF076\uF0FC*\-\u2013\u2014]|o(?=\s)|\(?\d{1,2}[.)]|\(\d{1,2}\)|\(?[ivx]{1,5}\)|\(?[a-z]\)|[ivx]{1,5}\.|[a-z]\.)(?:\s|&nbsp;|\u00a0)+/i;
+    var markT = /^([\u2022\u25AA\u25CF\u25E6\u25CB\u2023\u2043\u27A2\u27A4\u25BA\u2713\u00B7\uF0B7\uF0D8\uF0A7\uF076\uF0FC*\-\u2013\u2014]|o(?=\s)|\(?\d{1,2}[.)]|\(\d{1,2}\)|\(?[ivx]{1,5}\)|\(?[a-z]\)|[ivx]{1,5}\.|[a-z]\.)\s+/i;
+    // Drops the first n characters of text from a line's markup, across the
+    // separate runs (marker / tab / text) the conversion splits it into.
+    var stripLead = function (html, n) {
+      var box = document.createElement('span'); box.innerHTML = html;
+      var w = document.createTreeWalker(box, NodeFilter.SHOW_TEXT), tn;
+      while (n > 0 && (tn = w.nextNode())) {
+        var v = tn.nodeValue.replace(/^[\s\u00a0]+/, function (s) { return s; });
+        var lead = v.length - v.replace(/^[\s\u00a0]+/, '').length;
+        var take = Math.min(v.length, n + lead);
+        tn.nodeValue = v.slice(take); n -= (take - lead);
+      }
+      w = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+      while ((tn = w.nextNode())) { var t2 = tn.nodeValue.replace(/^[\s\u00a0]+/, ''); tn.nodeValue = t2; if (t2) break; }
+      return box.innerHTML;
+    };
+    var bulletize = function (el) {
+      if (el.tagName === 'TD' || el.querySelector('[data-rl-bl],[data-rl-mk]')) return;
+      var segs = (el.innerHTML || '').split(/<br\s*\/?>/i);
+      // Two addressees the conversion ran together ("… Board iv) Sr. DDG…")
+      // are split at the second marker.
+      segs = segs.reduce(function (acc, sg) {
+        if (!markT.test(txtA(sg))) { acc.push(sg); return acc; }
+        var parts = sg.split(/\s(?=\(?(?:[ivx]{1,5}|\d{1,2})\)\s+[A-Z])/);
+        return acc.concat(parts);
+      }, []);
+      var any = false, inList = false;
+      var out = segs.map(function (sg, si) {
+        var tx = txtA(sg);
+        if (!tx) {
+          var nx = ''; for (var k = si + 1; k < segs.length && !nx; k++) nx = txtA(segs[k]);
+          var hadPrev = segs.slice(0, si).some(function (q) { return txtA(q); });
+          return (hadPrev && nx && head.test(nx) && nx.length < 60 && !(segs[si + 1] !== undefined && !txtA(segs[si + 1]))) ? '<span data-rl-bl="0" style="display:block;height:.9em"></span>' : '';
+        }
+        var m = markT.exec(tx);
+        if (m && !/^\d{1,2}\.\d/.test(tx)) {
+          any = true; inList = true;
+          var g = /^[\u2022\u25AA\u25CF\u25E6\u25CB\u2023\u2043\u27A2\u27A4\u25BA\u2713\u00B7\uF0B7\uF0D8\uF0A7\uF076\uF0FC*\-\u2013\u2014o]$/i.test(m[1]) ? '\u2022' : m[1];
+          // Plain text: the marker is typed straight onto the text, no gap.
+          return '<span data-rl-bl="0" style="display:block;text-align:left">' + g + stripLead(sg, m[1].length) + '</span>';
+        }
+        return '<span data-rl-bl="0" style="display:block;text-align:left">' + sg + '</span>';
+      }).filter(Boolean);
+      if (!any) return;
+      el.innerHTML = out.join('');
+      el.style.setProperty('padding-left', '0', 'important');
+      el.style.setProperty('text-indent', '0', 'important');
+      el.style.setProperty('text-align', 'left', 'important');
+      el.style.setProperty('text-align-last', 'auto', 'important');
+    };
+    var on = false, gaps = [], headEl = null, topBlock = true, addrEls = [], lastMk = false, sinceHead = 0;
+    var dateA = /^(?:(?:new\s+delhi|delhi)\s*[,\-]?\s*)?(?:the\s+)?(?:dated?\b|dt\.|\u0926\u093f\u0928\u093e\u0902\u0915)|^new\s+delhi\s*[,\-]?\s*(?:the\s+)?\d{1,2}/i;
+    Array.prototype.filter.call(root.querySelectorAll('p,div,h1,h2,h3,h4,td'), function (el) {
+      if (el.closest('li,[data-rl-jump]')) return false;
+      if (el.tagName === 'TD') return !el.querySelector('p,div,table,ul,ol');
+      if (el.closest('td,th')) return !el.querySelector('p,div,table,ul,ol');
+      return !el.querySelector('p,div,table,ul,ol');
+    }).forEach(function (el) {
+      var lines = (el.innerHTML || '').split(/<br\s*\/?>/i).map(txtA).filter(Boolean);
+      if (!lines.length) { if (on && !el.querySelector('img')) gaps.push(el); return; }
+      if (head.test(lines[0]) && lines[0].length < 60) { on = true; gaps = []; sinceHead = 0; if (/^to\b/i.test(lines[0])) headEl = el; else topBlock = false; tightA(el); lastMk = lines.some(function (l) { return markT.test(l); }); if (lines.length > 1) { bulletize(el); addrEls.push(el); } return; }
+      if (!on) return;
+      sinceHead++;
+      // The address list ends where the file number / letterhead block of the signature begins.
+      if (stopA.test(lines[0]) || /^(f\.?\s*no\b|file\s*no\b|government of india|ministry of|department of)/i.test(lines[0]) || lines.some(function (l) { return l.length >= 110; })) { on = false; gaps = []; topBlock = false; return; }
+      // A PDF whose date sits at the right, level with the first addressee,
+      // converts with the "Dated" line inside the address list. It belongs
+      // above "To", at the right margin; a stray page/column number ("4")
+      // left between the addressees is dropped.
+      if (lines.length === 1 && topBlock && headEl && sinceHead <= 3 && !el.hasAttribute('data-rl-ua') && dateA.test(lines[0]) && lines[0].length <= 70) {
+        headEl.parentNode.insertBefore(el, headEl);
+        el.style.setProperty('text-align', 'right', 'important');
+        el.style.setProperty('text-align-last', 'auto', 'important');
+        el.style.setProperty('text-indent', '0', 'important');
+        el.style.setProperty('padding-left', '0', 'important');
+        el.style.setProperty('margin', '0 0 10px', 'important');
+        return;
+      }
+      if (lines.length === 1 && /^\d{1,3}$/.test(lines[0]) && el.tagName !== 'TD') { el.parentNode.removeChild(el); return; }
+      // A blank line after the last address, before a heading or an unnumbered
+      // paragraph, is spacing the author left: it stays and the block ends.
+      var prevEl = addrEls[addrEls.length - 1], prevTrail = !!(prevEl && prevEl.getAttribute('data-rl-trail'));
+      if ((gaps.length || prevTrail) && !lines.some(function (l) { return markT.test(l); }) && (/^H[1-4]$/.test(el.tagName) || (lines[0] === lines[0].toUpperCase() && /[A-Z]/.test(lines[0])) || lines[0].length > 60)) {
+        if (prevTrail) { prevEl.removeAttribute('data-rl-trail'); var sp0 = document.createElement('span'); sp0.setAttribute('data-rl-bl', '0'); sp0.style.cssText = 'display:block;height:.9em'; prevEl.appendChild(sp0); }
+        on = false; gaps = []; topBlock = false; return;
+      }
+      lastMk = lines.some(function (l) { return markT.test(l); });
+      gaps.splice(0).forEach(function (g) { if (g.parentNode) g.parentNode.removeChild(g); });
+      tightA(el);
+      bulletize(el);
+      addrEls.push(el);
+    });
+    // A blank line the author left after the last address, inside the same paragraph, is kept as one spacer line.
+    (function () {
+      var le = addrEls[addrEls.length - 1];
+      addrEls.forEach(function (e) { if (e !== le) e.removeAttribute('data-rl-trail'); });
+      if (le && le.getAttribute('data-rl-trail')) { le.removeAttribute('data-rl-trail'); var sp = document.createElement('span'); sp.setAttribute('data-rl-bl', '0'); sp.style.cssText = 'display:block;height:.9em'; le.appendChild(sp); }
+    })();
+    // One marker gutter for every addressee line, wide enough for the
+    // longest marker ("viii)", "10."), so all the texts start at the same
+    // indent — numbered items made in the editor included.
+    (function () {
+      var mks = [];
+      addrEls.forEach(function (el) {
+        Array.prototype.forEach.call(el.querySelectorAll('[data-rl-bl="1"]'), function (s) { var m = s.firstElementChild; if (m && !m.hasAttribute('data-rl-tight')) mks.push({ kind: 'bl', box: s, mk: m }); });
+        var mk = el.querySelector('[data-rl-mk]');
+        if (mk && !mk.hasAttribute('data-rl-tight')) mks.push({ kind: 'mk', box: el, mk: mk });
+      });
+      if (!mks.length) return;
+      // Addressee markers are plain text: no gutter, no space after the marker.
+      mks.forEach(function (o) {
+        ['display', 'width', 'min-width', 'text-align', 'box-sizing', 'padding-right', 'text-indent'].forEach(function (p) { o.mk.style.removeProperty(p); });
+        o.mk.style.setProperty('display', 'inline', 'important');
+        var nx = o.mk.nextSibling;
+        while (nx && nx.nodeType === 3 && !nx.nodeValue.replace(/[\s\u00a0]+/g, '') && nx.nextSibling) { var dn = nx; nx = nx.nextSibling; dn.parentNode.removeChild(dn); }
+        if (nx && nx.nodeType === 3) nx.nodeValue = nx.nodeValue.replace(/^[\s\u00a0]+/, '');
+        o.box.style.setProperty('padding-left', '0', 'important');
+        o.box.style.setProperty('text-indent', '0', 'important');
+        o.box.style.setProperty('text-align', 'left', 'important');
+        if (o.kind === 'mk') o.box.style.setProperty('margin-left', '0', 'important');
+      });
+    })();
+    // An address list set as a real numbered list (1), 2) …) right after
+    // "To" / "Copy to": items sit one under another, no gap between them.
+    Array.prototype.forEach.call(root.querySelectorAll('ol,ul'), function (list) {
+      if (list.closest('td,th,li,[data-rl-jump]')) return;
+      var n = list, prev = null, blanks = [];
+      for (var up = 0; up < 3 && n && !prev; up++) {
+        var p = n.previousElementSibling;
+        while (p && !txtA(p.innerHTML || '') && !p.querySelector('img')) { blanks.push(p); p = p.previousElementSibling; }
+        if (p) prev = p; else n = n.parentElement;
+      }
+      if (!prev) return;
+      var pl = (prev.innerHTML || '').split(/<br\s*\/?>/i).map(txtA).filter(Boolean);
+      var last = pl[pl.length - 1] || '';
+      if (!(head.test(last) && last.length < 60)) return;
+      blanks.forEach(function (g) { if (g.parentNode) g.parentNode.removeChild(g); });
+      tightA(prev);
+      // The list becomes ordinary lines: number or bullet typed straight onto the text.
+      var lst = (list.style.listStyleType || '').toLowerCase(), isOl = list.tagName === 'OL';
+      var n0 = parseInt(list.getAttribute('start'), 10); if (!(n0 > 0)) n0 = 1;
+      var fmtN = function (n) {
+        var al = function (k, up) { var r = String.fromCharCode(96 + ((k - 1) % 26) + 1); return up ? r.toUpperCase() : r; };
+        var ro = function (k, up) { var m = [[10, 'x'], [9, 'ix'], [5, 'v'], [4, 'iv'], [1, 'i']], r = ''; m.forEach(function (p) { while (k >= p[0]) { r += p[1]; k -= p[0]; } }); return up ? r.toUpperCase() : r; };
+        if (/lower-alpha|lower-latin/.test(lst)) return al(n, false) + '.';
+        if (/upper-alpha|upper-latin/.test(lst)) return al(n, true) + '.';
+        if (/lower-roman/.test(lst)) return ro(n, false) + '.';
+        if (/upper-roman/.test(lst)) return ro(n, true) + '.';
+        if (/paren/.test(lst)) return n + ')';
+        return n + '.';
+      };
+      var made = [];
+      Array.prototype.forEach.call(list.children, function (li, idx) {
+        if (li.tagName !== 'LI') return;
+        var p = document.createElement('p');
+        p.style.cssText = 'margin:0 !important;padding:0 !important;line-height:1.45 !important;text-align:left !important;';
+        var html = li.innerHTML.replace(/^(?:\s|&nbsp;|\u00a0)+/, '');
+        var inner = document.createElement('div'); inner.innerHTML = html;
+        var only = inner.children.length === 1 && inner.firstElementChild.tagName === 'P' && !txtA(inner.innerHTML.replace(inner.firstElementChild.outerHTML, ''));
+        p.innerHTML = (isOl ? fmtN(n0 + made.length) : '\u2022') + (only ? inner.firstElementChild.innerHTML : html);
+        made.push(p);
+      });
+      made.forEach(function (p, i) { if (i === 0) p.style.setProperty('margin-top', '4px', 'important'); list.parentNode.insertBefore(p, list); });
+      list.parentNode.removeChild(list);
+    });
+  }
+
+  renumberMarkers(host, adoptEl) {
+    host = host || this._active || this._doc; if (!host) return;
+    const styles = this.LIST_STYLES();
+    const sel = window.getSelection();
+    let caretNode = null, caretOff = 0, caretItem = null;
+    try { if (sel && sel.rangeCount && host.contains(sel.anchorNode)) { caretNode = sel.anchorNode; caretOff = sel.anchorOffset; const ce = caretNode.nodeType === 1 ? caretNode : caretNode.parentElement; caretItem = ce && ce.closest('[data-rl-mp]'); } } catch (e) {}
+    const markRe = /^[\s\u00a0\u200b]*(?:[\u2022\u25AA\u25CF\u25E6\u25CB\u2023\u2043\u27A2\u27A4\u25BA\u25B8\u2192\u2605\u2713\u00B7\u2013\u2014*\-]|\(?\d{1,3}[.)]|\(\d{1,3}\)|\(?[ivxlc]{1,6}[.)]|\([ivxlc]{1,6}\)|\(?[a-z]{1,2}[.)]|\([a-z]{1,2}\))[.\s\u00a0]*/i;
+    const counts = {};
+    let prevLid = null, prevStyle = null;
+    this.listItems_(host).forEach(el => {
+      const id = el.getAttribute('data-rl-mp');
+      const k = styles.find(x => x.id === id); if (!k) return;
+      let mk = el.querySelector('[data-rl-mk]');
+      if (!mk) {
+        // Only the item being typed in gets a marker added (a new item made
+        // with Enter, or the second half of a split one). Older paragraphs
+        // whose marker was typed by hand are left exactly as they are.
+        if (el !== caretItem && el !== adoptEl) return;
+        const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let tn, acc = ''; const nodes = [];
+        while ((tn = w.nextNode()) && acc.length < 16) { nodes.push(tn); acc += tn.nodeValue; }
+        const m = markRe.exec(acc);
+        // A line split off with Enter that starts with its own marker of a
+        // different kind ("a)" under "i)") becomes an item of that kind, one
+        // level down, instead of taking the parent's next number.
+        if (m && m[0].replace(/[\s\u00a0\u200b]/g, '') && !el.hasAttribute('data-rl-retyped')) {
+          const typed = m[0].replace(/[\s\u00a0\u200b]/g, '');
+          const fits = (kk) => { for (let i = 0; i < 40; i++) if (this.listMarker(kk, i) === typed) return i + 1; return 0; };
+          const fam = (x) => String(x || '').replace(/-(paren|bracket|rparen)$/, '');
+          if (!fits(k)) {
+            const k2 = styles.filter(x => x.ord).find(kk => fits(kk) && fam(kk.id) !== fam(k.id));
+            if (k2) {
+              const nx = el.nextElementSibling, nxId = nx && nx.getAttribute('data-rl-mp');
+              const join = nxId && fam(nxId) === fam(k2.id);
+              el.setAttribute('data-rl-mp', join ? nxId : k2.id);
+              el.setAttribute('data-rl-lid', join ? nx.getAttribute('data-rl-lid') : ('l' + Math.random().toString(36).slice(2, 9)));
+              el.setAttribute('data-rl-base', join ? (nx.getAttribute('data-rl-base') || nxId) : k2.id);
+              const lv2 = join ? (nx.getAttribute('data-rl-lvl') || '') : String((parseInt(el.getAttribute('data-rl-lvl') || '0', 10) || 0) + 1);
+              if (lv2 && lv2 !== '0') el.setAttribute('data-rl-lvl', lv2); else el.removeAttribute('data-rl-lvl');
+              const n2 = fits(k2); if (n2 > 1) el.setAttribute('data-rl-start', String(n2)); else el.removeAttribute('data-rl-start');
+              if (join) { nx.removeAttribute('data-rl-start'); const ml = nx.style.getPropertyValue('margin-left'); if (ml) el.style.setProperty('margin-left', ml, 'important'); }
+              else { const ml = parseFloat(getComputedStyle(el).marginLeft) || 0; el.style.setProperty('margin-left', Math.round(ml + 36) + 'px', 'important'); }
+              el.removeAttribute('id');
+              el.setAttribute('data-rl-retyped', '1');
+              (this._reRun = this._reRun || []).push(el);
+              return;
+            }
+          }
+        }
+        if (m && m[0].replace(/[\s\u00a0\u200b]/g, '')) {
+          let cut = m[0].length;
+          for (const n of nodes) { if (cut <= 0) break; const L = n.nodeValue.length, c = Math.min(L, cut); n.nodeValue = n.nodeValue.slice(c); if (n === caretNode) caretOff = Math.max(0, caretOff - c); cut -= L; }
+        }
+        mk = document.createElement('span');
+        mk.setAttribute('data-rl-mk', '1');
+        mk.setAttribute('style', 'display:inline-block;min-width:2.2em;text-indent:0;text-align:left');
+        el.insertBefore(mk, el.firstChild);
+        // Tab spaces left in front of the text (before the first real word) go;
+        // the marker gutter replaces them.
+        const w2 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let first = null, t2;
+        while ((t2 = w2.nextNode())) { if (!mk.contains(t2) && t2.nodeValue.replace(/[\s\u00a0\u200b]/g, '')) { first = t2; break; } }
+        el.querySelectorAll('[data-rl-tab]').forEach(t => { if (!first || (t.compareDocumentPosition(first) & Node.DOCUMENT_POSITION_FOLLOWING)) t.remove(); });
+      }
+      // Spaces typed between the number and the text are redundant (the
+      // marker has its own gutter) and made the caret skip a letter: clicking
+      // before the first letter landed after it, so Backspace ate that letter.
+      {
+        const w3 = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let t3;
+        while ((t3 = w3.nextNode())) {
+          if (mk.contains(t3)) continue;
+          const v = t3.nodeValue, lead = (/^[\s\u00a0\u200b]*/.exec(v) || [''])[0].length;
+          if (lead) { t3.nodeValue = v.slice(lead); if (t3 === caretNode) caretOff = Math.max(0, caretOff - lead); }
+          if (t3.nodeValue.length) break;
+        }
+        el.querySelectorAll('[data-rl-tab]').forEach(t => { const f = Array.from(el.childNodes); let before = true; for (const n of f) { if (n === mk) continue; if (n === t || n.contains && n.contains(t)) break; if ((n.textContent || '').replace(/[\s\u00a0\u200b]/g, '')) { before = false; break; } } if (before) t.remove(); });
+      }
+      let lid = el.getAttribute('data-rl-lid');
+      if (!lid) { lid = (prevStyle === id && prevLid) ? prevLid : ('l' + Math.random().toString(36).slice(2, 9)); el.setAttribute('data-rl-lid', lid); }
+      const lvl = parseInt(el.getAttribute('data-rl-lvl') || '0', 10) || 0;
+      Object.keys(counts).forEach(c => { const m2 = /^(.*):(\d+)$/.exec(c); if (m2 && m2[1] === lid && +m2[2] > lvl) delete counts[c]; });
+      const ck = lid + ':' + lvl;
+      if (counts[ck] == null && +el.getAttribute('data-rl-start') > 1) counts[ck] = +el.getAttribute('data-rl-start') - 1;
+      counts[ck] = (counts[ck] || 0) + 1;
+      const want = this.listMarker(k, counts[ck] - 1) + '\u00a0';
+      if (mk.textContent !== want) mk.textContent = want;
+      prevLid = lid; prevStyle = id;
+    });
+    // Items that changed kind above get their marker on a second pass.
+    if (this._reRun && this._reRun.length) { const rr = this._reRun; this._reRun = null; rr.forEach(x => this.renumberMarkers(host, x)); rr.forEach(x => x.removeAttribute('data-rl-retyped')); return; }
+    // Keep the caret where it was, after the marker.
+    try {
+      if (caretItem && caretNode) {
+        const mk = caretItem.querySelector('[data-rl-mk]');
+        const r = document.createRange();
+        if (caretNode.isConnected && !(mk && mk.contains(caretNode)) && !(caretNode === caretItem && caretOff === 0)) {
+          r.setStart(caretNode, Math.min(caretOff, caretNode.nodeType === 3 ? caretNode.nodeValue.length : caretNode.childNodes.length));
+        } else if (mk) { r.setStartAfter(mk); }
+        r.collapse(true);
+        const cur = sel.rangeCount ? sel.getRangeAt(0) : null;
+        if (!cur || cur.startContainer !== r.startContainer || cur.startOffset !== r.startOffset) { sel.removeAllRanges(); sel.addRange(r); }
+      }
+    } catch (e) {}
+  }
+
+  LIST_STYLES() {
+    return [
+      { id: 'disc', glyph: '\u2022', label: 'Disc', ord: false, css: 'disc' },
+      { id: 'circle', glyph: '\u25e6', label: 'Circle', ord: false, css: 'circle' },
+      { id: 'square', glyph: '\u25aa', label: 'Square', ord: false, css: 'square' },
+      { id: 'dash', glyph: '\u2013', label: 'Dash', ord: false, css: '"\u2013\u2002"' },
+      { id: 'arrow', glyph: '\u2192', label: 'Arrow', ord: false, css: '"\u2192\u2002"' },
+      { id: 'triangle', glyph: '\u25b8', label: 'Triangle', ord: false, css: '"\u25b8\u2002"' },
+      { id: 'tick', glyph: '\u2713', label: 'Tick', ord: false, css: '"\u2713\u2002"' },
+      { id: 'star', glyph: '\u2605', label: 'Star', ord: false, css: '"\u2605\u2002"' },
+      { id: 'decimal', glyph: '1.', label: 'Numbers', ord: true, css: 'decimal' },
+      { id: 'paren', glyph: '1)', label: 'Numbers 1)', ord: true, css: 'rl-paren' },
+      { id: 'bracket', glyph: '(1)', label: 'Numbers (1)', ord: true, css: 'rl-bracket' },
+      { id: 'alpha', glyph: 'a.', label: 'Letters', ord: true, css: 'lower-alpha' },
+      { id: 'alpha-paren', glyph: 'a)', label: 'Letters a)', ord: true, css: 'rl-alpha-paren' },
+      { id: 'alpha-bracket', glyph: '(a)', label: 'Letters (a)', ord: true, css: 'rl-alpha-bracket' },
+      { id: 'upper-alpha', glyph: 'A.', label: 'Capitals', ord: true, css: 'upper-alpha' },
+      { id: 'upper-alpha-paren', glyph: 'A)', label: 'Capitals A)', ord: true, css: 'upper-alpha' },
+      { id: 'roman', glyph: 'i.', label: 'Roman', ord: true, css: 'lower-roman' },
+      { id: 'roman-rparen', glyph: 'i)', label: 'Roman i)', ord: true, css: 'lower-roman' },
+      { id: 'roman-paren', glyph: '(i)', label: 'Roman (i)', ord: true, css: 'rl-roman-paren' },
+      { id: 'upper-roman', glyph: 'I.', label: 'Roman caps', ord: true, css: 'upper-roman' },
+      { id: 'upper-roman-paren', glyph: '(I)', label: 'Roman caps (I)', ord: true, css: 'upper-roman' },
+      { id: 'none', glyph: '\u00d7', label: 'Remove list', ord: false, css: '' },
+    ];
+  }
+
+  listMarker(k, n) {
+    const roman = (x) => { const v = [[1000,'m'],[900,'cm'],[500,'d'],[400,'cd'],[100,'c'],[90,'xc'],[50,'l'],[40,'xl'],[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']]; let s = ''; v.forEach(p => { while (x >= p[0]) { s += p[1]; x -= p[0]; } }); return s; };
+    const alpha = (x) => { let s = ''; x++; while (x > 0) { const r = (x - 1) % 26; s = String.fromCharCode(97 + r) + s; x = Math.floor((x - 1) / 26); } return s; };
+    const i = n + 1;
+    switch (k.id) {
+      case 'decimal': return i + '.';
+      case 'paren': return i + ')';
+      case 'bracket': return '(' + i + ')';
+      case 'alpha': return alpha(n) + '.';
+      case 'alpha-paren': return alpha(n) + ')';
+      case 'alpha-bracket': return '(' + alpha(n) + ')';
+      case 'upper-alpha': return alpha(n).toUpperCase() + '.';
+      case 'upper-alpha-paren': return alpha(n).toUpperCase() + ')';
+      case 'roman-rparen': return roman(i) + ')';
+      case 'upper-roman-paren': return '(' + roman(i).toUpperCase() + ')';
+      case 'roman': return roman(i) + '.';
+      case 'roman-paren': return '(' + roman(i) + ')';
+      case 'upper-roman': return roman(i).toUpperCase() + '.';
+      default: return k.glyph;
+    }
+  }
+
+  listItems_(host) {
+    return Array.from(host.querySelectorAll('[data-rl-mp]')).filter(el => !(el.parentElement && el.parentElement.closest('[data-rl-mp]')) && el.getAttribute('data-rl-mp') !== 'none');
+  }
+
+  justifyBody_(root) {
+    var glyph = /^\s*(?:[\u2022\u25AA\u25CF\u25E6\u2023\u2043\u27A2\u2713\u00B7\uF0B7\uF0D8\uF0A7*\-\u2013\u2014]|\(?[ivx]{1,5}\)|\(?[a-z]\)|[a-z][.)])\s+/;
+    var glyphI = /^\s*(?:\(?[ivx]{1,5}\)|\(?[a-z]\)|[a-z][.)])\s+/i;
+    try { this.pairMarkers_(root); } catch (e) {}
+    // A sentence the conversion broke across two paragraphs ("… subject to" /
+    // "adjustment after …") is joined back into one.
+    Array.prototype.slice.call(root.querySelectorAll('p')).forEach(function (el) {
+      var nx = el.nextElementSibling;
+      if (!nx || nx.tagName !== 'P' || el.closest('td,th') || !el.parentNode) return;
+      var a = (el.textContent || '').replace(/\u00a0/g, ' ').trim(), b = (nx.textContent || '').replace(/\u00a0/g, ' ').trim();
+      if (!a || !b || /[.:;!?)]$/.test(a) || !/^[a-z]/.test(b) || a.length < 40) return;
+      // A list item ("a) Where …", "ii) …") or a line after ":-" is a new
+      // line the author made, never a broken sentence.
+      if (/^\(?(?:[a-z]|[ivxlc]{1,6}|\d{1,3})[.)]\s/i.test(b) || /[:;]\s*[-\u2013\u2014]$/.test(a) || el.hasAttribute('data-rl-mp') || nx.hasAttribute('data-rl-mp') || nx.querySelector('[data-rl-mk],[data-rl-bl]') || el.hasAttribute('data-rl-keep') || nx.hasAttribute('data-rl-keep')) return;
+      el.innerHTML = el.innerHTML.replace(/(\s|&nbsp;|<br\s*\/?>)+$/i, '') + ' ' + nx.innerHTML;
+      nx.parentNode.removeChild(nx);
+    });
+    var sub = /^\s*(?:\(?[ivx]{1,5}\)|\(?[a-z]\)|[a-z][.)])\s+/i;
+    Array.prototype.forEach.call(root.querySelectorAll('p,div,li'), function (el) {
+      if (el.closest('td,th,[data-rl-jump],[data-rl-sec="meta"],[data-rl-sec="summary"]')) return;
+      if (el.tagName !== 'LI' && el.querySelector('p,div,table,ul,ol')) return;
+      var t = (el.textContent || '').replace(/\u00a0/g, ' ').trim();
+      if (!t) return;
+      if (el.hasAttribute('data-rl-ua')) return;
+      if (el.hasAttribute('data-rl-mp')) return;
+      var ta = (el.style.textAlign || '').toLowerCase();
+      if (ta === 'center' || ta === 'right') return;
+      el.style.setProperty('text-align', 'justify', 'important');
+      el.style.setProperty('text-align-last', 'left', 'important');
+      // A bullet or (a)/(i) item typed as a plain paragraph gets a hanging
+      // indent, so wrapped lines align under the text, not under the marker.
+      if (el.tagName !== 'LI' && (glyph.test(t) || glyphI.test(t))) {
+        el.style.setProperty('padding-left', '1.8em', 'important');
+        el.style.setProperty('text-indent', '-1.8em', 'important');
+        if (sub.test(t) && !el.style.marginLeft) el.style.setProperty('margin-left', '1.2em', 'important');
+      }
+    });
+  }
+
+  pairMarkers_(root) {
+    var onlyMark = /^\(?(?:[ivxlc]{1,6}|[a-z]|\d{1,2})[.)]$/i;
+    var linesOf = function (el) { return el.innerHTML.split(/<br\s*\/?>/i).map(function (h) { var d = document.createElement('div'); d.innerHTML = h; return (d.textContent || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim(); }).filter(Boolean); };
+    var isMarkBlock = function (el) { if (!el || !/^(P|DIV)$/.test(el.tagName) || el.querySelector('p,div,table,ul,ol,li,img')) return false; var ls = linesOf(el); return ls.length > 0 && ls.every(function (l) { return onlyMark.test(l); }); };
+    var isEmpty = function (el) { return el && /^(P|DIV)$/.test(el.tagName) && !el.querySelector('img,table') && !(el.textContent || '').replace(/[\s\u00a0]/g, ''); };
+    var esc = function (x) { return String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+    var sentSplit = function (l) { return l.split(/(?<=[A-Za-z)]{3,}\.)\s+(?=[A-Z(])/); };
+    var done = new Set();
+    Array.prototype.slice.call(root.querySelectorAll('p,div')).forEach(function (first) {
+      if (done.has(first) || !first.parentNode || first.closest('td,th') || !isMarkBlock(first)) return;
+      var marks = [], mBlocks = [], el = first;
+      while (el && (isMarkBlock(el) || isEmpty(el))) { if (!isEmpty(el)) { marks = marks.concat(linesOf(el)); mBlocks.push(el); } done.add(el); el = el.nextElementSibling; }
+      if (marks.length < 2) return;
+      var tryGather = function (split) {
+        var out = [], used = [], n = el, rest = null;
+        while (n && out.length < marks.length) {
+          if (isEmpty(n)) { used.push(n); n = n.nextElementSibling; continue; }
+          if (!/^(P|DIV)$/.test(n.tagName) || n.querySelector('p,div,table,ul,ol,li,img') || isMarkBlock(n)) return null;
+          var ls = linesOf(n); if (split) ls = ls.reduce(function (a, l) { return a.concat(sentSplit(l)); }, []);
+          if (ls.some(function (l) { return glyphLead.test(l); })) return null;
+          var need = marks.length - out.length;
+          out = out.concat(ls.slice(0, need)); used.push(n);
+          if (ls.length > need) { if (!split) return null; rest = ls.slice(need); }
+          n = n.nextElementSibling;
+        }
+        return out.length === marks.length ? { out: out, used: used, rest: rest } : null;
+      };
+      var glyphLead = /^\(?(?:[ivxlc]{1,6}|[a-z]|\d{1,2})[.)]\s/i;
+      var g = tryGather(false) || tryGather(true);
+      if (!g) return;
+      var parent = first.parentNode, tag = first.tagName.toLowerCase();
+      marks.forEach(function (m, k) { var p = document.createElement(tag); p.innerHTML = esc(m) + ' ' + esc(g.out[k]); parent.insertBefore(p, first); });
+      if (g.rest) { var r = document.createElement(tag); r.innerHTML = g.rest.map(esc).join(' '); parent.insertBefore(r, first); }
+      mBlocks.concat(g.used).forEach(function (x) { if (x.parentNode) x.parentNode.removeChild(x); });
+    });
+  }
+
+  stripLeakedFonts_(root) {
+    if (!root || root.querySelector('[data-rl-design],[data-rl-keepfmt]')) return;
+    const bad = new Set(['font-variant-ligatures', 'font-variant-caps', 'font-variant-numeric', 'font-variant-east-asian', 'font-variant', 'letter-spacing', 'word-spacing', 'text-transform', 'orphans', 'widows', '-webkit-text-stroke-width', 'text-decoration-thickness', 'text-decoration-style', 'text-decoration-color', 'white-space-collapse', 'text-wrap-mode', 'text-wrap-style']);
+    Array.from(root.querySelectorAll('[style]')).forEach(el => {
+      if (el.closest('table')) return;
+      const st = el.style;
+      // Only pt sizes (the Size tool) are deliberate; px / em / % / keyword sizes are leftovers.
+      const fs = st.fontSize || '';
+      if (!st.fontFamily && !(fs && !/pt\s*$/i.test(fs))) return;
+      // A heading keeps whatever size it was given: that is the size the author sees.
+      if (/^H[1-6]$/.test(el.tagName) && !st.fontFamily) return;
+      st.removeProperty('font-family'); if (!/pt\s*$/i.test(fs) && !/^H[1-6]$/.test(el.tagName)) st.removeProperty('font-size');
+      st.removeProperty('font');
+      Array.from(st).forEach(p => { if (bad.has(p)) st.removeProperty(p); });
+      if (st.fontStyle === 'normal') st.removeProperty('font-style');
+      if (st.fontWeight === '400') st.removeProperty('font-weight');
+      if (!el.getAttribute('style') || !el.getAttribute('style').trim()) {
+        el.removeAttribute('style');
+        if (el.tagName === 'SPAN' && !el.attributes.length) el.replaceWith(...Array.from(el.childNodes));
+      }
+    });
+  }
+
+  centerLetterhead_(root) {
+    // Where the letter itself begins: centring stops here.
+    const stop = /^(to\b|subject|sub\s*[:.\-]|sir\b|madam\b|ref\b|reference\b)/i;
+    // A file number is centred with the letterhead, not treated as its end.
+    const fileNo = /^(f\.?\s*no|no\.|file\s*no)/i;
+    // The document's own heading sits under the letterhead, centred.
+    const title = /^(office\s+memorandum|memorandum|order|orders|circular|notification|o\.\s*m\.?)\s*[:.]?\s*$/i;
+    const lh = /(government of india|ministry of|department of|office of|directorate of|controller general|\u092d\u093e\u0930\u0924 \u0938\u0930\u0915\u093e\u0930)/i;
+    const dateish = /\b\d{1,2}[.\/-]\d{1,2}[.\/-]\d{2,4}\b/;
+    // "Date: …", "Dated …", "दिनांक …" sit at the right margin, as in the PDF.
+    const dateLine = /^(?:(?:new\s+delhi|delhi|dak\s+bhawan[^,]{0,30})\s*[,\-]?\s*)?(?:the\s+)?(dated?\b|dt\.|\u0926\u093f\u0928\u093e\u0902\u0915)/i;
+    const placeDate = /^new\s+delhi\s*[,\-]?\s*(the\s+)?\d{1,2}/i;
+    const isDateLine = (l) => l.length <= 70 && (dateLine.test(l) || placeDate.test(l));
+    const midDate = /(?:\s|&nbsp;|\u00a0)(?=(?:<[^>]+>)*(?:dated?\b|dt\.|\u0926\u093f\u0928\u093e\u0902\u0915))/i;
+    const right = (el) => { el.style.setProperty('text-align', 'right', 'important'); el.style.setProperty('text-align-last', 'auto', 'important'); el.style.setProperty('text-indent', '0', 'important'); el.style.setProperty('padding-left', '0', 'important'); };
+    const txt = (h) => h.replace(/<[^>]+>/g, '').replace(/&nbsp;|\u00a0/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/\s+/g, ' ').trim();
+    // A "No. … | Dated …" letterhead set as a two-cell table row: the date
+    // cell sits at the right margin.
+    Array.from(root.querySelectorAll('tr')).slice(0, 12).forEach(tr => {
+      const c = tr.children; if (c.length < 2) return;
+      const last = c[c.length - 1];
+      if (fileNo.test(txt(c[0].innerHTML || '')) && isDateLine(txt(last.innerHTML || ''))) { right(last); Array.from(last.querySelectorAll('p,div')).forEach(right); }
+    });
+    const blocks = Array.from(root.querySelectorAll('p, div, h1, h2, h3, h4, td')).filter(el => {
+      if (el.tagName === 'TD') { const tr = el.parentElement; return tr && tr.children.length === 1 && !el.querySelector('table, p, div'); }
+      if (el.closest('td')) return false;
+      return !el.querySelector('table, p, div, ul, ol') && !el.closest('li');
+    });
+    // Header lines sit one under another with no gap between them.
+    const tight = (el) => { if (el.hasAttribute('data-rl-ul')) return; const mlT = el.style.marginLeft; el.style.setProperty('margin', '0', 'important'); if (mlT && parseFloat(mlT)) el.style.setProperty('margin-left', mlT, 'important'); el.style.setProperty('line-height', '1.4', 'important'); if (el.tagName === 'TD') el.style.setProperty('padding', '0 9px', 'important'); };
+    const center = (el) => { el.style.setProperty('text-align', 'center', 'important'); el.style.setProperty('text-align-last', 'auto', 'important'); tight(el); };
+    const spacers = [];
+    const subjRe = /^(subject|sub\s*[:.\-])/i;
+    let titleEl = null, dateEl = null, subjEl = null;
+    let seen = 0;
+    for (const el of blocks) {
+      let segs = (el.innerHTML || '').split(/<br\s*\/?>/i);
+      if (!segs.some(s => txt(s))) { if (!el.querySelector('img') && el.tagName !== 'TD') spacers.push(el); continue; }
+      if (el.tagName !== 'TD' && !el.hasAttribute('data-rl-ua')) {
+        const k = segs.findIndex(sg => { const t0 = txt(sg); return t0.length < 140 && fileNo.test(t0) && midDate.test(sg); });
+        if (k >= 0) { const mm = midDate.exec(segs[k]); segs.splice(k, 1, segs[k].slice(0, mm.index), segs[k].slice(mm.index + mm[0].length)); el.innerHTML = segs.join('<br>'); }
+      }
+      // "F. No. …/416 Ministry of Finance" — the file number and the first
+      // letterhead line merged into one line by the conversion. Split them.
+      const first = txt(segs[0]);
+      if (fileNo.test(first) && el.tagName !== 'TD') {
+        const m = lh.exec(segs[0]);
+        const fe = el.cloneNode(false);
+        fe.innerHTML = m ? segs[0].slice(0, m.index) : segs[0];
+        el.parentNode.insertBefore(fe, el);
+        center(fe);
+        segs = m ? [segs[0].slice(m.index)].concat(segs.slice(1)) : segs.slice(1);
+        el.innerHTML = segs.join('<br>');
+        seen++;
+        if (!segs.some(s => txt(s))) { el.remove(); continue; }
+      }
+      // "No. 12-01/2024-D  Dated: 15.09.2026" merged onto one line, or a date
+      // line sharing a block with other header lines: the date is split out
+      // onto its own right-aligned line.
+      if (el.tagName !== 'TD' && !el.hasAttribute('data-rl-ua')) {
+        const di = segs.findIndex(sg => isDateLine(txt(sg)));
+        const real = segs.filter(sg => txt(sg)).length;
+        if (di >= 0 && real > 1) {
+          const mk = (parts) => { const n = el.cloneNode(false); n.innerHTML = parts.join('<br>'); return n; };
+          const before = segs.slice(0, di), after = segs.slice(di + 1);
+          const dEl = mk([segs[di]]);
+          el.parentNode.insertBefore(dEl, el.nextSibling);
+          if (after.some(sg => txt(sg))) { const aEl = mk(after); dEl.parentNode.insertBefore(aEl, dEl.nextSibling); blocks.splice(blocks.indexOf(el) + 1, 0, dEl, aEl); }
+          else blocks.splice(blocks.indexOf(el) + 1, 0, dEl);
+          if (before.some(sg => txt(sg))) { el.innerHTML = before.join('<br>'); segs = before; }
+          else { el.remove(); continue; }
+        }
+      }
+      const lines = segs.map(txt).filter(Boolean);
+      if (stop.test(lines[0]) || lines.some(l => l.length >= 90)) {
+        if (subjRe.test(lines[0])) { subjEl = el; spacers.splice(0).forEach(sp => sp.remove()); }
+        break;
+      }
+      // Blank lines between header lines are dropped; the gap before the
+      // body (the letter proper) is kept.
+      spacers.splice(0).forEach(sp => { if (seen) sp.remove(); });
+      seen += lines.length;
+      if (seen > 14) break;
+      if (el.hasAttribute('data-rl-ua')) continue;
+      if (lines.length === 1 && isDateLine(lines[0])) { right(el); tight(el); dateEl = el; continue; }
+      if (lines.length === 1 && title.test(lines[0])) titleEl = el;
+      if (lines.length === 1 && dateish.test(lines[0]) && !fileNo.test(lines[0])) { tight(el); continue; }
+      if ((el.style.textAlign || '').toLowerCase() === 'right') { tight(el); continue; }
+      center(el);
+    }
+    // "OFFICE MEMORANDUM" sits on the line after the OM date, centred, bold
+    // and underlined; the subject follows in bold after one blank line.
+    if (titleEl) {
+      if (dateEl && (titleEl.compareDocumentPosition(dateEl) & Node.DOCUMENT_POSITION_FOLLOWING)) dateEl.parentNode.insertBefore(titleEl, dateEl.nextSibling);
+      center(titleEl);
+      titleEl.style.setProperty('font-weight', '700', 'important');
+      titleEl.style.setProperty('text-decoration', 'underline', 'important');
+    }
+    if (subjEl) {
+      subjEl.style.setProperty('font-weight', '700', 'important');
+      subjEl.style.setProperty('margin', '1.4em 0 12px', 'important');
+      subjEl.style.setProperty('line-height', '1.6', 'important');
+    }
+  }
+
+  dropEmptyBoxesHtml_(html) {
+    if (!html || (html.indexOf('data-rl-tblwrap') < 0 && html.indexOf('border') < 0)) return html || '';
+    try {
+      const d = document.createElement('div'); d.innerHTML = html;
+      const keep = [this._doc, this._sum]; this._doc = d; this._sum = null;
+      try { this.dropEmptyTblWraps_(true); } finally { this._doc = keep[0]; this._sum = keep[1]; }
+      return d.innerHTML;
+    } catch (e) { return html; }
+  }
+
+  dropEmptyTblWraps_(full) {
+    [this._doc, this._sum].forEach(t => {
+      if (!t) return;
+      // Empty rows left at the end of a table (all cells blank) are removed.
+      if (full) t.querySelectorAll('table:not([data-rl-keep])').forEach(tb => {
+        const blankRow = (r) => r && Array.from(r.cells).every(c => !(c.textContent || '').replace(/[\s\u00a0\u200b]/g, '') && !c.querySelector('img'));
+        let r = tb.rows[tb.rows.length - 1];
+        // A row that a merged cell above reaches into (rowSpan), or that has no
+        // cells of its own, is part of a merge: removing it undid the merge.
+        const merged = (row) => { const ix = row.rowIndex; return !row.cells.length || Array.from(tb.rows).slice(0, ix).some((o, k) => Array.from(o.cells).some(c => k + (c.rowSpan || 1) > ix)); };
+        while (r && tb.rows.length > 1 && blankRow(r) && !merged(r)) { r.remove(); r = tb.rows[tb.rows.length - 1]; }
+      });
+      // Text typed after a table can end up inside the table's frame; it is
+      // moved out so the frame holds only the table.
+      t.querySelectorAll('[data-rl-tblwrap]').forEach(w => {
+        const tb = Array.from(w.children).find(c => c.tagName === 'TABLE');
+        if (!tb) return;
+        let after = w;
+        Array.from(w.childNodes).forEach(n => {
+          if (n === tb) return;
+          if (n.nodeType === 3 && !n.textContent.trim()) { n.remove(); return; }
+          if (n.nodeType === 1 && n.tagName === 'CAPTION') return;
+          const before = Array.from(w.childNodes).indexOf(n) < Array.from(w.childNodes).indexOf(tb);
+          if (before) w.parentNode.insertBefore(n, w); else { after.after(n); after = n; }
+        });
+      });
+      t.querySelectorAll('[data-rl-tblwrap], div[style*="border"], div[style*="box-shadow"]').forEach(w => {
+        if (!w.isConnected || w.querySelector('table,img,iframe,video')) return;
+        if (!w.hasAttribute('data-rl-tblwrap') && !/border-radius|box-shadow/.test(w.getAttribute('style') || '')) return;
+        if ((w.textContent || '').replace(/[\s\u00a0\u200b]/g, '')) { w.replaceWith(...Array.from(w.childNodes)); return; }
+        w.remove();
+      });
+    });
+  }
+
+  summaryTablesHtml_(html) {
+    if (!html || html.indexOf('<table') < 0) return html || '';
+    try {
+      const d = document.createElement('div'); d.innerHTML = html;
+      const light = (v) => /^(#fff|#ffffff|white|#fcfaf6|#fafafa|#f9f9f9|rgb\(255,\s*255,\s*255\)|rgb\(252,\s*250,\s*246\))$/i.test(String(v || '').trim());
+      d.querySelectorAll('[data-rl-tblwrap]').forEach(w => { w.style.setProperty('background', 'transparent'); w.style.setProperty('box-shadow', 'none'); });
+      d.querySelectorAll('table').forEach(tb => { try { this.tightenCells_(tb); } catch (e) {} });
+      d.querySelectorAll('table, tbody, thead, tr, td, th').forEach(n => {
+        const bg = n.style.backgroundColor || n.style.background;
+        if (n.tagName === 'TH' || /b30000|179,\s*0,\s*0/i.test(String(bg))) return;
+        if (!bg || light(bg) || /^rgba?\(/.test(bg) && light(bg)) { n.style.removeProperty('background'); n.style.removeProperty('background-color'); }
+        else if (n.tagName === 'TR' || n.tagName === 'TD') { n.style.removeProperty('background'); n.style.removeProperty('background-color'); }
+        n.removeAttribute('bgcolor');
+      });
+      return d.innerHTML;
+    } catch (e) { return html; }
+  }
+
+  tightenCells_(tb) {
+    Array.from(tb.querySelectorAll('td,th')).forEach(cell => {
+      const blank = (n) => n && ((n.nodeType === 3 && !n.textContent.replace(/[\s\u00a0\u200b]/g, '')) || (n.nodeType === 1 && (n.tagName === 'BR' || (/^(P|DIV|SPAN)$/.test(n.tagName) && !n.querySelector('img,table') && !(n.textContent || '').replace(/[\s\u00a0\u200b]/g, '')))));
+      while (blank(cell.firstChild)) cell.firstChild.remove();
+      while (blank(cell.lastChild)) cell.lastChild.remove();
+      cell.querySelectorAll('p,div').forEach(p => {
+        if (blank(p)) { p.remove(); return; }
+        p.style.setProperty('margin', '0', 'important'); p.style.setProperty('padding', '0', 'important');
+        p.style.setProperty('line-height', '1.4', 'important'); p.style.removeProperty('text-indent');
+        while (p.lastChild && p.lastChild.nodeName === 'BR') p.lastChild.remove();
+      });
+      cell.querySelectorAll('br + br').forEach(b => b.remove());
+      cell.style.setProperty('vertical-align', 'top');
+      cell.style.setProperty('line-height', '1.4');
+    });
+  }
+  }
+  var df = new DocFix();
+  return {
+    doc: function (html) {
+      if (!html) return '';
+      var out = html;
+      try { out = df.styleTables(out); } catch (e) {}
+      try { out = df.normalizeShortLines_(out); } catch (e) {}
+      return out;
+    },
+    summary: function (html) {
+      if (!html) return '';
+      try { return df.summaryTablesHtml_(df.dropEmptyBoxesHtml_(html)); } catch (e) { return html; }
+    }
+  };
+})();
 
 </script>
 <script>
@@ -823,14 +2042,22 @@ window.RL_THEME = {
     var v = C.view(x);
     return { id: x.id, name: v.title, category: v.depts[0] || x.category, date: x.date, status: v.status, omNo: v.omNo };
   }
+  // Department chips: tap one, or switch on "Select several" and tick as many as you like.
   function chips() {
-    var out = '<div class="chips" role="group" aria-label="Departments">';
-    out += '<button class="chip" data-act="cat" data-cat="" aria-pressed="' + (!C.state.cat) + '">All</button>';
+    var sel = C.state.catSel || [], multi = !!C.state.multiChips;
+    var out = '<div class="chiprow"><button class="chip mtoggle" data-act="mchips" aria-pressed="' + multi + '">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/><path d="m14.5 6 2 2 3.5-4"/></svg>' +
+      (multi ? 'Done' + (sel.length ? ' (' + sel.length + ')' : '') : 'Select several') + '</button>';
+    out += '<div class="chips" role="group" aria-label="Departments">';
+    out += '<button class="chip" data-act="cat" data-cat="" aria-pressed="' + (!C.state.cat && !sel.length) + '">All</button>';
     C.state.cats.forEach(function (c) {
-      out += '<button class="chip" data-act="cat" data-cat="' + esc(c) + '" aria-pressed="' + (C.state.cat === c) + '">' + esc(c) + '</button>';
+      var on = multi ? sel.indexOf(c) >= 0 : (C.state.cat === c || (sel.length === 1 && sel[0] === c));
+      out += '<button class="chip' + (multi ? ' tick' : '') + '" data-act="' + (multi ? 'mcat' : 'cat') + '" data-cat="' + esc(c) + '"' +
+        (multi ? ' role="checkbox" aria-checked="' + on + '"' : '') + ' aria-pressed="' + on + '">' + (multi ? '<span class="cbox" aria-hidden="true"></span>' : '') + esc(c) + '</button>';
     });
-    return out + '</div>';
+    return out + '</div></div>';
   }
+
   function list(items, empty) {
     if (!C.state.loaded) return '';
     if (!items.length) return '<p class="empty show">' + esc(empty) + '</p>';
@@ -891,7 +2118,7 @@ window.RL_THEME = {
       var allm = C.sortedByDate(C.filtered()), limm = C.state.limit || 40;
       items = allm.slice(0, limm);
       heading = multi + ' departments <span class="count">' + allm.length + (allm.length === 1 ? ' ruling' : ' rulings') + '</span>';
-      selbar = '<div class="selchips">' + C.state.catSel.map(function (d) { return '<button class="chip on" data-act="ddrop" data-cat="' + esc(d) + '" aria-label="Remove ' + esc(d) + '">' + esc(d) + ' ×</button>'; }).join('') + '<button class="hlink" data-act="dclear">Clear all</button><a class="hlink" href="#depts">Change</a></div>';
+      selbar = C.state.multiChips ? '' : '<div class="selchips">' + C.state.catSel.map(function (d) { return '<button class="chip on" data-act="ddrop" data-cat="' + esc(d) + '" aria-label="Remove ' + esc(d) + '">' + esc(d) + ' ×</button>'; }).join('') + '<button class="hlink" data-act="dclear">Clear all</button><a class="hlink" href="#depts">Change</a></div>';
       if (allm.length > limm) more = '<button class="more" data-act="more">Show more (' + (allm.length - limm) + ' left)</button>';
     } else if (cat) {
       var all = C.sortedByDate(C.filtered());
@@ -958,13 +2185,13 @@ window.RL_THEME = {
     if (v.blogUrl) h += '<a class="pdf ghost" href="' + esc(v.blogUrl) + '" target="_blank" rel="noopener">Read on the blog</a>';
     h += '</div>';
     h += metaGrid(v);
-    var sum = ov && ov.summaryHtml ? sanitize(ov.summaryHtml) : (v.summary ? esc(v.summary) : '');
+    var sum = ov && ov.summaryHtml ? fixSum(ov.summaryHtml) : (v.summary ? esc(v.summary) : '');
     var cachedSum = !sum && C.state.sums && C.state.sums[id];
     h += '<section class="rsec"><h2 class="rsec-h">Summary <span class="sumlabel" id="sumlabel">' + (sum ? 'Edited' : cachedSum ? esc(cachedSum.label) : '') + '</span></h2><div id="sumbody" data-id="' + esc(id) + '" data-edited="' + (sum ? '1' : '') + '">' +
-      (sum ? '<div class="sumbox">' + sum + '</div>' : cachedSum ? sumHtml(cachedSum.text) : '<p class="muted">Preparing a summary…</p>') + '</div></section>';
-    h += '<section class="rsec"><h2 class="rsec-h">Document text</h2><div id="docbody">';
-    if (ov && ov.html) h += '<div class="docbox">' + sanitize(ov.html) + '</div>';
-    else if (ov && ov.text) h += '<pre class="doc">' + esc(ov.text) + '</pre>';
+      (sum ? '<div class="sumbox sumpaper" data-rl-doc="1">' + sum + '</div>' : cachedSum ? sumHtml(cachedSum.text) : '<p class="muted">Preparing a summary…</p>') + '</div></section>';
+    h += '<section class="rsec"><div class="rsec-row"><h2 class="rsec-h">Document text</h2>' + fontBar() + '</div><div id="docbody">';
+    if (ov && ov.html) h += docPaper(ov.html);
+    else if (ov && ov.text) h += plainPaper(ov.text);
     else h += '<p class="muted">Loading text…</p>';
     h += '</div></section>';
     if (v.amend) h += '<section class="rsec"><h2 class="rsec-h">Amendment note</h2><div class="amend">' + esc(v.amend) + '</div></section>';
@@ -1013,20 +2240,37 @@ window.RL_THEME = {
       .then(function (d) { if (d && d.ok && d.summary) setSummary(id, d.summary, 'AI summary'); else none(); })
       .catch(none);
   }
+
+  // ---- Saved posts keep their own layout: the classic reader's pipeline, reading font and text size ----
+  function fontScale() { try { return parseFloat(localStorage.getItem('rl_font_scale_' + C.profileKey()) || '1') || 1; } catch (e) { return 1; } }
+  function setFontScale(v) { try { localStorage.setItem('rl_font_scale_' + C.profileKey(), String(v)); } catch (e) {} }
+  function paperStyle() { var z = fontScale(); return 'font-size:' + (16 * z).toFixed(1) + 'px;--rl-zoom:' + z; }
+  function docPaper(html) {
+    var out = sanitize(html);
+    try { if (window.RLDocFix) out = window.RLDocFix.doc(out); } catch (e) {}
+    return '<div class="docpaper" data-rl-doc="1" style="' + paperStyle() + '">' + out + '</div>';
+  }
+  function plainPaper(text) { return '<div class="docpaper plain" data-rl-doc="1" style="' + paperStyle() + '">' + esc(text) + '</div>'; }
+  function fixSum(html) { var out = sanitize(html); try { if (window.RLDocFix) out = window.RLDocFix.summary(out); } catch (e) {} return out; }
+  function fontBar() {
+    return '<div class="fontbar" role="group" aria-label="Text size"><button class="hlink" data-act="font" data-d="-1" aria-label="Smaller text">A−</button>' +
+      '<span id="fontPct">' + Math.round(fontScale() * 100) + '%</span><button class="hlink" data-act="font" data-d="1" aria-label="Larger text">A+</button>' +
+      (fontScale() !== 1 ? '<button class="hlink" data-act="font" data-d="0">Reset</button>' : '') + '</div>';
+  }
   function fillText(id) {
     C.loadText(id).then(function (t) {
       var el = document.getElementById('docbody'); if (!el || el.getAttribute('data-done')) return;
       var known = C.state.byId[id];
-      if (t && t.html) el.innerHTML = '<div class="docbox">' + sanitize(t.html) + '</div>';
-      else if (t && t.text) el.innerHTML = '<pre class="doc">' + esc(t.text) + '</pre>';
-      else if (known && known.text) el.innerHTML = '<pre class="doc">' + esc(known.text) + '</pre>';
+      if (t && t.html) el.innerHTML = docPaper(t.html);
+      else if (t && t.text) el.innerHTML = plainPaper(t.text);
+      else if (known && known.text) el.innerHTML = plainPaper(known.text);
       else el.innerHTML = '<p class="muted">' + (t && t.pending ? 'This document is still being prepared. Open it again in a minute, or use Download PDF.' : 'The text of this ruling is not available yet. Use Download PDF above.') + '</p>';
       var cand = [(t && t.text) || '', (t && t.html ? plainOf(t.html) : ''), (known && known.text) || ''].sort(function (a, b) { return b.length - a.length; });
       fillSummary(id, cand[0]);
     }).catch(function () {
       var el = document.getElementById('docbody'); if (!el) return;
       var known = C.state.byId[id];
-      el.innerHTML = known && known.text ? '<pre class="doc">' + esc(known.text) + '</pre>' : '<p class="muted">The text is taking too long to load. Use Download PDF above, or try again.</p>';
+      el.innerHTML = known && known.text ? plainPaper(known.text) : '<p class="muted">The text is taking too long to load. Use Download PDF above, or try again.</p>';
       fillSummary(id, (known && known.text) || '');
     });
   }
@@ -1791,12 +3035,14 @@ window.RL_THEME = {
     else if (r === 'cghs') { route = 'cghs'; view = cghsView(); }
     else if (r === 'rates') { route = 'rates'; view = ratesView(); }
     else view = homeView();
+    var oldRow = document.querySelector('.chiprow .chips'), oldLeft = oldRow ? oldRow.scrollLeft : 0;
     app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route === 'read' ? '' : route) +
       (route === 'home' || route === 'search' || route === 'saved' || route === 'alerts' ? '<a class="dk-fab" href="#daksi" aria-label="Ask DakSi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></a>' : '');
     document.body.setAttribute('data-route', route);
     var on = document.querySelector('.chip[aria-pressed="true"]');
     // Bring the chosen chip into view inside its row only; the page itself must not move.
-    if (on && route !== 'read') { var row = on.parentNode; if (row) row.scrollLeft = Math.max(0, on.offsetLeft - row.offsetLeft - (row.clientWidth - on.offsetWidth) / 2); }
+    if (C.state.keepScroll) { C.state.keepScroll = false; var nr = document.querySelector('.chiprow .chips'); if (nr) nr.scrollLeft = oldLeft; }
+    else if (on && route !== 'read') { var row = on.parentNode; if (row) row.scrollLeft = Math.max(0, on.offsetLeft - row.offsetLeft - (row.clientWidth - on.offsetWidth) / 2); }
     var q = document.getElementById('q');
     if (q && r === 'search') { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
     if (route === 'read') window.scrollTo(0, 0);
@@ -1839,6 +3085,8 @@ window.RL_THEME = {
       return;
     }
     if (act === 'open') { go('#read/' + encodeURIComponent(el.getAttribute('data-id'))); }
+    else if (act === 'mchips') { C.state.multiChips = !C.state.multiChips; if (C.state.multiChips && C.state.cat) { C.state.catSel = [C.state.cat]; C.state.cat = ''; } C.state.keepScroll = true; render(); }
+    else if (act === 'mcat') { var mc = el.getAttribute('data-cat'), cs = (C.state.catSel || []).slice(), ix = cs.indexOf(mc); if (ix >= 0) cs.splice(ix, 1); else cs.push(mc); C.state.catSel = cs; C.state.pick = cs.slice(); C.state.cat = ''; C.state.limit = 40; C.state.keepScroll = true; render(); }
     else if (act === 'cat') { C.state.catSel = []; C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; render(); var h = document.querySelector('.sec'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     else if (act === 'more') { C.state.limit = (C.state.limit || 40) + 40; render(); }
     else if (act === 'back') { history.length > 1 ? history.back() : go('#home'); }
@@ -1847,6 +3095,10 @@ window.RL_THEME = {
       el.setAttribute('aria-pressed', String(C.isSaved(id))); el.textContent = C.isSaved(id) ? 'Saved' : 'Save';
     }
     else if (act === 'share') { openShare(el.getAttribute('data-id')); }
+    else if (act === 'font') { var dd = +el.getAttribute('data-d'), cur = fontScale(), step = Math.round((cur - 1) / 0.1) + dd;
+      var nv = dd === 0 ? 1 : Math.max(0.8, Math.min(1.7, Math.round((1 + step * 0.1) * 100) / 100)); setFontScale(nv);
+      document.querySelectorAll('.docpaper').forEach(function (p2) { p2.style.fontSize = (16 * nv).toFixed(1) + 'px'; p2.style.setProperty('--rl-zoom', nv); });
+      var fb = el.closest('.fontbar'); if (fb) fb.outerHTML = fontBar(); }
     else if (act === 'iphone') { iphoneSheet(); }
     else if (act === 'id-edit') { idSheet(); }
     else if (act === 'dk-faq') { var fid = el.getAttribute('data-id'); DK.faqOpen = DK.faqOpen === fid ? '' : fid; render(); }
