@@ -16,7 +16,8 @@ body{margin:0;font-family:var(--font-body);font-size:15px;line-height:1.5;color:
 h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance}
 .search{display:block;width:100%;height:50px;margin:0 0 14px;padding:0 18px;border-radius:var(--search-r);border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:500 15px var(--font-body);outline:none}
 .search:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--focus)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+.chips{display:flex;flex-wrap:nowrap;gap:8px;margin:0 0 20px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.chip{flex:0 0 auto;white-space:nowrap}
 .chip{height:36px;padding:0 16px;border-radius:999px;border:1.5px solid var(--rule);background:transparent;color:var(--ink);font:700 13px var(--font-body);cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
 .chip:focus-visible,.back:focus-visible,.save:focus-visible,.nav a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -31,9 +32,12 @@ h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance}
 .back,.save{height:38px;padding:0 16px;border-radius:999px;border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:700 13px var(--font-body);cursor:pointer}
 .save[aria-pressed="true"]{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
 .doc{white-space:pre-wrap;word-wrap:break-word;font:400 15px/1.7 var(--font-body);color:var(--ink);background:var(--card);border-radius:14px;padding:18px;margin:0;box-shadow:var(--shadow)}
-.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-around;gap:6px;padding:10px max(14px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));background:var(--nav-bg);border-top:1px solid var(--rule);z-index:50}
-.nav a{flex:1;text-align:center;text-decoration:none;font:700 12.5px var(--font-body);color:var(--ink-soft);padding:8px 6px;border-radius:999px}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:6px;padding:10px max(14px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));background:var(--nav-bg);border-top:1px solid var(--rule);z-index:50}
+.nav a{flex:1;max-width:180px;text-align:center;text-decoration:none;font:700 12.5px var(--font-body);color:var(--ink-soft);padding:8px 6px;border-radius:999px}
 .nav a[aria-current="page"]{background:var(--accent-fill);color:var(--accent-ink)}
+.summary{font-size:15px;color:var(--ink-soft);margin:0 0 12px}
+.pdf{display:inline-flex;align-items:center;height:40px;padding:0 18px;border-radius:999px;background:var(--accent-fill);color:var(--accent-ink);font:700 13.5px var(--font-body);text-decoration:none;margin:0 0 16px}
+.pdf:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 :root{--paper:#FBF1DF;--card:#FFF8EC;--paper-2:#F5E4C6;--ink:#2E1F1A;--ink-soft:#6B5346;--plum:#6A2C5A;--plum-ink:#FFF8EC;--marigold:#E9A23B;--sage:#6F8F6A;--rule:#E2CBA8;--accent:#6A2C5A;--accent-fill:#6A2C5A;--accent-ink:#FFF8EC;--focus:rgba(106,44,90,.25);--nav-bg:#FFF8EC;--search-r:999px;--font-display:'Fraunces',Georgia,serif;--font-body:'Figtree',system-ui,sans-serif;--shadow:0 10px 24px -14px rgba(106,44,90,.35);color-scheme:light}
 body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transparent 0);background-size:22px 22px}
@@ -63,7 +67,7 @@ body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transpar
 (function (global) {
   var ENDPOINT = (global.RL_CONFIG && global.RL_CONFIG.endpoint) || '';
   var KEY_IDX = 'rl_index_v2', KEY_SAVED = 'rl_saved';
-  var state = { items: [], cats: [], loaded: false, error: '', query: '', cat: '', saved: [], text: {}, route: 'home' };
+  var state = { byId: {}, items: [], cats: [], loaded: false, error: '', query: '', cat: '', saved: [], text: {}, route: 'home' };
 
   function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function fetchJson(url) {
@@ -79,7 +83,7 @@ body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transpar
   }
   function isSaved(id) { return state.saved.indexOf(id) >= 0; }
 
-  function cleanName(n) { return String(n || '').replace(/\.pdf$/i, '').trim(); }
+  function cleanName(n) { return String(n || '').replace(/\.(pdf|jpe?g|png|docx?|xlsx?|txt)$/i, '').trim(); }
   function shortDate(d) {
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(d || ''));
     if (m) return m[3] + '.' + m[2] + '.' + m[1];
@@ -92,26 +96,53 @@ body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transpar
 
   function applyIndex(d) {
     var items = (d && d.items) || [];
+    if (!items.length) return false;
     state.items = items.filter(function (x) { return x && x.id; }).map(function (x) {
-      return { id: String(x.id), name: cleanName(x.name), date: x.date || '', category: x.category || 'Other' };
+      var prev = state.byId && state.byId[x.id];
+      return { id: String(x.id), name: cleanName(x.name), date: x.date || '', category: x.category || 'Other',
+        orderNo: x.orderNo || '', status: x.status || '', summary: x.summary || '',
+        url: x.url || (prev && prev.url) || '',
+        text: x.text || (prev && prev.text) || '' };
     });
+    state.byId = {};
+    state.items.forEach(function (x) { state.byId[x.id] = x; x.hay = norm(x.name + ' ' + x.category + ' ' + x.orderNo + ' ' + x.date + ' ' + x.summary); });
     var seen = {}; state.cats = [];
     state.items.forEach(function (x) { if (!seen[x.category]) { seen[x.category] = 1; state.cats.push(x.category); } });
     state.cats.sort();
     state.loaded = true; state.error = '';
+    return true;
   }
-  function loadIndex() {
-    // Show the saved copy at once, then refresh from the backend.
+  function slim(d) {
+    // Keep the device copy small: titles and dates only, no full text.
+    return { syncedAt: d.syncedAt || '', items: (d.items || []).map(function (x) {
+      return { id: x.id, name: x.name, date: x.date, category: x.category, orderNo: x.orderNo || '', status: x.status || '', summary: x.summary || '', url: x.url || '' }; }) };
+  }
+  function withTimeout(ms) { var c = window.AbortController ? new AbortController() : null; if (c) setTimeout(function () { c.abort(); }, ms); return c; }
+  function loadIndex(onUpdate) {
+    // 1. Device copy: instant on repeat visits.
     try { var cached = JSON.parse(localStorage.getItem(KEY_IDX) || 'null'); if (cached) applyIndex(cached); } catch (e) {}
-    if (!ENDPOINT) { if (!state.loaded) state.error = 'No backend endpoint configured.'; return Promise.resolve(); }
-    return fetchJson(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'export=index&t=' + Date.now())
-      .then(function (d) { applyIndex(d); store(KEY_IDX, d); })
-      .catch(function (e) { if (!state.loaded) state.error = 'Could not reach the rulings service. ' + (e.message || ''); });
+    if (state.loaded && onUpdate) onUpdate();
+    // 2. search-index.json from the same site (CDN, about a second), includes the text of every ruling.
+    var stat = fetch('search-index.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (d) { if (applyIndex(d)) { store(KEY_IDX, slim(d)); if (onUpdate) onUpdate(); } })
+      .catch(function () {});
+    // 3. Backend, in the background, for anything newer than the committed file.
+    if (!ENDPOINT) return stat;
+    var c = withTimeout(45000);
+    var live = fetch(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'export=index&t=' + Date.now(), { redirect: 'follow', cache: 'no-store', signal: c ? c.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (d) { return stat.then(function () { if (applyIndex(d)) { store(KEY_IDX, slim(d)); if (onUpdate) onUpdate(); } }); })
+      .catch(function (e) { return stat.then(function () { if (!state.loaded) { state.error = 'Could not load the rulings. Check your connection and try again.'; if (onUpdate) onUpdate(); } }); });
+    return live;
   }
   function loadText(id) {
     if (state.text[id] !== undefined) return Promise.resolve(state.text[id]);
+    var known = state.byId && state.byId[id];
+    if (known && known.text) return Promise.resolve(known.text);
     if (!ENDPOINT) return Promise.resolve('');
-    return fetchJson(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'text=' + encodeURIComponent(id))
+    var c = withTimeout(25000);
+    return fetch(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'text=' + encodeURIComponent(id), { redirect: 'follow', signal: c ? c.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (d) { var t = (d && d.text) || ''; state.text[id] = t; return t; });
   }
   function filtered() {
@@ -119,7 +150,7 @@ body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transpar
     return state.items.filter(function (x) {
       if (state.cat && x.category !== state.cat) return false;
       if (!toks.length) return true;
-      var hay = norm(x.name + ' ' + x.category + ' ' + x.date);
+      var hay = x.hay || norm(x.name + ' ' + x.category + ' ' + x.date);
       return toks.every(function (t) { return hay.indexOf(t) >= 0; });
     });
   }
@@ -173,6 +204,7 @@ window.RL_THEME = {
     return out + '</div>';
   }
   function list(items, empty) {
+    if (!C.state.loaded) return '';
     if (!items.length) return '<p class="empty show">' + esc(empty) + '</p>';
     return '<div class="rack">' + items.map(function (x) { return T.card(x, C.isSaved(x.id)); }).join('') + '</div>';
   }
@@ -204,12 +236,15 @@ window.RL_THEME = {
   function readView(id) {
     var x = C.state.items.filter(function (i) { return i.id === id; })[0];
     var title = x ? x.name : 'Ruling';
-    var body = '<div class="reader" id="reader"><p class="empty show">Loading text…</p></div>';
+    var extra = '';
+    if (x && x.summary) extra += '<p class="summary">' + esc(x.summary) + '</p>';
+    if (x && x.url) extra += '<p><a class="pdf" href="' + esc(x.url) + '" target="_blank" rel="noopener">Open the original PDF</a></p>';
+    var body = extra + '<div class="reader" id="reader"><p class="empty show">Loading text…</p></div>';
     C.loadText(id).then(function (t) {
       var el = document.getElementById('reader'); if (!el) return;
-      el.innerHTML = t ? '<pre class="doc">' + esc(t) + '</pre>' : '<p class="empty show">Text for this ruling is not available yet.</p>';
+      el.innerHTML = t ? '<pre class="doc">' + esc(t) + '</pre>' : '<p class="empty show">The text of this ruling is not available yet. Use the PDF link above.</p>';
     }).catch(function () {
-      var el = document.getElementById('reader'); if (el) el.innerHTML = '<p class="empty show">Could not load the text. Check your connection and try again.</p>';
+      var el = document.getElementById('reader'); if (el) el.innerHTML = '<p class="empty show">The text is taking too long to load. Use the PDF link above, or try again.</p>';
     });
     return '<div class="topbar"><button class="back" data-act="back">Back</button>' +
       '<button class="save" data-act="save" data-id="' + esc(id) + '" aria-pressed="' + C.isSaved(id) + '">' + (C.isSaved(id) ? 'Saved' : 'Save') + '</button></div>' +
@@ -256,7 +291,7 @@ window.RL_THEME = {
   window.addEventListener('hashchange', render);
   C.loadSaved();
   render();
-  C.loadIndex().then(render);
+  C.loadIndex(render);
 })();
 
 </script>
