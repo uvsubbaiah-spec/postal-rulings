@@ -1712,6 +1712,204 @@ window.RLDocFix = (function () {
       cell.style.setProperty('line-height', '1.4');
     });
   }
+
+  formatDoc(raw) {
+    const lines = String(raw || '').replace(/\r/g, '').split('\n');
+    const blocks = [];
+    let para = [];
+    const flush = () => { if (para.length) { blocks.push({ kind: 'para', text: para.join(' ').replace(/\s+/g, ' ').trim() }); para = []; } };
+    // Pre-pass: find table regions conservatively. Column-split lines (tab or
+    // 2+ spaces) are trusted; money-column lines are only accepted when a
+    // "Table - N" caption sits just above them. Runs never chain across blank
+    // or non-tabular lines, so prose is never promoted into a table.
+    const R = lines.map(l => this.rowCells(l));
+    const tblStart = {}, skip = {};
+    const hosp = this.hospitalRecords(lines);
+    if (hosp) { for (let k = hosp.start; k <= hosp.end; k++) R[k] = null; tblStart[hosp.start] = { rows: hosp.rows, caption: '', hasHeader: true, end: hosp.end }; }
+    for (let i = 0; i < lines.length; i++) {
+      if (!R[i] || skip[i]) continue;
+      let j = i;
+      while (j + 1 < lines.length && R[j + 1]) j++;
+      const raw = R.slice(i, j + 1);
+      const spaceKind = raw.every(r => r.kind === 'space');
+      const pctKind = raw.every(r => r.kind === 'pct');
+      let caption = '', capIdx = -1;
+      for (let b = i - 1; b >= 0 && b >= i - 4; b--) {
+        const c = lines[b].trim(); if (!c) continue;
+        if (/^table\s*[-\u2013:]?\s*\d+/i.test(c)) { caption = c; capIdx = b; break; }
+      }
+      const kind = spaceKind ? 'space' : (pctKind ? 'pct' : 'money');
+      const ok = spaceKind
+        ? (raw.length >= 3 || (!!caption && raw.length >= 2))
+        : pctKind
+          ? (caption ? raw.length >= 2 : raw.length >= 4)
+          : (!!caption && raw.length >= 2 && raw.every(r => r.money >= 2));
+      if (!ok || !this.looksLikeTable(raw.map(r => r.cells), kind, caption)) { i = j; continue; }
+      // Header: the non-tabular lines between the caption and the first row.
+      let header = null, note = [];
+      if (capIdx >= 0) {
+        for (let b = capIdx + 1; b < i; b++) { const c = lines[b].trim(); if (c) note.push(c); }
+      }
+      const rows = raw.map(r => r.cells);
+      if (spaceKind && raw[0].money === 0) { header = true; }
+      else if (note.length) {
+        // A single non-tabular line above a money table is that table's heading.
+        const hdr = note.length === 1 ? this.rowCells(note[0]) : null;
+        if (hdr) { rows.unshift(hdr.cells); header = true; note = []; }
+      }
+      const cap = [caption, note.join(' ')].filter(Boolean).join(' \u2014 ');
+      if (capIdx >= 0) for (let b = capIdx; b < i; b++) skip[b] = 1;
+      tblStart[i] = { rows: rows, caption: cap, hasHeader: !!header, end: j };
+      i = j;
+    }
+    for (let li = 0; li < lines.length; li++) {
+      const ln = lines[li];
+      if (skip[li]) continue;
+      const mark = tblStart[li];
+      if (mark) {
+        flush();
+        blocks.push({ kind: 'table', rows: mark.rows, caption: mark.caption, hasHeader: mark.hasHeader });
+        li = mark.end;
+        continue;
+      }
+      const t = ln.trim();
+      if (!t) { flush(); continue; }
+      const letters = t.replace(/[^A-Za-z]/g, '');
+      const isUpper = letters.length >= 3 && t === t.toUpperCase() && t.length <= 80;
+      const isKeyHead = /^(sub(?:ject)?\s*:|ref\s*:|no\.?\s|f\.?\s?no\.?|order\b|notification\b|circular\b|memorandum\b|corrigendum\b)/i.test(t) && t.length <= 100;
+      const isBullet = /^([\u2022\u25CF\u25AA\-\*·]\s+|\(?[ivx]+\)\s+|\(?[a-z]\)\s+|\(?\d+\)\s+|\d+\.\s+)/i.test(t);
+      if (isBullet) { flush(); blocks.push({ kind: 'list', text: t.replace(/^[\u2022\u25CF\u25AA\-\*·]\s+/, '') }); continue; }
+      if (isUpper || isKeyHead) { flush(); blocks.push({ kind: 'heading', text: t }); continue; }
+      para.push(t);
+    }
+    flush();
+    return blocks.map(b => ({ ...b, isHeading: b.kind === 'heading', isPara: b.kind === 'para', isList: b.kind === 'list', isTable: b.kind === 'table',
+      tableEl: b.kind === 'table' ? React.createElement('div', { dangerouslySetInnerHTML: { __html: this.tableHtml(b.rows, b.caption, b.hasHeader) } }) : null }));
+  }
+
+  hospitalRecords(lines) {
+    const START = /^\s*IN\d{8,}\s+\S/;
+    const JUNK = /^\s*(HFR ID Hospital Name.*|on|Address City\/State HCO Nodal|Contact|Specialities Validity Range Status Map|--\s*\d+\s+of\s+\d+\s*--|page\s*\d+(\s*of\s*\d+)?)\s*$/i;
+    const starts = [];
+    lines.forEach((l, i) => { if (START.test(l)) starts.push(i); });
+    if (starts.length < 3) return null;
+    let end = starts[starts.length - 1];
+    while (end + 1 < lines.length && end - starts[starts.length - 1] < 16) { if (!lines[end + 1].trim()) break; end++; }
+    const MON = '(\\d{1,2}\\s+[A-Za-z]{3,9})';
+    const STATES = /(andhra pradesh|arunachal pradesh|assam|bihar|chhattisgarh|goa|gujarat|haryana|himachal pradesh|jharkhand|karnataka|kerala|madhya pradesh|maharashtra|manipur|meghalaya|mizoram|nagaland|odisha|orissa|punjab|rajasthan|sikkim|tamil nadu|telangana|tripura|uttar pradesh|uttarakhand|uttaranchal|west bengal|delhi|new delhi|chandigarh|puducherry|pondicherry|jammu and kashmir|jammu & kashmir|ladakh|andaman and nicobar islands|dadra and nagar haveli|daman and diu|lakshadweep)$/i;
+    const one = (x) => String(x || '').replace(/\s+/g, ' ').replace(/^[\s,;]+|[\s,;]+$/g, '');
+    // Speciality names are printed with no separator, and a column wrap can cut a word in two: join mid-word, split at each capital.
+    // Speciality names are printed one after another with no separator, and a column wrap can cut a word anywhere. The text is closed up and read against the list of CGHS speciality names; what is not in the list is split at capitals.
+    const VOC = ['Abdomen/GI Surgery', 'Abdomen/ GI Surgery', 'Annual Health Check-up', 'Biopsies', 'Blood Component Charges', 'Burns And Plastic Surgery', 'Cardiology', 'Cardiothoracic Surgery', 'Chemotherapy', 'Consultation', 'Critical Care', 'Dentistry', 'ENT', 'General Medicine', 'General Procedure', 'General Surgery', 'Head and Neck Surgery', 'Implants', 'Laboratory Medicine', 'Medical Gastroenterology', 'Medical management', 'Paediatric Medical management', 'Nephrology And Urology', 'Neo-natal care Packages', 'Neurology', 'Neuro-Surgery', 'Obstetrics And Gynaecology', 'Obstetrics & Gynaecology', 'Oncology Investigations', 'Oncology', 'Ophthalmology', 'Orthopaedics', 'Otorhinolaryngology', 'Paediatric Surgery', 'Paediatrics', 'Physiotherapy', 'Pulmonology', 'Radiation Oncology', 'Radiology', 'Skin', 'Surgical Oncology', 'Unspecified Surgical Package', 'Urology', 'Ward charges', 'Psychiatry', 'Plastic Surgery', 'Nuclear Medicine', 'Gastroenterology', 'Dialysis', 'Pathology', 'Investigations', 'Day Care', 'Physiotherapy Charges', 'Nutrition', 'Endocrinology', 'Rheumatology', 'Haematology', 'Vascular Surgery', 'Neurosurgery', 'Cardiovascular And Cardiac Surgery', 'Cardiovascular And Thoracic Surgery', 'Interventional Radiology', 'Interventional Cardiology', 'Polytrauma', 'Ayurveda', 'Homeopathy', 'Unani', 'Siddha', 'Yoga And Naturopathy', 'Neonatology', 'Anaesthesia', 'Emergency', 'Oral And Maxillofacial Surgery', 'Medical Oncology', 'Paediatric Cardiology', 'Nephrology', 'Cardiac Surgery', 'Thoracic Surgery'];
+    const VK = VOC.map(v => ({ k: v.toLowerCase().replace(/[^a-z0-9&\/\-]/g, ''), v: v })).sort((x, y) => y.k.length - x.k.length);
+    const specs = (t) => {
+      const c = String(t || '').split('\n').map(x => x.trim()).join('').replace(/\s+/g, ''), lc = c.toLowerCase();
+      const out = []; let i = 0, un = '';
+      const flush = () => { if (un) { out.push(one(un.replace(/([a-z\)])([A-Z])/g, '$1, $2').replace(/(?<=[A-Z]{2})(?=[A-Z][a-z])/g, ', '))); un = ''; } };
+      while (i < c.length) {
+        const m = VK.find(x => lc.startsWith(x.k, i));
+        if (m) { flush(); out.push(m.v); i += m.k.length; } else { un += c[i]; i++; }
+      }
+      flush();
+      return out.filter(Boolean).join(', ');
+    };
+    const rows = [['HFR ID', 'Hospital name', 'Accreditation', 'Address', 'City / State', 'Contact', 'Specialities', 'Valid from', 'Valid to', 'Status', 'Map']];
+    starts.forEach((s0, n) => {
+      const e = n + 1 < starts.length ? starts[n + 1] - 1 : end;
+      let t = lines.slice(s0, e + 1).filter(l => l.trim() && !JUNK.test(l)).map(l => l.trim()).join('\n');
+      const idm = t.match(/^(IN\d{8,})\s+/);
+      if (!idm) return;
+      t = t.slice(idm[0].length);
+      let lat = '', st = '', fr = '', to = '', yr;
+      t = t.replace(/(?:https?:\/\/\S*google\.com\/?\s*)?maps\?\s*q=\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)/i, (m, a1, b1) => { lat = a1 + ', ' + b1; return '\n'; });
+      t = t.replace(/https?:\/\/\S*google\.com\/?/gi, '\n');
+      t = t.replace(/\b(De-?empanelled|Dis-?empanelled|Empanelled|Suspended)\b/i, (m) => { st = m; return '\n'; });
+      t = t.replace(new RegExp('To:\\s*' + MON + '\\s+(\\d{4})', 'i'), (m, d1, y1) => { to = d1 + ' ' + y1; return '\n'; });
+      t = t.replace(new RegExp('From:\\s*' + MON + '(?:\\s+(\\d{4}))?', 'i'), (m, d1, y1) => { fr = d1 + (y1 ? ' ' + y1 : ''); return '\n'; });
+      if (fr && !/\d{4}$/.test(fr)) t = t.replace(/(^|\n)\s*(20\d\d)\s*(?=\n|$)/, (m, p, y1) => { fr += ' ' + y1; return '\n'; });
+      const ph = /\b\d{10}(?:\s*[,\/]\s*\d{10})*/.exec(t);
+      let pre = ph ? t.slice(0, ph.index) : t, post = ph ? t.slice(ph.index + ph[0].length) : '';
+      // A record cut by a page break drops the end of its name into the speciality text.
+      const lk = /(?:^|\n)\s*(Hospital|Clinic|Centre|Center|Nursing Home)\s+[A-Za-z ]*-?\s?\d{6}\.?,?/.exec(post);
+      if (lk) { post = post.replace(lk[0], '\n'); pre = pre.replace(/\s+$/, '') ; var nameTail = ' ' + lk[1]; }
+      const pj = one(pre.replace(/\n/g, ' '));
+      let name = pj, acc = '', addr = '';
+      var nameTail = typeof nameTail === 'undefined' ? '' : nameTail;
+      const am = /\s((?:NABH|NABL)(?:\s*[,&\/]\s*(?:NABH|NABL))*|-)(?=\s|$)/.exec(' ' + pj);
+      if (am) { const k = am.index; name = one((' ' + pj).slice(0, k)); acc = am[1] === '-' ? '' : am[1]; addr = one((' ' + pj).slice(k + am[0].length)); }
+      else { const nl = pre.split('\n'); name = one(nl[0]); addr = one(nl.slice(1).join(' ')); }
+      name = one(name + nameTail);
+      const parts = addr.split(',').map(x => x.trim()).filter(Boolean);
+      let city = '', state = '';
+      if (parts.length >= 2) {
+        const last = parts[parts.length - 1].replace(/[-\s]*\d{6}\.?$/, '').replace(/\.$/, '').trim();
+        if (STATES.test(last)) { state = last; city = parts[parts.length - 2]; parts.splice(parts.length - 2, 2); addr = parts.join(', '); }
+      }
+      rows.push([idm[1], name, acc, addr, [city, state].filter(Boolean).join(', '), ph ? ph[0].replace(/\s+/g, ' ') : '', specs(post), fr, to, st, lat]);
+    });
+    return rows.length > 3 ? { rows: rows, start: starts[0], end: end } : null;
+  }
+
+  looksLikeTable(rows, kind, caption) {
+    if (!rows || rows.length < 2) return false;
+    const cols = rows.reduce((m, r) => Math.max(m, r.length), 0);
+    if (cols < 2) return false;
+    // 1. Column consistency — wrapped prose splits into uneven cell counts.
+    const counts = {};
+    rows.forEach(r => { counts[r.length] = (counts[r.length] || 0) + 1; });
+    const modal = Math.max.apply(null, Object.keys(counts).map(k => counts[k]));
+    if (modal < Math.max(2, Math.ceil(rows.length * 0.7))) return false;
+    const flat = [].concat.apply([], rows).map(c => String(c == null ? '' : c));
+    // 2. Cell brevity — a cell holds a figure or a short label, not a sentence.
+    if (flat.some(c => c.length > 70)) return false;
+    if (flat.some(c => c.trim().split(/\s+/).length > 12)) return false;
+    // 3. Sentence punctuation is the clearest sign the run is a paragraph.
+    if (flat.some(c => /[a-z],\s|[a-z]\.\s+[A-Z]|;\s/.test(c))) return false;
+    // 4. Numeric evidence — one non-first column that is mostly figures.
+    if (kind !== 'money') {
+      let numeric = false;
+      for (let j = 1; j < cols; j++) {
+        const vals = rows.map(r => r[j]).filter(v => v != null && String(v).trim());
+        if (vals.length < Math.ceil(rows.length * 0.6)) continue;
+        const hits = vals.filter(v => this.isNumCell(v) || /\d\s?%/.test(String(v)) || this.moneyCells(v).length).length;
+        if (hits >= Math.ceil(vals.length * 0.6)) { numeric = true; break; }
+      }
+      if (!numeric && !caption) return false;
+    }
+    return true;
+  }
+
+  rowCells(line) {
+    const t = String(line || '').trim();
+    if (!t) return null;
+    if (/\t| {2,}/.test(t)) {
+      const parts = t.split(/\t| {2,}/).map(s => s.trim()).filter(Boolean);
+      return parts.length >= 2 ? { cells: parts, kind: 'space', money: parts.filter(p => this.moneyCells(p).length).length } : null;
+    }
+    const money = this.moneyCells(t);
+    if (money.length >= 2) {
+      const lead = t.match(/^(\d{1,2})[.)]?\s+/);
+      const label = t.slice(lead ? lead[0].length : 0, t.indexOf(money[0])).trim();
+      const cells = [];
+      if (lead) cells.push(lead[1]);
+      cells.push(label);
+      money.forEach(m => cells.push(m.trim()));
+      return { cells: cells, kind: 'money', money: money.length };
+    }
+    // "label … 20% of basic pension" — slab tables in scanned OMs. One figure
+    // per line, so these are only accepted as part of a run of similar lines.
+    const pct = t.match(/(\d[\d.,]*\s?%)/);
+    if (pct && pct.index > 2) {
+      const label = t.slice(0, pct.index).trim();
+      // Guard against wrapped prose: a slab label starts like a label and does
+      // not trail off in a preposition/conjunction the way a broken line does.
+      if (label.length > 70) return null;
+      if (!/^[A-Z0-9(\u20b9]/.test(label)) return null;
+      if (/\b(of|the|at|on|in|and|to|for|shall|be|is|was|with|from|as|by|that|which)$/i.test(label)) return null;
+      return { cells: [label, t.slice(pct.index).trim()], kind: 'pct', money: 1 };
+    }
+    return null;
+  }
   }
   var df = new DocFix();
   return {
@@ -1721,6 +1919,10 @@ window.RLDocFix = (function () {
       try { out = df.styleTables(out); } catch (e) {}
       try { out = df.normalizeShortLines_(out); } catch (e) {}
       return out;
+    },
+    text: function (raw) {
+      if (!raw) return '';
+      try { var blocks = df.formatDoc(raw); if (!blocks || !blocks.length) return ''; return this.doc(df.htmlFromBlocks(blocks)); } catch (e) { return ''; }
     },
     summary: function (html) {
       if (!html) return '';
@@ -2196,8 +2398,11 @@ window.RLDocFix = (function () {
     h += '<section class="rsec"><h2 class="rsec-h">Summary <span class="sumlabel" id="sumlabel">' + (sum ? 'Edited' : cachedSum ? esc(cachedSum.label) : '') + '</span></h2><div id="sumbody" data-id="' + esc(id) + '" data-edited="' + (sum ? '1' : '') + '">' +
       (sum ? '<div class="sumbox sumpaper" data-rl-doc="1">' + sum + '</div>' : cachedSum ? sumHtml(cachedSum.text) : '<p class="muted">Preparing a summary…</p>') + '</div></section>';
     h += '<section class="rsec"><div class="rsec-row"><h2 class="rsec-h">Document text</h2>' + fontBar() + '</div><div id="docbody">';
-    if (ov && ov.html) h += docPaper(ov.html);
+    var tx = C.state.text && C.state.text[id];
+    if (tx && tx.html) h += docPaper(tx.html);
+    else if (ov && ov.html) h += docPaper(ov.html);
     else if (ov && ov.text) h += plainPaper(ov.text);
+    else if (tx && tx.text) h += plainPaper(tx.text);
     else h += '<p class="muted">Loading text…</p>';
     h += '</div></section>';
     if (v.amend) h += '<section class="rsec"><h2 class="rsec-h">Amendment note</h2><div class="amend">' + esc(v.amend) + '</div></section>';
@@ -2256,7 +2461,13 @@ window.RLDocFix = (function () {
     try { if (window.RLDocFix) out = window.RLDocFix.doc(out); } catch (e) {}
     return '<div class="docpaper" data-rl-doc="1" style="' + paperStyle() + '">' + out + '</div>';
   }
-  function plainPaper(text) { return '<div class="docpaper plain" data-rl-doc="1" style="' + paperStyle() + '">' + esc(text) + '</div>'; }
+  // Text-only posts (most scans) are laid out the way the classic reader lays them out: headings, paragraphs, lists and tables.
+  function plainPaper(text) {
+    var html = '';
+    try { if (window.RLDocFix) html = window.RLDocFix.text(text); } catch (e) {}
+    if (html) return '<div class="docpaper" data-rl-doc="1" style="' + paperStyle() + '">' + sanitize(html) + '</div>';
+    return '<div class="docpaper plain" data-rl-doc="1" style="' + paperStyle() + '">' + esc(text) + '</div>';
+  }
   function fixSum(html) { var out = sanitize(html); try { if (window.RLDocFix) out = window.RLDocFix.summary(out); } catch (e) {} return out; }
   function fontBar() {
     return '<div class="fontbar" role="group" aria-label="Text size"><button class="hlink" data-act="font" data-d="-1" aria-label="Smaller text">A−</button>' +
@@ -2265,9 +2476,10 @@ window.RLDocFix = (function () {
   }
   function fillText(id) {
     C.loadText(id).then(function (t) {
-      var el = document.getElementById('docbody'); if (!el || el.getAttribute('data-done')) return;
+      var el = document.getElementById('docbody'); if (!el) return;
       var known = C.state.byId[id];
-      if (t && t.html) el.innerHTML = docPaper(t.html);
+      if (t && t.html) { el.innerHTML = docPaper(t.html); el.setAttribute('data-done', '1'); }
+      else if (el.getAttribute('data-done')) { /* keep the saved formatted copy */ }
       else if (t && t.text) el.innerHTML = plainPaper(t.text);
       else if (known && known.text) el.innerHTML = plainPaper(known.text);
       else el.innerHTML = '<p class="muted">' + (t && t.pending ? 'This document is still being prepared. Open it again in a minute, or use Download PDF.' : 'The text of this ruling is not available yet. Use Download PDF above.') + '</p>';
@@ -2290,14 +2502,13 @@ window.RLDocFix = (function () {
       '<button class="save" data-act="save" data-id="' + esc(id) + '" aria-pressed="' + C.isSaved(id) + '">' + (C.isSaved(id) ? 'Saved' : 'Save') + '</button></div></div>' +
       '<div id="rbody">' + readerBody(id, cached) + '</div>';
     var seq = (readView.seq = (readView.seq || 0) + 1);
-    if (!(cached && (cached.html || cached.text))) fillText(id);
-    else setTimeout(function () { fillSummary(id, cached.text || plainOf(cached.html)); }, 0);
+    fillText(id);
+    if (cached && (cached.html || cached.text)) setTimeout(function () { fillSummary(id, cached.text || plainOf(cached.html)); }, 0);
     C.loadOv(id).then(function (ov) {
       if (seq !== readView.seq || !ov) return;
       var rb = document.getElementById('rbody'); if (!rb) return;
       rb.innerHTML = readerBody(id, ov);
-      if (ov.html || ov.text) { var d = document.getElementById('docbody'); if (d) d.setAttribute('data-done', '1'); fillSummary(id, ov.text || plainOf(ov.html)); }
-      else fillText(id);
+      if (ov.html || ov.text) { var d = document.getElementById('docbody'); var tx2 = C.state.text && C.state.text[id]; if (d && !(tx2 && tx2.html)) d.setAttribute('data-done', '1'); fillSummary(id, ov.text || plainOf(ov.html)); }
     }).catch(function () {});
     return html;
   }
@@ -2807,7 +3018,7 @@ window.RLDocFix = (function () {
       '<input id="rtHosp" list="rtHosps" data-act="rt-hospin" autocomplete="off" placeholder="Hospital (optional)' + (RT.city ? ' in ' + esc(RT.city) : '') + '" value="' + esc(RT.hosp) + '"></div>';
     if (CG.hosp) {
       var rc = rtKey(RT.city);
-      h += '<datalist id="rtHosps">' + CG.hosp.map(hRec).filter(function (r) { return !RT.city || rtKey(cityOf(r.cs)) === rc; }).slice(0, 300).map(function (r) { return '<option value="' + esc(r.n) + '">'; }).join('') + '</datalist>';
+      h += '<datalist id="rtHosps">' + CG.hosp.map(hRec).filter(function (r) { return !RT.city || rtKey(hospCity(r)) === rc || rtKey(cityOf(r.cs)) === rc; }).slice(0, 300).map(function (r) { return '<option value="' + esc(r.n) + '">'; }).join('') + '</datalist>';
     } else loadHosp();
     h += '</div><div class="rf-col">' +
       step(3, 'City tier') + cards('rt-tier', 'City tier', [['i', 'Tier I', 'Delhi, Mumbai, Hyderabad…'], ['ii', 'Tier II', 'Other large cities'], ['iii', 'Tier III', 'All other places']], RT.tier) +
@@ -2856,12 +3067,32 @@ window.RLDocFix = (function () {
     var ok = function () { if (b) b.textContent = 'Copied'; };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(function () {});
   }
+
+  // The CGHS list's "city" is often the district (e.g. "Krishna" for Vijayawada), so the real town is
+  // looked for in the whole address first, then in the city field. A Tier I/II town found anywhere wins.
+  function hospCity(r) {
+    var hay = ' ' + String((r.ad || '') + ' ' + (r.cs || '')).toLowerCase().replace(/[^a-z]+/g, ' ') + ' ';
+    var hit = '';
+    RT_T1.concat(RT_T2).some(function (c) {
+      var k = ' ' + c.toLowerCase().replace(/[^a-z]+/g, ' ').trim() + ' ';
+      if (hay.indexOf(k) >= 0) { hit = c; return true; }
+      return false;
+    });
+    if (!hit) Object.keys(RT_ALIAS).some(function (a) {
+      if (a.length >= 5 && hay.replace(/ /g, '').indexOf(a) >= 0) {
+        var target = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === RT_ALIAS[a]; })[0];
+        if (target) { hit = target; return true; }
+      }
+      return false;
+    });
+    return hit || cityOf(r.cs);
+  }
   function hospPick(name) {
     var r = (CG.hosp || []).map(hRec).filter(function (x) { return x.n === name; })[0];
     if (!r) return false;
     RT.hosp = r.n;
-    var c = cityOf(r.cs);
-    if (c) { var hit = RT_T1.concat(RT_T2).filter(function (x) { return rtKey(x) === rtKey(c); })[0]; rtPickCity(hit || c); RT.msg = 'City and tier set from ' + r.n + '.'; }
+    var c = hospCity(r);
+    if (c) { var hit = RT_T1.concat(RT_T2).filter(function (x) { return rtKey(x) === rtKey(c); })[0]; rtPickCity(hit || c); RT.msg = 'City and tier set from ' + r.n + ' (' + (hit || c) + ').'; }
     if (/super/i.test(r.a)) RT.type = 'superspeciality'; else if (/non/i.test(r.a)) RT.type = 'non_nabh'; else if (/nabh/i.test(r.a)) RT.type = 'nabh';
     rtSave(); return true;
   }
