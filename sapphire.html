@@ -1991,6 +1991,19 @@ window.RL_THEME = (function () {
     else if (act === 'dl-close') { try { localStorage.setItem('rl_dl_dismissed', '1'); } catch (x) {} var b = document.querySelector('.dlbar'); if (b) b.remove(); }
   });
   document.addEventListener('change', function (e) { if (e.target && e.target.getAttribute) screens2Change(e.target.getAttribute('data-act'), e.target); });
+
+  // Download the app straight from this site (no GitHub page in between). The phone then offers to install it;
+  // inside the Android app, the app downloads it and opens the installer itself.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href*="releases/latest/download/postal-rulings.apk"]');
+    if (!a || !window.RL_APK_LOCAL) return;
+    e.preventDefault();
+    var href = new URL(window.RL_APK_LOCAL, location.href).toString();
+    if (/PostalRulingsApp/.test(navigator.userAgent || '')) { location.href = href; return; }
+    var d = document.createElement('a'); d.href = href; d.setAttribute('download', 'postal-rulings.apk'); d.style.display = 'none';
+    document.body.appendChild(d); d.click(); setTimeout(function () { d.remove(); }, 1000);
+    var bar = document.querySelector('.dlbar'); if (bar) { var t = bar.querySelector('.dltxt'); if (t) t.innerHTML = '<b>Downloading…</b>When it finishes, tap <b>Open</b> to install.'; }
+  }, true);
   window.addEventListener('hashchange', render);
 
   // Links shared from the app (?doc=ID) open that ruling here too.
@@ -2003,6 +2016,7 @@ window.RL_THEME = (function () {
   window.RL_VERSION = window.RL_VERSION || '1.0.11';
   fetch('app-version.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
     if (d && d.version) { window.RL_VERSION = d.version; document.querySelectorAll('.hbtn .ver').forEach(function (n) { n.textContent = 'v' + d.version; }); }
+    if (d && d.apk) window.RL_APK_LOCAL = String(d.apk);
   }).catch(function () {});
   C.loadSaved();
   render();

@@ -1,11 +1,21 @@
-Postal Rulings: new designs
+Postal Rulings: direct app download and new designs
 
-Upload all four files to the root of the postal-rulings repo, replacing the current ones:
+Upload these files to the root of the postal-rulings repo, replacing the current ones:
   index.html  cozy.html  fireside.html  sapphire.html
+  app-version.json
+  postal-rulings.apk   (version 1.0.12, the same file as your v1.0.12 release)
 
-What index.html changes
-- Profile > App theme: choosing Cozy, Fireside or Sapphire switches the whole app,
-  including the Android app, to that new design. The choice is remembered.
-- Shared and notification links (?doc=...) open in the chosen design.
-- Admin (the Admin card, or index.html?classic=1) always opens the classic app.
-- Choosing Classic in the new design's Profile goes back to the classic app.
+Download behaviour
+- Get App, Download app and the Android banner download postal-rulings.apk from this site.
+  No GitHub page opens. When it finishes, the phone shows the file; tap Open to install.
+- Inside the Android app, the app downloads it and opens the installer by itself.
+
+For every future app version
+1. Publish the GitHub release as before.
+2. Upload the same APK to the repo root as postal-rulings.apk (replace the old one).
+3. Change "version" in app-version.json.
+If app-version.json has no "apk" line, the buttons fall back to the GitHub release link.
+
+Themes (unchanged from the last delivery)
+- Profile > App theme: Cozy, Fireside or Sapphire switches the whole app to that design.
+- Admin (index.html?classic=1) always opens the classic app.
