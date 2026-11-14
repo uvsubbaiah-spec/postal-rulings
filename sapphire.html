@@ -161,6 +161,12 @@ body[data-route="read"]{padding-bottom:40px}
 .cart .x{border:0;background:transparent;color:var(--ink-soft);font-size:20px;cursor:pointer;width:30px;height:30px}
 .carttotal{display:flex;justify-content:space-between;margin:10px 0 0;font-size:16px}
 .small{font-size:12.5px;margin:4px 0 10px}
+.dk-nav{position:sticky;top:calc(10px + env(safe-area-inset-top,0px));z-index:20;display:flex;align-items:center;justify-content:center;gap:12px;margin:0 auto 14px;width:max-content;max-width:100%;padding:6px 8px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);border:1px solid var(--rule)}
+.dk-arrow{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:0;background:var(--accent-fill);color:var(--accent-ink);cursor:pointer}
+.dk-arrow:disabled{opacity:.35;cursor:default}
+.dk-arrow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dk-count{font:700 12.5px var(--font-body);color:var(--ink);white-space:nowrap}
+.dk-msg.me:focus{outline:2px solid var(--accent);outline-offset:3px}
 
 /* Sapphire: blue gradient hero with glass crystals, white sections, navy hexagon icons. */
 :root{--paper:#F5F8FD;--card:#FFFFFF;--ink:#1B2440;--ink-soft:#5B6785;--rule:#E2E8F3;--accent:#2F6BFF;--accent-fill:#2F6BFF;--accent-ink:#FFFFFF;--navy:#1C2D5A;--sky1:#1F4FD1;--sky2:#3C86FF;--sky3:#9CC4FF;--focus:rgba(47,107,255,.25);--nav-bg:#FFFFFF;--search-r:12px;--font-display:'Poppins',system-ui,sans-serif;--font-body:'Poppins',system-ui,sans-serif;--shadow:0 10px 30px -18px rgba(28,45,90,.35);color-scheme:light}
@@ -232,7 +238,7 @@ h1,h2{letter-spacing:-.01em}
 .pdf{box-shadow:0 8px 18px -10px rgba(47,107,255,.7)}
 .dk-fab{background:linear-gradient(135deg,var(--sky2),var(--sky1))}
 @media (max-width:760px){.hero-grid{grid-template-columns:1fr}.hero-r{order:-1}.crystal{max-width:300px}.toplinks{display:none}.count{font-size:36px}}
-.nav a{font-size:9.5px;letter-spacing:-.01em}
+.nav a{font-size:9px;letter-spacing:-.02em;padding-left:0;padding-right:0}
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -643,6 +649,14 @@ window.RL_THEME = (function () {
     dkLoadFaq();
     var h = '<div class="topbar"><button class="back" data-act="back">Back</button>' + (DK.msgs.length ? '<button class="save" data-act="dk-clear">New chat</button>' : '') + '</div>' +
       '<h1 class="page">Ask DakSi</h1><p class="note">Ask about any order, circular or ruling. DakSi answers from the rulings in this repository and shows its sources.</p>';
+    var total = DK.msgs.filter(function (m) { return m.role === 'user'; }).length;
+    if (total > 1) {
+      DK.q = Math.min(Math.max(DK.q || total, 1), total);
+      h += '<div class="dk-nav" role="group" aria-label="Move between questions">' +
+        '<button class="dk-arrow" data-act="dk-prev" aria-label="Previous question"' + (DK.q <= 1 ? ' disabled' : '') + '><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>' +
+        '<span class="dk-count" id="dkCount">Question ' + DK.q + ' of ' + total + '</span>' +
+        '<button class="dk-arrow" data-act="dk-next" aria-label="Next question"' + (DK.q >= total ? ' disabled' : '') + '><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div>';
+    }
     h += '<div class="dk-log" id="dklog">';
     if (!DK.msgs.length) {
       h += '<div class="pcard"><h2 class="rsec-h">Frequently asked</h2>';
@@ -654,8 +668,9 @@ window.RL_THEME = (function () {
       }).join('');
       h += '</div>';
     }
+    var qn = 0;
     DK.msgs.forEach(function (m, i) {
-      if (m.role === 'user') h += '<div class="dk-msg me">' + esc(m.text) + '</div>';
+      if (m.role === 'user') { qn++; h += '<div class="dk-msg me" data-q="' + qn + '" tabindex="-1">' + esc(m.text) + '</div>'; }
       else if (m.role === 'error') h += '<div class="dk-msg bot err"><p>' + esc(m.text) + '</p><button class="pdf" data-act="dk-retry" data-q="' + esc(m.q) + '">Retry</button></div>';
       else h += '<div class="dk-msg bot">' + dkAnswer(m, 'm' + i) + '</div>';
     });
@@ -664,12 +679,22 @@ window.RL_THEME = (function () {
       '<button class="pdf" type="submit"' + (DK.busy ? ' disabled' : '') + '>Ask</button></form>';
     return h;
   }
+  function dkJump(n) {
+    var all = document.querySelectorAll('.dk-msg.me'); var total = all.length; if (!total) return;
+    DK.q = Math.min(Math.max(n, 1), total);
+    var el = document.querySelector('.dk-msg.me[data-q="' + DK.q + '"]');
+    var bar = document.querySelector('.dk-nav'), gap = (bar ? bar.offsetHeight : 0) + 34;
+    if (el) { var top = el.getBoundingClientRect().top + window.scrollY - gap; window.scrollTo({ top: top, behavior: 'smooth' }); try { el.focus({ preventScroll: true }); } catch (e) {} }
+    var c = document.getElementById('dkCount'); if (c) c.textContent = 'Question ' + DK.q + ' of ' + total;
+    var pv = document.querySelector('[data-act="dk-prev"]'), nx = document.querySelector('[data-act="dk-next"]');
+    if (pv) pv.disabled = DK.q <= 1; if (nx) nx.disabled = DK.q >= total;
+  }
   function renderDk() { if ((location.hash || '') === '#daksi') { render(); var l = document.getElementById('dklog'); if (l) { var last = l.lastElementChild; if (last && last.scrollIntoView) last.scrollIntoView({ block: 'start' }); } } }
   function dkAsk(q) {
     q = String(q || '').trim(); if (!q || DK.busy) return;
     var prior = DK.msgs.filter(function (m) { return m.role !== 'error'; });
     var history = prior.slice(-8).map(function (m) { return { role: m.role === 'user' ? 'user' : 'model', text: m.role === 'user' ? m.text : [m.answer || ''].concat((m.sections || []).map(function (x) { return (x.heading ? x.heading + ':\n' : '') + (x.items || []).map(function (t) { return '- ' + t; }).join('\n'); })).join('\n') }; });
-    DK.msgs = prior.concat([{ role: 'user', text: q }]); DK.busy = true; renderDk();
+    DK.msgs = prior.concat([{ role: 'user', text: q }]); DK.q = DK.msgs.filter(function (m) { return m.role === 'user'; }).length; DK.busy = true; renderDk();
     var t0 = Date.now();
     var once = function (ms) {
       var c = window.AbortController ? new AbortController() : null; if (c) setTimeout(function () { c.abort(); }, ms);
@@ -1398,7 +1423,9 @@ window.RL_THEME = (function () {
     else if (act === 'id-edit') { idSheet(); }
     else if (act === 'dk-faq') { var fid = el.getAttribute('data-id'); DK.faqOpen = DK.faqOpen === fid ? '' : fid; render(); }
     else if (act === 'dk-ask-faq' || act === 'dk-retry') { if (act === 'dk-retry') DK.msgs = DK.msgs.filter(function (m) { return m.role !== 'error'; }); dkAsk(el.getAttribute('data-q')); }
-    else if (act === 'dk-clear') { DK.msgs = []; dkStore(); render(); }
+    else if (act === 'dk-clear') { DK.msgs = []; DK.q = 0; dkStore(); render(); }
+    else if (act === 'dk-prev') { dkJump((DK.q || 1) - 1); }
+    else if (act === 'dk-next') { dkJump((DK.q || 1) + 1); }
     else if (act === 'dk-src') {
       var key = el.getAttribute('data-key') || '', nn = el.getAttribute('data-n'), msg = null;
       if (key.charAt(0) === 'm') msg = DK.msgs[+key.slice(1)];
