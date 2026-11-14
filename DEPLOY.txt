@@ -1,10 +1,11 @@
-Postal Rulings: saved-post layout, themes for admins, direct app download
+Postal Rulings: New designs in the Profile menu
 
-Upload these files to the root of the postal-rulings repo, replacing the current ones:
-  index.html  cozy.html  fireside.html  sapphire.html  app-version.json  postal-rulings.apk
+Upload index.html to the root of the postal-rulings repo, replacing the current one.
+(The other files in this zip are the same as the last delivery; upload them too if you
+have not already.)
 
-Then, in the Android app, pull down at the top of the home page once to reload it.
+Then, in the Android app, pull down at the top of the home page once so it loads the
+new index.html.
 
-To switch the Android app to a new design
-  Profile (your initial at the top) > App theme > Cozy, Fireside or Sapphire.
-  The choice is remembered on that phone. Admin opens the classic app from the Admin card.
+To switch: tap your profile icon at the top > New designs > Sapphire, Fireside or Cozy.
+The choice is remembered on that phone. Admin opens the classic app from the Admin card.
