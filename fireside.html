@@ -6,6 +6,8 @@
 <title>Postal Rulings · Fireside</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<meta name="theme-color" content="#17110F">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap">
 <style>
@@ -41,11 +43,66 @@ h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance}
 .sec .count{font-family:var(--font-body);font-size:13px;font-weight:500;color:var(--ink-soft);margin-left:8px}
 .more{display:block;margin:22px auto 0;height:42px;padding:0 22px;border-radius:999px;border:1.5px solid var(--rule);background:var(--card);color:var(--ink);font:700 13.5px var(--font-body);cursor:pointer}
 .more:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* reader */
+.tb-right{display:flex;gap:8px}
+.rhead{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0 6px}
+.dept{font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+.rtitle{font-size:clamp(24px,5.5vw,34px);line-height:1.15}
+.ractions{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 16px}
+.pdf.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--rule)}
+.st{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--st-bg,#E6F0E2);color:var(--st-fg,#2F6A3A)}
+.st-superseded{--st-bg:#FCEFD6;--st-fg:#8A5A00}
+.st-repealed{--st-bg:#F8DEDA;--st-fg:#9E2F2A}
+.st-draft{--st-bg:#ECE7E2;--st-fg:#5F564F}
+.mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:12px;overflow:hidden;margin:0 0 20px}
+.mcell{background:var(--card);padding:10px 12px;min-width:0}
+.mk{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.mv{font-size:14.5px;font-weight:600;color:var(--ink);overflow-wrap:anywhere;margin-top:2px}
+.dash{color:var(--ink-soft);font-weight:400;font-style:italic}
+.rsec{margin:0 0 22px}
+.rsec-h{font-size:19px;font-weight:700;margin:0 0 10px;color:var(--ink)}
+.sumbox,.amend{background:var(--card);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);font-size:15px;line-height:1.6;color:var(--ink);overflow-wrap:anywhere}
+.amend{white-space:pre-wrap;border-left:4px solid var(--accent)}
+.muted{color:var(--ink-soft);margin:0}
+.docbox{background:var(--doc-bg,var(--card));color:var(--doc-ink,var(--ink));border-radius:12px;padding:18px;box-shadow:var(--shadow);font-size:15px;line-height:1.65;overflow-wrap:anywhere;overflow-x:auto}
+.docbox table{border-collapse:collapse;max-width:100%}
+.docbox td,.docbox th{border:1px solid #C9B9A3;padding:6px 8px;vertical-align:top}
+.docbox img{max-width:100%;height:auto}
+/* saved rows */
+.srows{display:flex;flex-direction:column;gap:12px}
+.srow{background:var(--card);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);cursor:pointer;min-width:0;border-left:4px solid var(--accent)}
+.srow:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.srow-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.omno{font:700 12px ui-monospace,Consolas,monospace;color:var(--ink)}
+.srow-title{font-family:var(--font-display);font-size:17px;font-weight:700;line-height:1.25;color:var(--ink)}
+.srow-meta{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+/* share sheet and dialogs */
+.sheet-wrap{position:fixed;inset:0;background:rgba(10,6,4,.55);display:flex;align-items:flex-end;justify-content:center;z-index:100;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(16px + env(safe-area-inset-bottom,0px))}
+.sheet{width:100%;max-width:480px;background:var(--card);color:var(--ink);border-radius:18px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.sheet-title{margin:0 0 12px;color:var(--ink-soft)}
+.sheet-btns{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 14px}
+.sheet ol{margin:0 0 14px;padding-left:20px;line-height:1.6}
+/* logo, header buttons, tools, download banner */
+.logo{width:64px;height:64px;border-radius:50%;flex:0 0 auto;box-shadow:0 4px 12px rgba(0,0,0,.25);background:#fff}
+.hbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.hbtn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:999px;border:1.5px solid var(--rule);background:transparent;color:var(--ink);font:700 12.5px var(--font-body);text-decoration:none;cursor:pointer}
+.hbtn .ver{font-size:11px;opacity:.75}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 20px}
+.tool{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);color:var(--ink);text-decoration:none;min-width:0}
+.tool b{font-family:var(--font-display);font-size:15px;line-height:1.2}
+.tool small{font-size:11.5px;color:var(--ink-soft)}
+.tool:focus-visible,.hbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dlbar{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;gap:12px;background:var(--card);color:var(--ink);border-radius:16px;padding:12px 14px;box-shadow:0 12px 30px rgba(0,0,0,.3);max-width:560px;margin:0 auto}
+.dlbar img{width:44px;height:44px;border-radius:50%}
+.dlbar .dltxt{flex:1;min-width:0;font-size:13px;line-height:1.35}
+.dlbar .dltxt b{display:block;font-family:var(--font-display);font-size:15px}
+.dlbar .x{border:0;background:transparent;color:var(--ink-soft);font-size:22px;cursor:pointer;width:34px;height:34px}
+body[data-route="read"]{padding-bottom:40px}
 
 :root{--night:#17110F;--wall:#221915;--letter:#F3E2C4;--ember:#E8934A;--wax:#9E2F2A;--ink:#F3E2C4;--ink-soft:#A8917B;--paper:#17110F;--card:#221915;--rule:#3A2C25;--accent:#E8934A;--accent-fill:#E8934A;--accent-ink:#17110F;--focus:rgba(232,147,74,.3);--nav-bg:#1B1411;--search-r:4px;--font-display:'Cormorant Garamond',Georgia,serif;--font-body:'Lora',Georgia,serif;--shadow:0 18px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%) var(--night)}
 .lamp{text-align:center;margin-bottom:26px}
-.glow{width:120px;height:120px;margin:0 auto 14px;border-radius:50%;background:radial-gradient(circle,rgba(232,147,74,.85) 0%,rgba(232,147,74,.25) 38%,transparent 70%);animation:breathe 6s ease-in-out infinite}
+.glow{display:grid;place-items:center;width:120px;height:120px;margin:0 auto 14px;border-radius:50%;background:radial-gradient(circle,rgba(232,147,74,.85) 0%,rgba(232,147,74,.25) 38%,transparent 70%);animation:breathe 6s ease-in-out infinite}
 @keyframes breathe{50%{opacity:.7;transform:scale(.96)}}
 .lamp h1{font-size:clamp(34px,8vw,56px);font-weight:700;line-height:1}
 .lamp p{margin:10px auto 0;color:var(--ink-soft);max-width:42ch;font-style:italic}
@@ -62,6 +119,11 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 .letter h2{font:700 23px/1.2 'Cormorant Garamond',serif;margin:8px 0 10px;color:#3A2A1E}
 .sig{font-style:italic;font-size:13px;color:#7A5A3E;border-top:1px dashed #C9AE8A;padding-top:10px}
 .nav a{color:var(--ink-soft)}
+.mcell,.sumbox,.amend,.srow,.tool,.sheet,.dlbar{background:var(--wall)}
+:root{--doc-bg:#F3E2C4;--doc-ink:#3A2A1E}
+.hbtn{border-color:#4A3A30}
+.lamp .logo{width:72px;height:72px;margin:0}
+.lamp .hbtns{justify-content:center}
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -74,7 +136,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 (function (global) {
   var ENDPOINT = (global.RL_CONFIG && global.RL_CONFIG.endpoint) || '';
   var KEY_IDX = 'rl_index_v2', KEY_SAVED = 'rl_saved';
-  var state = { byId: {}, items: [], cats: [], loaded: false, error: '', query: '', cat: '', saved: [], text: {}, route: 'home' };
+  var state = { ov: {}, byId: {}, items: [], cats: [], loaded: false, error: '', query: '', cat: '', saved: [], text: {}, route: 'home' };
 
   function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function fetchJson(url) {
@@ -142,22 +204,63 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
       .catch(function (e) { return stat.then(function () { if (!state.loaded) { state.error = 'Could not load the rulings. Check your connection and try again.'; if (onUpdate) onUpdate(); } }); });
     return live;
   }
+
+  var KEY_OV = 'rl_ov_lean_v2';
+  function leanOv(all) {
+    var out = {};
+    Object.keys(all || {}).forEach(function (id) {
+      var o = all[id] || {}, l = {};
+      ['title', 'omNo', 'issueDate', 'effective', 'status', 'summary', 'depts', 'amend', 'chain', 'blogUrl'].forEach(function (k) { if (o[k] !== undefined && o[k] !== '') l[k] = o[k]; });
+      if (Object.keys(l).length) out[id] = l;
+    });
+    return out;
+  }
+  function loadOverrides(onUpdate) {
+    try { var c = JSON.parse(localStorage.getItem(KEY_OV) || 'null'); if (c) { state.ov = c; if (onUpdate) onUpdate(); } } catch (e) {}
+    if (!ENDPOINT) return Promise.resolve();
+    var c2 = withTimeout(60000);
+    return fetch(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'overrides=1&t=' + Date.now(), { redirect: 'follow', cache: 'no-store', signal: c2 ? c2.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (!d || !d.overrides) return;
+        var full = d.overrides, lean = leanOv(full);
+        Object.keys(full).forEach(function (id) { if (state.ovFull) state.ovFull[id] = full[id]; });
+        state.ovFull = full; state.ov = lean; store(KEY_OV, lean);
+        if (onUpdate) onUpdate();
+      }).catch(function () {});
+  }
+  function loadOv(id) {
+    if (state.ovFull && state.ovFull[id] && (state.ovFull[id].html || state.ovFull[id].text)) return Promise.resolve(state.ovFull[id]);
+    if (!ENDPOINT) return Promise.resolve(state.ov[id] || null);
+    var c = withTimeout(25000);
+    return fetch(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'ov=' + encodeURIComponent(id) + '&t=' + Date.now(), { redirect: 'follow', cache: 'no-store', signal: c ? c.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { var o = (d && d.override) || null; if (o) { state.ovFull = state.ovFull || {}; state.ovFull[id] = o; } return o; });
+  }
+  function view(x) {
+    // The item as the app shows it: admin corrections win over the Drive file name.
+    var o = state.ov[x.id] || {};
+    var depts = (o.depts && o.depts.length) ? o.depts : [x.category];
+    return { id: x.id, title: o.title || x.name, omNo: o.omNo || x.orderNo || '', issueDate: o.issueDate || '', effective: o.effective || '',
+      status: o.status || x.status || '', summary: o.summary || x.summary || '', depts: depts, category: x.category,
+      amend: o.amend || '', chain: o.chain || [], blogUrl: o.blogUrl || '', url: x.url || '', date: x.date || '' };
+  }
   function loadText(id) {
     if (state.text[id] !== undefined) return Promise.resolve(state.text[id]);
-    var known = state.byId && state.byId[id];
-    if (known && known.text) return Promise.resolve(known.text);
-    if (!ENDPOINT) return Promise.resolve('');
+    if (!ENDPOINT) return Promise.resolve({ text: '', html: '' });
     var c = withTimeout(25000);
     return fetch(ENDPOINT + (ENDPOINT.indexOf('?') >= 0 ? '&' : '?') + 'text=' + encodeURIComponent(id), { redirect: 'follow', signal: c ? c.signal : undefined })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (d) { var t = (d && d.text) || ''; state.text[id] = t; return t; });
+      .then(function (d) { var t = { text: (d && d.text) || '', html: (d && d.html) || '', pending: !!(d && d.pending) }; if (!t.pending) state.text[id] = t; return t; });
   }
   function filtered() {
     var q = norm(state.query).trim(), toks = q ? q.split(/\s+/) : [];
     return state.items.filter(function (x) {
-      if (state.cat && x.category !== state.cat) return false;
+      if (state.cat && x.category !== state.cat) { var od = state.ov[x.id] && state.ov[x.id].depts; if (!(od && od.indexOf(state.cat) >= 0)) return false; }
       if (!toks.length) return true;
-      var hay = x.hay || norm(x.name + ' ' + x.category + ' ' + x.date);
+      var o = state.ov[x.id];
+      var hay = (x.hay || norm(x.name + ' ' + x.category + ' ' + x.date)) + (o ? ' ' + norm((o.title || '') + ' ' + (o.omNo || '') + ' ' + (o.summary || '') + ' ' + (o.depts || []).join(' ')) : '');
+      if (state.cat && o && o.depts && o.depts.indexOf(state.cat) >= 0) { /* also listed under its extra departments */ }
       return toks.every(function (t) { return hay.indexOf(t) >= 0; });
     });
   }
@@ -165,7 +268,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 
   global.RLCore = {
     state: state, loadIndex: loadIndex, loadText: loadText, toggleSaved: toggleSaved, isSaved: isSaved,
-    loadSaved: loadSaved, filtered: filtered, savedItems: savedItems, sortedByDate: sortedByDate, shortDate: shortDate
+    loadSaved: loadSaved, loadOverrides: loadOverrides, loadOv: loadOv, view: view, filtered: filtered, savedItems: savedItems, sortedByDate: sortedByDate, shortDate: shortDate
   };
 })(window);
 
@@ -173,7 +276,9 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 <script>
 window.RL_THEME = {
   header: function () {
-    return '<header class="lamp"><div class="glow" aria-hidden="true"></div><h1>Postal Rulings</h1><p>Read the orders by lamplight. Every ruling is a letter from the Department of Posts.</p></header>';
+    return '<header class="lamp"><div class="glow"><img class="logo" src="icons/icon-192.png" alt="Postal Rulings logo"></div><h1>Postal Rulings</h1><p>Read the orders by lamplight. Every ruling is a letter from the Department of Posts.</p>' +
+      '<div class="hbtns"><a class="hbtn" href="https://github.com/uvsubbaiah-spec/postal-rulings/releases/latest/download/postal-rulings.apk" rel="noopener">Get App <span class="ver">v' + (window.RL_VERSION || '') + '</span></a>' +
+      '<button class="hbtn" data-act="iphone">iPhone app</button></div>' + '</header>';
   },
   card: function (x, saved) {
     var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
@@ -183,7 +288,7 @@ window.RL_THEME = {
       (seal ? '<span class="seal">' + seal + '</span>' : '') +
       '<div class="kicker">' + esc(x.category) + '</div>' +
       '<h2>' + esc(x.name) + '</h2>' +
-      '<div class="sig">' + esc(d) + (saved ? ' · Saved' : '') + '</div></article>';
+      '<div class="sig">' + esc([x.omNo, d, x.status, saved ? 'Saved' : ''].filter(Boolean).join(' · ')) + '</div></article>';
   },
   nav: function (route) {
     var a = function (r, label, href) { return '<a href="' + href + '"' + (route === r ? ' aria-current="page"' : '') + '>' + label + '</a>'; };
@@ -199,7 +304,36 @@ window.RL_THEME = {
   var app = document.getElementById('app');
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function go(hash) { location.hash = hash; }
+  function fmtDate(d) { return C.shortDate(d); }
+  function statusPill(st) {
+    if (!st) return '';
+    var k = String(st).toLowerCase().replace(/[^a-z]/g, '');
+    return '<span class="st st-' + esc(k) + '">' + esc(st) + '</span>';
+  }
 
+  // Formatted posts are admin-written HTML. Keep their layout, drop anything that could run code.
+  function sanitize(html) {
+    try {
+      var doc = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html');
+      var root = doc.body.firstChild;
+      root.querySelectorAll('script,style,iframe,object,embed,link,meta,form,input,button,textarea,select').forEach(function (n) { n.remove(); });
+      root.querySelectorAll('*').forEach(function (n) {
+        Array.prototype.slice.call(n.attributes).forEach(function (a) {
+          var name = a.name.toLowerCase(), v = String(a.value || '').trim().toLowerCase();
+          if (name.indexOf('on') === 0) n.removeAttribute(a.name);
+          else if ((name === 'href' || name === 'src') && v.indexOf('javascript:') === 0) n.removeAttribute(a.name);
+        });
+        if (n.tagName === 'A') { n.setAttribute('target', '_blank'); n.setAttribute('rel', 'noopener'); }
+      });
+      return root.innerHTML;
+    } catch (e) { return esc(html); }
+  }
+
+  // Cards and rows show the corrected title, department and status, like the app.
+  function cardItem(x) {
+    var v = C.view(x);
+    return { id: x.id, name: v.title, category: v.depts[0] || x.category, date: x.date, status: v.status, omNo: v.omNo };
+  }
   function chips() {
     var out = '<div class="chips" role="group" aria-label="Departments">';
     out += '<button class="chip" data-act="cat" data-cat="" aria-pressed="' + (!C.state.cat) + '">All</button>';
@@ -211,12 +345,52 @@ window.RL_THEME = {
   function list(items, empty) {
     if (!C.state.loaded) return '';
     if (!items.length) return '<p class="empty show">' + esc(empty) + '</p>';
-    return '<div class="rack">' + items.map(function (x) { return T.card(x, C.isSaved(x.id)); }).join('') + '</div>';
+    return '<div class="rack">' + items.map(function (x) { return T.card(cardItem(x), C.isSaved(x.id)); }).join('') + '</div>';
   }
   function status() {
     if (C.state.error && !C.state.loaded) return '<p class="empty show">' + esc(C.state.error) + '</p>';
     if (!C.state.loaded) return '<p class="empty show">Loading rulings…</p>';
     return '';
+  }
+
+
+  // Tools row: the same entry points as the app. Screens not rebuilt yet open in the classic app.
+  function toolsRow() {
+    var t = function (href, title, sub, ext) {
+      return '<a class="tool" href="' + href + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '><b>' + title + '</b><small>' + sub + '</small></a>';
+    };
+    return '<nav class="tools" aria-label="Tools">' +
+      t('index.html', 'CGHS empanelled hospitals', 'Opens in the classic app') +
+      t('index.html', 'CGHS package rates', 'Opens in the classic app') +
+      t('pay-fixation.html', 'Pay fixation', '7th CPC pay fixation') +
+      t('https://postalrulings.blogspot.com/', 'Blog of Postal Rulings', 'Summaries of every ruling', true) +
+      t('index.html', 'Ask DakSi', 'Opens in the classic app') +
+      t('index.html', 'Admin', 'PIN sign-in in the classic app') +
+      '</nav>';
+  }
+  function iphoneSheet() {
+    var wrap = document.createElement('div');
+    wrap.className = 'sheet-wrap'; wrap.setAttribute('data-act', 'share-close');
+    wrap.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="Install on iPhone">' +
+      '<h2 class="rsec-h">Install on iPhone</h2><ol>' +
+      '<li>Open this page in <b>Safari</b>. Other iPhone browsers cannot add apps to the Home Screen.</li>' +
+      '<li>Tap the <b>Share</b> button at the bottom of Safari.</li>' +
+      '<li>Choose <b>Add to Home Screen</b>, then tap <b>Add</b>.</li></ol>' +
+      '<button class="back sheet-close" data-act="share-close">Close</button></div>';
+    document.body.appendChild(wrap);
+  }
+  // Android: offer the app once, like the classic app's banner. Hidden inside the app itself.
+  function downloadBar() {
+    var ua = navigator.userAgent || '';
+    if (!/Android/i.test(ua) || /PostalRulingsApp/.test(ua)) return;
+    try { if (localStorage.getItem('rl_dl_dismissed') === '1') return; } catch (e) {}
+    if (document.querySelector('.dlbar')) return;
+    var bar = document.createElement('div');
+    bar.className = 'dlbar'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Get the Android app');
+    bar.innerHTML = '<img src="icons/icon-192.png" alt=""><div class="dltxt"><b>Postal Rulings for Android</b>Install the app for quicker access to orders and circulars.</div>' +
+      '<a class="pdf" href="https://github.com/uvsubbaiah-spec/postal-rulings/releases/latest/download/postal-rulings.apk" rel="noopener">Download app</a>' +
+      '<button class="x" data-act="dl-close" aria-label="Close">×</button>';
+    document.body.appendChild(bar);
   }
 
   function homeView() {
@@ -233,54 +407,145 @@ window.RL_THEME = {
     }
     return T.header() +
       '<label class="sr" for="q">Search rulings</label>' +
-      '<input id="q" class="search" type="search" placeholder="Search a subject or ruling" value="' + esc(C.state.query) + '" data-act="q">' +
-      chips() + '<h2 class="sec">' + heading + '</h2>' + status() +
+      '<input id="q" class="search" type="search" placeholder="Search a subject, OM No. or ruling" value="' + esc(C.state.query) + '" data-act="q">' +
+      toolsRow() + chips() + '<h2 class="sec">' + heading + '</h2>' + status() +
       list(items, cat ? 'No rulings in this department yet.' : 'No rulings yet.') + more;
   }
   function searchView() {
-    var hits = C.filtered();
+    var hits = C.sortedByDate(C.filtered());
     return '<h1 class="page">Search</h1>' +
       '<label class="sr" for="q">Search rulings</label>' +
-      '<input id="q" class="search" type="search" placeholder="Search a subject or ruling" value="' + esc(C.state.query) + '" data-act="q" autofocus>' +
+      '<input id="q" class="search" type="search" placeholder="Search a subject, OM No. or ruling" value="' + esc(C.state.query) + '" data-act="q">' +
       chips() + '<p class="note">' + hits.length + (hits.length === 1 ? ' ruling' : ' rulings') + '</p>' +
       status() + list(hits.slice(0, 80), 'Nothing matches that search.');
   }
+
+  // Saved: compact rows like the app (OM No., status, department, title, date).
   function savedView() {
     var items = C.savedItems();
-    return '<h1 class="page">Saved</h1>' + status() + list(items, 'You have not saved any rulings yet. Open a ruling and tap Save.');
+    var head = '<h1 class="page">Saved</h1><p class="note">Rulings you have bookmarked for quick reference.</p>';
+    if (!C.state.loaded) return head + status();
+    if (!items.length) return head + '<p class="empty show">Nothing saved yet. Tap Save on any ruling to keep it here.</p>';
+    return head + '<div class="srows">' + items.map(function (x) {
+      var v = C.view(x);
+      return '<article class="srow" data-act="open" data-id="' + esc(x.id) + '" role="button" tabindex="0">' +
+        '<div class="srow-top">' + (v.omNo ? '<span class="omno">' + esc(v.omNo) + '</span>' : '') + statusPill(v.status) +
+        '<span class="dept">' + esc(v.depts[0] || x.category) + '</span></div>' +
+        '<div class="srow-title">' + esc(v.title) + '</div>' +
+        '<div class="srow-meta">' + esc(v.issueDate ? 'OM dated ' + fmtDate(v.issueDate) : fmtDate(x.date)) + '</div></article>';
+    }).join('') + '</div>';
+  }
+
+  function metaGrid(v) {
+    var cell = function (k, val) { return '<div class="mcell"><div class="mk">' + k + '</div><div class="mv">' + (val ? esc(val) : '<span class="dash">Not given</span>') + '</div></div>'; };
+    return '<div class="mgrid">' + cell('OM No.', v.omNo) + cell('Date issued', v.issueDate ? fmtDate(v.issueDate) : '') +
+      cell('Effective from', v.effective ? fmtDate(v.effective) : '') + cell('Status', v.status) + '</div>';
+  }
+  function readerBody(id, ov) {
+    var x = C.state.byId[id] || { id: id, name: 'Ruling', category: '', date: '' };
+    var v = C.view(x);
+    if (ov) {
+      ['title', 'omNo', 'issueDate', 'effective', 'status', 'summary', 'amend', 'blogUrl'].forEach(function (k) { if (ov[k]) v[k] = ov[k]; });
+      if (ov.depts && ov.depts.length) v.depts = ov.depts;
+      if (ov.chain) v.chain = ov.chain;
+    }
+    var h = '';
+    h += '<div class="rhead">' + statusPill(v.status) + '<span class="dept">' + esc(v.depts.join(' · ')) + '</span></div>';
+    h += '<h1 class="page rtitle">' + (ov && ov.titleHtml ? sanitize(ov.titleHtml) : esc(v.title)) + '</h1>';
+    h += '<p class="note">Added ' + esc(fmtDate(x.date)) + '</p>';
+    h += '<div class="ractions">';
+    if (v.url) h += '<a class="pdf" href="' + esc(v.url) + '" target="_blank" rel="noopener">Download PDF</a>';
+    if (v.blogUrl) h += '<a class="pdf ghost" href="' + esc(v.blogUrl) + '" target="_blank" rel="noopener">Read on the blog</a>';
+    h += '</div>';
+    h += metaGrid(v);
+    var sum = ov && ov.summaryHtml ? sanitize(ov.summaryHtml) : (v.summary ? esc(v.summary) : '');
+    h += '<section class="rsec"><h2 class="rsec-h">Summary</h2>' + (sum ? '<div class="sumbox">' + sum + '</div>' : '<p class="muted">No summary has been added for this ruling yet.</p>') + '</section>';
+    h += '<section class="rsec"><h2 class="rsec-h">Document text</h2><div id="docbody">';
+    if (ov && ov.html) h += '<div class="docbox">' + sanitize(ov.html) + '</div>';
+    else if (ov && ov.text) h += '<pre class="doc">' + esc(ov.text) + '</pre>';
+    else h += '<p class="muted">Loading text…</p>';
+    h += '</div></section>';
+    if (v.amend) h += '<section class="rsec"><h2 class="rsec-h">Amendment note</h2><div class="amend">' + esc(v.amend) + '</div></section>';
+    var chain = (v.chain || []).filter(function (cid) { return cid && cid !== id; });
+    if (chain.length) {
+      h += '<section class="rsec"><h2 class="rsec-h">Amendment history</h2><div class="srows">' + chain.map(function (cid) {
+        var cx = C.state.byId[cid]; if (!cx) return '';
+        var cv = C.view(cx);
+        return '<article class="srow" data-act="open" data-id="' + esc(cid) + '" role="button" tabindex="0"><div class="srow-top">' +
+          (cv.omNo ? '<span class="omno">' + esc(cv.omNo) + '</span>' : '') + statusPill(cv.status) + '</div><div class="srow-title">' + esc(cv.title) + '</div>' +
+          '<div class="srow-meta">' + esc(fmtDate(cx.date)) + '</div></article>';
+      }).join('') + '</div></section>';
+    }
+    return h;
+  }
+  function fillText(id) {
+    C.loadText(id).then(function (t) {
+      var el = document.getElementById('docbody'); if (!el || el.getAttribute('data-done')) return;
+      var known = C.state.byId[id];
+      if (t && t.html) el.innerHTML = '<div class="docbox">' + sanitize(t.html) + '</div>';
+      else if (t && t.text) el.innerHTML = '<pre class="doc">' + esc(t.text) + '</pre>';
+      else if (known && known.text) el.innerHTML = '<pre class="doc">' + esc(known.text) + '</pre>';
+      else el.innerHTML = '<p class="muted">' + (t && t.pending ? 'This document is still being prepared. Open it again in a minute, or use Download PDF.' : 'The text of this ruling is not available yet. Use Download PDF above.') + '</p>';
+    }).catch(function () {
+      var el = document.getElementById('docbody'); if (!el) return;
+      var known = C.state.byId[id];
+      el.innerHTML = known && known.text ? '<pre class="doc">' + esc(known.text) + '</pre>' : '<p class="muted">The text is taking too long to load. Use Download PDF above, or try again.</p>';
+    });
   }
   function readView(id) {
-    var x = C.state.items.filter(function (i) { return i.id === id; })[0];
-    var title = x ? x.name : 'Ruling';
-    var extra = '';
-    if (x && x.summary) extra += '<p class="summary">' + esc(x.summary) + '</p>';
-    if (x && x.url) extra += '<p><a class="pdf" href="' + esc(x.url) + '" target="_blank" rel="noopener">Open the original PDF</a></p>';
-    var body = extra + '<div class="reader" id="reader"><p class="empty show">Loading text…</p></div>';
-    C.loadText(id).then(function (t) {
-      var el = document.getElementById('reader'); if (!el) return;
-      el.innerHTML = t ? '<pre class="doc">' + esc(t) + '</pre>' : '<p class="empty show">The text of this ruling is not available yet. Use the PDF link above.</p>';
-    }).catch(function () {
-      var el = document.getElementById('reader'); if (el) el.innerHTML = '<p class="empty show">The text is taking too long to load. Use the PDF link above, or try again.</p>';
-    });
-    return '<div class="topbar"><button class="back" data-act="back">Back</button>' +
-      '<button class="save" data-act="save" data-id="' + esc(id) + '" aria-pressed="' + C.isSaved(id) + '">' + (C.isSaved(id) ? 'Saved' : 'Save') + '</button></div>' +
-      '<h1 class="page">' + esc(title) + '</h1>' + (x ? '<p class="note">' + esc(x.category) + ' · ' + esc(C.shortDate(x.date)) + '</p>' : '') + body;
+    var cached = C.state.ovFull && C.state.ovFull[id];
+    var html = '<div class="topbar"><button class="back" data-act="back">Back</button><div class="tb-right">' +
+      '<button class="save share" data-act="share" data-id="' + esc(id) + '">Share</button>' +
+      '<button class="save" data-act="save" data-id="' + esc(id) + '" aria-pressed="' + C.isSaved(id) + '">' + (C.isSaved(id) ? 'Saved' : 'Save') + '</button></div></div>' +
+      '<div id="rbody">' + readerBody(id, cached) + '</div>';
+    var seq = (readView.seq = (readView.seq || 0) + 1);
+    if (!(cached && (cached.html || cached.text))) fillText(id);
+    C.loadOv(id).then(function (ov) {
+      if (seq !== readView.seq || !ov) return;
+      var rb = document.getElementById('rbody'); if (!rb) return;
+      rb.innerHTML = readerBody(id, ov);
+      if (ov.html || ov.text) { var d = document.getElementById('docbody'); if (d) d.setAttribute('data-done', '1'); }
+      else fillText(id);
+    }).catch(function () {});
+    return html;
+  }
+
+  // Share: the phone's own share panel where it works, otherwise the app-style panel.
+  function shareUrl(id) { return location.origin + location.pathname + '?doc=' + encodeURIComponent(id); }
+  function openShare(id) {
+    var x = C.state.byId[id]; var title = x ? C.view(x).title : 'Postal ruling'; var url = shareUrl(id);
+    var mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+    if (mobile && navigator.share) { navigator.share({ title: title, text: title, url: url }).catch(function () {}); return; }
+    var wrap = document.createElement('div');
+    wrap.className = 'sheet-wrap'; wrap.setAttribute('data-act', 'share-close');
+    wrap.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-label="Share this ruling">' +
+      '<h2 class="rsec-h">Share this ruling</h2><p class="sheet-title">' + esc(title) + '</p>' +
+      '<label class="sr" for="share-url">Link</label><input id="share-url" class="search" readonly value="' + esc(url) + '">' +
+      '<div class="sheet-btns"><button class="pdf" data-act="share-copy">Copy link</button>' +
+      '<a class="pdf ghost" href="https://wa.me/?text=' + encodeURIComponent(title + '\n' + url) + '" target="_blank" rel="noopener">WhatsApp</a>' +
+      '<a class="pdf ghost" href="mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(title + '\n\n' + url) + '">Email</a></div>' +
+      '<button class="back sheet-close" data-act="share-close">Close</button></div>';
+    document.body.appendChild(wrap);
+    var inp = document.getElementById('share-url'); if (inp) inp.select();
   }
 
   function render() {
     var r = (location.hash || '#home').replace(/^#/, '');
     var view, route = 'home';
-    if (r.indexOf('read/') === 0) { route = 'home'; view = readView(decodeURIComponent(r.slice(5))); }
+    if (r.indexOf('read/') === 0) { route = 'read'; view = readView(decodeURIComponent(r.slice(5))); }
     else if (r === 'search') { route = 'search'; view = searchView(); }
     else if (r === 'saved') { route = 'saved'; view = savedView(); }
     else view = homeView();
-    app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route);
+    app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route === 'read' ? '' : route);
     document.body.setAttribute('data-route', route);
     var on = document.querySelector('.chip[aria-pressed="true"]');
-    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
+    if (on && on.scrollIntoView && route !== 'read') on.scrollIntoView({ block: 'nearest', inline: 'center' });
     var q = document.getElementById('q');
     if (q && r === 'search') { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+    if (route === 'read') window.scrollTo(0, 0);
   }
+  // Re-render lists when data arrives, but never rebuild an open reader (it updates itself).
+  function refresh() { if ((location.hash || '').indexOf('#read/') !== 0) render(); }
 
   var typing = null;
   document.addEventListener('input', function (e) {
@@ -296,21 +561,52 @@ window.RL_THEME = {
       }, 180);
     }
   });
+  document.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.getAttribute && e.target.getAttribute('data-act') === 'open') { e.preventDefault(); e.target.click(); }
+    if (e.key === 'Escape') { var w = document.querySelector('.sheet-wrap'); if (w) w.remove(); }
+  });
   document.addEventListener('click', function (e) {
-    var el = e.target.closest('[data-act], [data-go]');
+    var el = e.target.closest('[data-act]');
     if (!el) return;
-    var act = el.getAttribute('data-act'), go_ = el.getAttribute('data-go');
-    if (go_) { e.preventDefault(); go(go_); return; }
+    var act = el.getAttribute('data-act');
+    if (act === 'share-close') { if (e.target === el || el.classList.contains('sheet-close')) { var w = document.querySelector('.sheet-wrap'); if (w) w.remove(); } return; }
+    if (act === 'share-copy') {
+      var inp = document.getElementById('share-url'); var u = inp ? inp.value : '';
+      var done = function () { el.textContent = 'Copied'; };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(done).catch(function () { if (inp) inp.select(); });
+      else if (inp) { inp.select(); try { document.execCommand('copy'); done(); } catch (x) {} }
+      return;
+    }
     if (act === 'open') { go('#read/' + encodeURIComponent(el.getAttribute('data-id'))); }
     else if (act === 'cat') { C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; render(); var h = document.querySelector('.sec'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     else if (act === 'more') { C.state.limit = (C.state.limit || 40) + 40; render(); }
     else if (act === 'back') { history.length > 1 ? history.back() : go('#home'); }
-    else if (act === 'save') { var id = el.getAttribute('data-id'); C.toggleSaved(id); render(); }
+    else if (act === 'save') {
+      var id = el.getAttribute('data-id'); C.toggleSaved(id);
+      el.setAttribute('aria-pressed', String(C.isSaved(id))); el.textContent = C.isSaved(id) ? 'Saved' : 'Save';
+    }
+    else if (act === 'share') { openShare(el.getAttribute('data-id')); }
+    else if (act === 'iphone') { iphoneSheet(); }
+    else if (act === 'dl-close') { try { localStorage.setItem('rl_dl_dismissed', '1'); } catch (x) {} var b = document.querySelector('.dlbar'); if (b) b.remove(); }
   });
   window.addEventListener('hashchange', render);
+
+  // Links shared from the app (?doc=ID) open that ruling here too.
+  try {
+    var want = new URLSearchParams(location.search).get('doc');
+    if (want) { history.replaceState(null, '', location.pathname + '#read/' + encodeURIComponent(want)); }
+  } catch (e) {}
+
+  // App version for the Get App button, from the same file the classic app uses.
+  window.RL_VERSION = window.RL_VERSION || '1.0.11';
+  fetch('app-version.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    if (d && d.version) { window.RL_VERSION = d.version; document.querySelectorAll('.hbtn .ver').forEach(function (n) { n.textContent = 'v' + d.version; }); }
+  }).catch(function () {});
   C.loadSaved();
   render();
-  C.loadIndex(render);
+  setTimeout(downloadBar, 1500);
+  C.loadIndex(refresh);
+  C.loadOverrides(refresh);
 })();
 
 </script>
