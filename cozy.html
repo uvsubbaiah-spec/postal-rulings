@@ -98,6 +98,10 @@ h1,h2{font-family:var(--font-display);margin:0;text-wrap:balance}
 .dlbar .dltxt b{display:block;font-family:var(--font-display);font-size:15px}
 .dlbar .x{border:0;background:transparent;color:var(--ink-soft);font-size:22px;cursor:pointer;width:34px;height:34px}
 body[data-route="read"]{padding-bottom:40px}
+.sumlabel{font-family:var(--font-body);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin-left:8px}
+.sumbox p{margin:0 0 8px}
+.sumbox ul{margin:0;padding-left:20px}
+.sumbox li{margin:4px 0}
 
 :root{--paper:#FBF1DF;--card:#FFF8EC;--paper-2:#F5E4C6;--ink:#2E1F1A;--ink-soft:#6B5346;--plum:#6A2C5A;--plum-ink:#FFF8EC;--marigold:#E9A23B;--sage:#6F8F6A;--rule:#E2CBA8;--accent:#6A2C5A;--accent-fill:#6A2C5A;--accent-ink:#FFF8EC;--focus:rgba(106,44,90,.25);--nav-bg:#FFF8EC;--search-r:999px;--font-display:'Fraunces',Georgia,serif;--font-body:'Figtree',system-ui,sans-serif;--shadow:0 10px 24px -14px rgba(106,44,90,.35);color-scheme:light}
 body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transparent 0);background-size:22px 22px}
@@ -305,6 +309,44 @@ window.RL_THEME = {
     return '<span class="st st-' + esc(k) + '">' + esc(st) + '</span>';
   }
 
+  // Same summary the app writes when no admin summary exists (copied from the app).
+  function localSummary(raw) {
+    const lines = String(raw || '').replace(/\u00a0/g, ' ').split(/\r?\n/).map(x => x.replace(/[ \t]+/g, ' ').trim()).filter(Boolean);
+    if (lines.join('').length < 80) return '';
+    let subject = '', subjAt = -1;
+    for (let i = 0; i < lines.length && subjAt < 0; i++) {
+      const m = /^sub(?:ject)?\s*[:\-\u2013.]\s*(.*)$/i.exec(lines[i]); if (!m) continue;
+      subject = m[1]; subjAt = i; let j = i + 1;
+      while (j < lines.length && subject.length < 400 && !/[.]$/.test(subject) && lines[j].length < 170 && !/^(sir|madam|i am directed|the undersigned|please refer|reference|ref\b|\d+[.)]\s)/i.test(lines[j])) { subject += ' ' + lines[j]; j++; }
+      subjAt = j;
+    }
+    subject = subject.replace(/\s+/g, ' ').replace(/[.;,\s]+$/, '').trim();
+    const flat = lines.slice(Math.max(0, subjAt)).join(' ').replace(/\s+/g, ' ');
+    const prot = flat.replace(/\b(No|Nos|Rs|Dr|Sh|Smt|Shri|Dt|dtd|Ref|Sl|Vol|Para|Art|Sec|Govt|Dept|Dy|Asst|Addl|Ltd|etc|viz|St|w\.e\.f|i\.e|e\.g)\./gi, '$1\u0001').replace(/(\d)\.(\d)/g, '$1\u0001$2').replace(/\b([A-Z])\.(?=\s?[A-Z0-9])/g, '$1\u0001');
+    const sents = prot.replace(/([.!?])\s+/g, '$1\n').split('\n').map(s => s.replace(/\u0001/g, '.').trim());
+    const KW = /\b(shall|hereby|with effect|w\.?e\.?f\.?|revis\w*|amend\w*|standardi[sz]\w*|direct\w*|approv\w*|notif\w*|permit\w*|allowed|entitle\w*|withdraw\w*|supersed\w*|cut-?off|rates?|effective|come into force|clarif\w*|decided|applicable|eligible|admissible|extended|enhanc\w*|increas\w*|reduc\w*|ceiling|limit\w*|per cent|competent authority|sanction\w*)\b|%|\u20b9|\bRs\b/gi;
+    const SKIP = /^(sir|madam|yours|copy to|reference|please refer|in this connection|this issues|the undersigned is directed to forward|to,?$|government of india|ministry of|department of|directorate|dak bhawan|f\.?\s?no|no\.?\s?[\w\/-]+\s)/i;
+    const lead = /^(?:\d{1,2}[.)]\s*)?(?:I am directed to (?:say|convey|state|inform|refer)(?: that)?,?\s*|It is (?:hereby )?(?:informed|stated|clarified) that\s*)/i;
+    const cands = sents.map((s, i) => { s = s.replace(lead, '').trim(); return { s: s.charAt(0).toUpperCase() + s.slice(1), i }; })
+      .filter(o => o.s.length >= 40 && o.s.length <= 420 && !SKIP.test(o.s))
+      .map(o => ({ ...o, score: (o.s.match(KW) || []).length + (/\d/.test(o.s) ? 1 : 0) + (o.i < 6 ? 0.5 : 0) }))
+      .filter(o => o.score >= 1.5);
+    const seen = {}, pick = cands.sort((p, q) => q.score - p.score || p.i - q.i).filter(o => { const k = o.s.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60); if (seen[k]) return false; seen[k] = 1; return true; })
+      .slice(0, 5).sort((p, q) => p.i - q.i).map(o => o.s);
+    const cut = (s) => { if (s.length <= 320) return s; const k = Math.max(s.lastIndexOf(';', 300), s.lastIndexOf(',', 300)); return (k > 150 ? s.slice(0, k) : s.slice(0, 300).replace(/\s\S*$/, '')) + '.'; };
+    const end = (s) => (/[.!?]$/.test(s) ? s : s + '.');
+    const eff = /(?:with effect from|w\.?e\.?f\.?|effective from|come into force on)\s+((?:\d{1,2}[.\/-]\d{1,2}[.\/-]\d{2,4})|(?:\d{1,2}(?:st|nd|rd|th)?\s+[A-Z][a-z]+,?\s+\d{4})|(?:[A-Z][a-z]+\s+\d{1,2},?\s+\d{4}))/i.exec(flat);
+    const sup = /\b(supersed\w+|in (?:partial )?modification of|in continuation of)\b[^.]{0,180}/i.exec(flat);
+    const out = []; let first = '';
+    if (subject) first = end(subject.charAt(0).toUpperCase() + subject.slice(1)); else if (pick.length) first = end(cut(pick.shift()));
+    if (!first) return '';
+    out.push(first);
+    pick.filter(s => s.toLowerCase().indexOf(subject.toLowerCase().slice(0, 40)) < 0 || !subject).slice(0, 4).forEach(s => out.push('- ' + end(cut(s))));
+    const body = out.join(' ').toLowerCase();
+    if (eff && body.indexOf(eff[1].toLowerCase()) < 0) out.push('- Effective from ' + eff[1] + '.');
+    if (sup && body.indexOf(sup[0].toLowerCase().slice(0, 40)) < 0) out.push('- ' + end(cut(sup[0].replace(/\s+/g, ' ').trim().replace(/^./, c => c.toUpperCase()))));
+    return out.join('\n');
+  }
   // Formatted posts are admin-written HTML. Keep their layout, drop anything that could run code.
   function sanitize(html) {
     try {
@@ -453,7 +495,9 @@ window.RL_THEME = {
     h += '</div>';
     h += metaGrid(v);
     var sum = ov && ov.summaryHtml ? sanitize(ov.summaryHtml) : (v.summary ? esc(v.summary) : '');
-    h += '<section class="rsec"><h2 class="rsec-h">Summary</h2>' + (sum ? '<div class="sumbox">' + sum + '</div>' : '<p class="muted">No summary has been added for this ruling yet.</p>') + '</section>';
+    var cachedSum = !sum && C.state.sums && C.state.sums[id];
+    h += '<section class="rsec"><h2 class="rsec-h">Summary <span class="sumlabel" id="sumlabel">' + (sum ? 'Edited' : cachedSum ? esc(cachedSum.label) : '') + '</span></h2><div id="sumbody" data-id="' + esc(id) + '" data-edited="' + (sum ? '1' : '') + '">' +
+      (sum ? '<div class="sumbox">' + sum + '</div>' : cachedSum ? sumHtml(cachedSum.text) : '<p class="muted">Preparing a summary…</p>') + '</div></section>';
     h += '<section class="rsec"><h2 class="rsec-h">Document text</h2><div id="docbody">';
     if (ov && ov.html) h += '<div class="docbox">' + sanitize(ov.html) + '</div>';
     else if (ov && ov.text) h += '<pre class="doc">' + esc(ov.text) + '</pre>';
@@ -472,6 +516,39 @@ window.RL_THEME = {
     }
     return h;
   }
+
+  // "First line" then "- point" lines, as the app shows them.
+  function sumHtml(t) {
+    var lines = String(t || '').split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+    if (!lines.length) return '';
+    var first = [], pts = [];
+    lines.forEach(function (l) { if (/^-\s+/.test(l)) pts.push(l.replace(/^-\s+/, '')); else first.push(l); });
+    return '<div class="sumbox">' + (first.length ? '<p>' + esc(first.join(' ')) + '</p>' : '') +
+      (pts.length ? '<ul>' + pts.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
+  }
+  function plainOf(html) { try { var d = new DOMParser().parseFromString(html, 'text/html'); d.querySelectorAll('br,p,div,li,tr,h1,h2,h3').forEach(function (n) { n.appendChild(d.createTextNode('\n')); }); return d.body.textContent || ''; } catch (e) { return ''; } }
+  function setSummary(id, text, label) {
+    C.state.sums = C.state.sums || {}; C.state.sums[id] = { text: text, label: label };
+    var b = document.getElementById('sumbody'), l = document.getElementById('sumlabel');
+    if (!b || b.getAttribute('data-edited') === '1' || b.getAttribute('data-id') !== id) return;
+    b.innerHTML = sumHtml(text); if (l) l.textContent = label;
+  }
+  // No admin summary: build one from the text, else ask the backend (cached there), like the app.
+  function fillSummary(id, plain) {
+    var b = document.getElementById('sumbody');
+    if (!b || b.getAttribute('data-edited') === '1') return;
+    if (C.state.sums && C.state.sums[id]) return;
+    var local = '';
+    try { local = localSummary(plain); } catch (e) {}
+    if (local) { setSummary(id, local, 'Auto-generated'); return; }
+    var ep = (window.RL_CONFIG && window.RL_CONFIG.endpoint) || '';
+    var none = function () { var bb = document.getElementById('sumbody'); if (bb && bb.getAttribute('data-id') === id && !(C.state.sums && C.state.sums[id])) bb.innerHTML = '<p class="muted">No summary is available for this ruling yet.</p>'; };
+    if (!ep || !String(plain || '').trim()) { none(); return; }
+    fetch(ep, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'postSummary', id: id, text: String(plain).slice(0, 40000) }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.ok && d.summary) setSummary(id, d.summary, 'AI summary'); else none(); })
+      .catch(none);
+  }
   function fillText(id) {
     C.loadText(id).then(function (t) {
       var el = document.getElementById('docbody'); if (!el || el.getAttribute('data-done')) return;
@@ -480,12 +557,16 @@ window.RL_THEME = {
       else if (t && t.text) el.innerHTML = '<pre class="doc">' + esc(t.text) + '</pre>';
       else if (known && known.text) el.innerHTML = '<pre class="doc">' + esc(known.text) + '</pre>';
       else el.innerHTML = '<p class="muted">' + (t && t.pending ? 'This document is still being prepared. Open it again in a minute, or use Download PDF.' : 'The text of this ruling is not available yet. Use Download PDF above.') + '</p>';
+      var cand = [(t && t.text) || '', (t && t.html ? plainOf(t.html) : ''), (known && known.text) || ''].sort(function (a, b) { return b.length - a.length; });
+      fillSummary(id, cand[0]);
     }).catch(function () {
       var el = document.getElementById('docbody'); if (!el) return;
       var known = C.state.byId[id];
       el.innerHTML = known && known.text ? '<pre class="doc">' + esc(known.text) + '</pre>' : '<p class="muted">The text is taking too long to load. Use Download PDF above, or try again.</p>';
+      fillSummary(id, (known && known.text) || '');
     });
   }
+
   function readView(id) {
     var cached = C.state.ovFull && C.state.ovFull[id];
     var html = '<div class="topbar"><button class="back" data-act="back">Back</button><div class="tb-right">' +
@@ -494,11 +575,12 @@ window.RL_THEME = {
       '<div id="rbody">' + readerBody(id, cached) + '</div>';
     var seq = (readView.seq = (readView.seq || 0) + 1);
     if (!(cached && (cached.html || cached.text))) fillText(id);
+    else setTimeout(function () { fillSummary(id, cached.text || plainOf(cached.html)); }, 0);
     C.loadOv(id).then(function (ov) {
       if (seq !== readView.seq || !ov) return;
       var rb = document.getElementById('rbody'); if (!rb) return;
       rb.innerHTML = readerBody(id, ov);
-      if (ov.html || ov.text) { var d = document.getElementById('docbody'); if (d) d.setAttribute('data-done', '1'); }
+      if (ov.html || ov.text) { var d = document.getElementById('docbody'); if (d) d.setAttribute('data-done', '1'); fillSummary(id, ov.text || plainOf(ov.html)); }
       else fillText(id);
     }).catch(function () {});
     return html;
