@@ -184,6 +184,45 @@ body[data-route="read"]{padding-bottom:40px}
 .sumtable tr.grp{cursor:default}
 .sumtable .st{white-space:nowrap;overflow-wrap:normal;font-size:10px;padding:2px 7px;letter-spacing:.03em}
 
+/* ---- Rate finder ---- */
+.rfinder{background:var(--card);border-radius:22px;box-shadow:0 22px 50px -28px rgba(10,20,60,.45),0 0 0 1px var(--rule);overflow:hidden;margin:0 0 22px}
+.rf-head{position:relative;display:flex;align-items:center;gap:14px;padding:18px 20px;color:var(--accent-ink);background:linear-gradient(120deg,var(--accent-fill),color-mix(in srgb,var(--accent-fill) 55%,#ffffff 10%));overflow:hidden}
+.rf-head::after{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.28),transparent 65%);pointer-events:none}
+.rf-h-ic{display:grid;place-items:center;flex:0 0 auto;width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.rf-kick{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;opacity:.85;margin-bottom:6px}
+.rf-sum{display:flex;flex-wrap:wrap;gap:6px}
+.rf-chip{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 12px;border-radius:999px;background:rgba(255,255,255,.2);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);font-size:12.5px;font-weight:700;white-space:nowrap}
+.rf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 28px;padding:16px 20px 20px}
+.rf-col{min-width:0}
+.rf-step{display:flex;align-items:center;gap:8px;margin:14px 0 10px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.rf-n{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-fill);color:var(--accent-ink);font-size:11px;letter-spacing:0}
+.optcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.optcard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;padding:14px 12px 12px;border-radius:16px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);text-align:left;cursor:pointer;font:inherit;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease,background .15s ease}
+.optcard:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 45%,var(--rule))}
+.optcard[aria-checked="true"]{border-color:var(--accent);background:var(--card);box-shadow:0 12px 26px -14px color-mix(in srgb,var(--accent) 70%,transparent),0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.optcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.oc-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--accent) 12%,var(--card));color:var(--accent);margin-bottom:4px}
+.optcard[aria-checked="true"] .oc-ic{background:var(--accent-fill);color:var(--accent-ink)}
+.oc-t{font-weight:800;font-size:14px;line-height:1.2}
+.oc-d{font-size:11.5px;color:var(--ink-soft);line-height:1.3}
+.oc-ok{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-fill);color:var(--accent-ink);transform:scale(0);transition:transform .18s ease}
+.optcard[aria-checked="true"] .oc-ok{transform:scale(1)}
+.ifield{position:relative;display:flex;align-items:center;gap:8px;min-height:54px;margin:0 0 10px;padding:0 8px 0 14px;border-radius:16px;border:1.5px solid var(--rule);background:var(--paper);transition:border-color .15s ease,box-shadow .15s ease}
+.ifield:focus-within{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 14%,transparent)}
+.if-ic{display:grid;place-items:center;color:var(--accent);flex:0 0 auto}
+.ifield input,.ifield select{flex:1;min-width:0;height:50px;border:0;background:transparent;color:var(--ink);font:600 15px var(--font-body);outline:none;appearance:none;-webkit-appearance:none}
+.ifield select{cursor:pointer;padding-right:24px;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 12px) 50%,calc(100% - 7px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+.ifield input::placeholder{color:var(--ink-soft);font-weight:500}
+.if-btn{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;height:38px;padding:0 12px;border-radius:12px;border:0;background:var(--accent-fill);color:var(--accent-ink);font:700 12.5px var(--font-body);cursor:pointer}
+.if-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tierbadge{flex:0 0 auto;height:26px;display:inline-flex;align-items:center;padding:0 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#E6F0E2;color:#2F6A3A}
+.tierbadge.t-ii{background:#FFF1D6;color:#7A4B00}.tierbadge.t-iii{background:#ECE7F7;color:#4B3A8A}
+.rf-help{display:flex;gap:6px;align-items:flex-start;margin:-2px 2px 12px;font-size:12.5px;line-height:1.45;color:var(--ink-soft)}
+.rf-help svg{flex:0 0 auto;margin-top:2px;color:var(--accent)}
+@media (max-width:760px){.rf-grid{grid-template-columns:1fr;padding:10px 14px 16px}.rf-head{padding:16px}.if-btn span{display:none}.optcard{padding:12px 10px 10px}.oc-d{font-size:11px}}
+@media (max-width:380px){.optcards{gap:6px}.oc-t{font-size:13px}}
+@media (prefers-reduced-motion:reduce){.optcard,.oc-ok,.ifield{transition:none}}
+
 :root{--night:#17110F;--wall:#221915;--letter:#F3E2C4;--ember:#E8934A;--wax:#9E2F2A;--ink:#F3E2C4;--ink-soft:#A8917B;--paper:#17110F;--card:#221915;--rule:#3A2C25;--accent:#E8934A;--accent-fill:#E8934A;--accent-ink:#17110F;--focus:rgba(232,147,74,.3);--nav-bg:#1B1411;--search-r:4px;--font-display:'Cormorant Garamond',Georgia,serif;--font-body:'Lora',Georgia,serif;--shadow:0 18px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%) var(--night)}
 .lamp{text-align:center;margin-bottom:26px}
@@ -210,6 +249,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 .lamp .logo{width:72px;height:72px;margin:0}
 .lamp .hbtns{justify-content:center}
 .seal{font-size:11px}
+.nav a{font-size:9.5px;letter-spacing:-.01em;padding-left:0;padding-right:0}
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -1338,23 +1378,65 @@ window.RL_THEME = {
     if (!RT.auto) { RT.auto = true; if (!RT.city) rtLocate(true); }
     var h = '<div class="topbar"><button class="back" data-act="back">Back</button></div><h1 class="page">CGHS package rates</h1>' +
       '<p class="note">By hospital type, city tier, ward and speciality. Source: CGHS rate list, Ministry of Health and Family Welfare (cghs.mohfw.gov.in). Rates in rupees; check the current CGHS orders before claiming.</p>';
-    h += '<div class="pcard">' +
-      '<div class="fl"><span>Hospital type</span>' + seg('rt-type', [['nabh', 'NABH'], ['non_nabh', 'Non-NABH'], ['superspeciality', 'Super Speciality']], RT.type) + '</div>' +
-      '<label class="fl" for="rtCity"><span>City</span></label><button class="hlink" data-act="rt-loc" type="button">Use my location</button>' +
-      '<input id="rtCity" class="search" list="rtCities" data-act="rt-city" placeholder="Type a city name" value="' + esc(RT.city) + '"><datalist id="rtCities">' +
-      RT_T1.concat(RT_T2).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>' +
-      '<p class="muted small">' + esc(RT.msg || 'Choosing a city sets its tier. Tier III covers every city not in Tier I or Tier II.') + '</p>' +
-      '<label class="fl" for="rtHosp"><span>Hospital (optional)</span></label><input id="rtHosp" class="search" list="rtHosps" data-act="rt-hospin" placeholder="Search a hospital' + (RT.city ? ' in ' + esc(RT.city) : '') + '" value="' + esc(RT.hosp) + '">';
+    var I = function (d, sz) { return '<svg width="' + (sz || 20) + '" height="' + (sz || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>'; };
+    var IC = {
+      nabh: '<path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+      non_nabh: '<path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-5h6v5"/><path d="M12 8v4M10 10h4"/>',
+      superspeciality: '<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/><path d="M8 12h2l1.5-2.5 2 5 1.5-2.5H16"/>',
+      i: '<path d="M3 21h18"/><path d="M5 21V8l4-3v16M9 21V3l6 3v15M15 21V10l4 2v9"/>',
+      ii: '<path d="M3 21h18"/><path d="M6 21V10l5-3v14M11 21V7l6 3v11"/>',
+      iii: '<path d="M3 21h18"/><path d="M5 21v-7l5-4 5 4v7"/><path d="M17 21v-5l3-2v7"/>',
+      general: '<path d="M3 18V8M21 18v-5a3 3 0 0 0-3-3H8v8"/><path d="M3 14h18"/><circle cx="6" cy="10.5" r="1.5"/>',
+      semi_private: '<path d="M3 18V9M21 18v-4a3 3 0 0 0-3-3h-7v7"/><path d="M3 15h18"/><circle cx="7" cy="12" r="2"/>',
+      private: '<path d="M3 19V8M21 19v-4a3 3 0 0 0-3-3h-6v7"/><path d="M3 16h18"/><circle cx="7.5" cy="12.5" r="2.2"/><path d="M14 5l1 2 2 .3-1.5 1.4.4 2-1.9-1-1.9 1 .4-2L11 7.3l2-.3z"/>',
+      pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+      locate: '<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/>',
+      hosp: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 7v6M9 10h6M9 21v-4h6v4"/>',
+      search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+      sp: '<path d="M6 3v6a6 6 0 0 0 12 0V3"/><path d="M12 15v3a3 3 0 0 0 6 0v-1"/><circle cx="18" cy="15" r="2"/>',
+      check: '<path d="m5 12 4.5 4.5L19 7"/>'
+    };
+    var NAME = { nabh: 'NABH', non_nabh: 'Non-NABH', superspeciality: 'Super Speciality', i: 'Tier I', ii: 'Tier II', iii: 'Tier III', general: 'General ward', semi_private: 'Semi-private ward', private: 'Private ward' };
+    var cards = function (act, group, opts, cur) {
+      return '<div class="optcards" role="radiogroup" aria-label="' + group + '">' + opts.map(function (o) {
+        var on = o[0] === cur;
+        return '<button type="button" class="optcard" role="radio" aria-checked="' + on + '" data-act="' + act + '" data-v="' + o[0] + '">' +
+          '<span class="oc-ic">' + I(IC[o[0]], 22) + '</span><span class="oc-t">' + o[1] + '</span><span class="oc-d">' + o[2] + '</span>' +
+          '<span class="oc-ok" aria-hidden="true">' + I(IC.check, 14) + '</span></button>';
+      }).join('') + '</div>';
+    };
+    var step = function (n, label) { return '<div class="rf-step"><span class="rf-n">' + n + '</span><span>' + label + '</span></div>'; };
+    var cityTier = RT.city ? rtTierOf(RT.city) : '';
+    h += '<section class="rfinder" aria-label="Rate finder">' +
+      '<div class="rf-head"><div class="rf-h-ic">' + I('<path d="M4 7h16M4 12h10M4 17h7"/><circle cx="17.5" cy="16.5" r="3.5"/><path d="m20 19 2 2"/>', 26) + '</div>' +
+      '<div style="min-width:0"><div class="rf-kick">Rate finder</div><div class="rf-sum">' +
+      '<span class="rf-chip">' + NAME[RT.type] + '</span><span class="rf-chip">' + NAME[RT.tier] + '</span><span class="rf-chip">' + NAME[RT.ward] + '</span>' +
+      (RT.city ? '<span class="rf-chip city">' + I(IC.pin, 14) + esc(RT.city) + '</span>' : '') + '</div></div></div>' +
+      '<div class="rf-grid"><div class="rf-col">' +
+      step(1, 'Hospital type') + cards('rt-type', 'Hospital type', [['nabh', 'NABH', 'Accredited hospitals'], ['non_nabh', 'Non-NABH', 'Not accredited'], ['superspeciality', 'Super Speciality', 'Specialised centres']], RT.type) +
+      step(2, 'Where') +
+      '<div class="ifield"><label class="sr" for="rtCity">City</label><span class="if-ic">' + I(IC.pin) + '</span>' +
+      '<input id="rtCity" list="rtCities" data-act="rt-city" placeholder="Type your city" autocomplete="off" value="' + esc(RT.city) + '">' +
+      (cityTier ? '<span class="tierbadge t-' + cityTier + '">' + NAME[cityTier] + '</span>' : '') +
+      '<button type="button" class="if-btn" data-act="rt-loc" title="Use my location">' + I(IC.locate, 18) + '<span>Locate</span></button></div>' +
+      '<datalist id="rtCities">' + RT_T1.concat(RT_T2).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>' +
+      '<p class="rf-help">' + I('<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/>', 15) + '<span>' + esc(RT.msg || 'Choosing a city sets its tier. Tier III covers every city not in Tier I or Tier II.') + '</span></p>' +
+      '<div class="ifield"><label class="sr" for="rtHosp">Hospital (optional)</label><span class="if-ic">' + I(IC.hosp) + '</span>' +
+      '<input id="rtHosp" list="rtHosps" data-act="rt-hospin" autocomplete="off" placeholder="Hospital (optional)' + (RT.city ? ' in ' + esc(RT.city) : '') + '" value="' + esc(RT.hosp) + '"></div>';
     if (CG.hosp) {
       var rc = rtKey(RT.city);
       h += '<datalist id="rtHosps">' + CG.hosp.map(hRec).filter(function (r) { return !RT.city || rtKey(cityOf(r.cs)) === rc; }).slice(0, 300).map(function (r) { return '<option value="' + esc(r.n) + '">'; }).join('') + '</datalist>';
     } else loadHosp();
-    h += '<div class="fl"><span>City tier</span>' + seg('rt-tier', [['i', 'Tier I'], ['ii', 'Tier II'], ['iii', 'Tier III']], RT.tier) + '</div>' +
-      '<div class="fl"><span>Ward</span>' + seg('rt-ward', [['general', 'General'], ['semi_private', 'Semi-private'], ['private', 'Private']], RT.ward) + '</div>';
-    if (!CG.rates) return h + '</div><p class="empty show">' + esc(CG.ratesErr || 'Loading the rate list…') + '</p>' + (CG.ratesErr ? '<button class="more" data-act="cg-retry">Try again</button>' : '');
+    h += '</div><div class="rf-col">' +
+      step(3, 'City tier') + cards('rt-tier', 'City tier', [['i', 'Tier I', 'Delhi, Mumbai, Hyderabad…'], ['ii', 'Tier II', 'Other large cities'], ['iii', 'Tier III', 'All other places']], RT.tier) +
+      step(4, 'Ward') + cards('rt-ward', 'Ward', [['general', 'General', 'Shared ward'], ['semi_private', 'Semi-private', 'Twin sharing'], ['private', 'Private', 'Single room']], RT.ward);
+    if (!CG.rates) return h + '</div></div></section><p class="empty show">' + esc(CG.ratesErr || 'Loading the rate list…') + '</p>' + (CG.ratesErr ? '<button class="more" data-act="cg-retry">Try again</button>' : '');
     var sps = {}; CG.rates.items.forEach(function (it) { if (it[2]) sps[it[2]] = 1; });
-    h += '<label class="fl" for="rtSp"><span>Speciality</span><select id="rtSp" data-act="rt-sp"><option value="">All specialities</option>' + Object.keys(sps).sort().map(function (s2) { return '<option' + (s2 === RT.sp ? ' selected' : '') + '>' + esc(s2) + '</option>'; }).join('') + '</select></label>' +
-      '<label class="sr" for="rtQ">Search treatment</label><input id="rtQ" class="search" type="search" data-act="rt-q" placeholder="Search treatment, procedure or code" value="' + esc(RT.q) + '"></div>';
+    h += step(5, 'Find a treatment') +
+      '<div class="ifield"><label class="sr" for="rtSp">Speciality</label><span class="if-ic">' + I(IC.sp) + '</span><select id="rtSp" data-act="rt-sp"><option value="">All specialities</option>' +
+      Object.keys(sps).sort().map(function (s2) { return '<option' + (s2 === RT.sp ? ' selected' : '') + '>' + esc(s2) + '</option>'; }).join('') + '</select></div>' +
+      '<div class="ifield"><label class="sr" for="rtQ">Search treatment</label><span class="if-ic">' + I(IC.search) + '</span><input id="rtQ" type="search" data-act="rt-q" autocomplete="off" placeholder="Treatment, procedure or code" value="' + esc(RT.q) + '"></div>' +
+      '</div></div></section>';
     var q = RT.q.toLowerCase().trim();
     var hits = CG.rates.items.filter(function (it) {
       if (RT.sp && it[2] !== RT.sp) return false;
@@ -1540,7 +1622,8 @@ window.RL_THEME = {
     if (act === 'sumq') { SUM.q = el.value; SUM.cap = 100; rerender('sumq'); return true; }
     if (act === 'hsq') { HS.q = el.value; HS.show = 30; rerender('hsq'); return true; }
     if (act === 'rt-q') { RT.q = el.value; RT.show = 40; rerender('rtQ'); return true; }
-    if (act === 'rt-city') { var v = el.value.trim(); var hit = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === rtKey(v); })[0]; if (hit || !v) { rtPickCity(hit || '', hit ? null : RT.tier); RT.msg = ''; render(); } else { RT.city = v; } return true; }
+    if (act === 'rt-city') { var v = el.value.trim(); var hit = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === rtKey(v); })[0];
+      if (hit || !v) { rtPickCity(hit || '', hit ? null : RT.tier); RT.msg = ''; render(); var f3 = document.getElementById('rtCity'); if (f3) { f3.focus(); f3.setSelectionRange(f3.value.length, f3.value.length); } } else { RT.city = v; } return true; }
     if (act === 'rt-hospin') { if (hospPick(el.value)) render(); return true; }
     if (act === 'rt-name') { RT.name = el.value; return true; }
     return false;
