@@ -1,0 +1,11 @@
+Postal Rulings: new designs
+
+Upload all four files to the root of the postal-rulings repo, replacing the current ones:
+  index.html  cozy.html  fireside.html  sapphire.html
+
+What index.html changes
+- Profile > App theme: choosing Cozy, Fireside or Sapphire switches the whole app,
+  including the Android app, to that new design. The choice is remembered.
+- Shared and notification links (?doc=...) open in the chosen design.
+- Admin (the Admin card, or index.html?classic=1) always opens the classic app.
+- Choosing Classic in the new design's Profile goes back to the classic app.

@@ -223,6 +223,63 @@ body[data-route="read"]{padding-bottom:40px}
 @media (max-width:380px){.optcards{gap:6px}.oc-t{font-size:13px}}
 @media (prefers-reduced-motion:reduce){.optcard,.oc-ok,.ifield{transition:none}}
 
+/* ---- Screen header band ---- */
+.phead{position:relative;display:flex;align-items:center;gap:16px;padding:22px 22px;margin:0 0 18px;border-radius:22px;color:var(--accent-ink);background:linear-gradient(120deg,var(--accent-fill),color-mix(in srgb,var(--accent-fill) 60%,#ffffff 8%));box-shadow:0 22px 50px -30px rgba(10,20,60,.55);overflow:hidden}
+.phead::after{content:"";position:absolute;right:-50px;top:-70px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.28),transparent 65%);pointer-events:none}
+.ph-ic{display:grid;place-items:center;flex:0 0 auto;width:54px;height:54px;border-radius:16px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.ph-t{font-size:clamp(22px,5vw,30px);font-weight:800;line-height:1.1;margin:0;color:inherit}
+.ph-s{margin:6px 0 0;font-size:13px;opacity:.88;max-width:60ch}
+.phead .rf-sum{margin-top:10px}
+/* ---- Empty and loading states ---- */
+.estate{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:34px 18px;border-radius:20px;background:var(--card);box-shadow:var(--shadow)}
+.es-ic{display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:color-mix(in srgb,var(--accent) 12%,var(--card));color:var(--accent);margin-bottom:6px}
+.estate b{font-family:var(--font-display);font-size:18px;color:var(--ink)}.estate p{margin:0 0 8px;color:var(--ink-soft);max-width:44ch}
+.skel{display:grid;gap:14px}.sk{height:150px;border-radius:20px;background:linear-gradient(90deg,var(--card) 25%,color-mix(in srgb,var(--accent) 8%,var(--card)) 50%,var(--card) 75%);background-size:200% 100%;animation:shim 1.4s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+/* ---- Hospital finder and cards ---- */
+.hf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:16px 20px 18px}
+.hf-q{grid-column:1/-1}
+.hf-grid .ifield{margin:0}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.hcard2{display:flex;flex-direction:column;gap:10px;min-width:0;padding:18px;border-radius:20px;background:var(--card);box-shadow:0 18px 40px -26px rgba(10,20,60,.45),0 0 0 1px var(--rule);transition:transform .18s ease,box-shadow .18s ease}
+.hcard2:hover{transform:translateY(-3px);box-shadow:0 26px 50px -26px rgba(10,20,60,.55),0 0 0 1px color-mix(in srgb,var(--accent) 35%,var(--rule))}
+.hc-top{display:flex;gap:12px;align-items:flex-start}
+.hc-mono{display:grid;place-items:center;flex:0 0 auto;width:48px;height:48px;border-radius:14px;font:800 16px var(--font-display);color:var(--accent-ink);background:linear-gradient(135deg,color-mix(in srgb,var(--accent-fill) 70%,#000 10%),var(--accent-fill))}
+.hc-mono.n{background:linear-gradient(135deg,#1E8E5A,#36B37E);color:#fff}
+.hc-name{font-family:var(--font-display);font-size:17px;font-weight:800;line-height:1.25;margin:0;color:var(--ink)}
+.hc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.acc{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.04em;background:color-mix(in srgb,var(--accent) 12%,var(--card));color:var(--accent)}
+.acc.n{background:#E3F4EA;color:#1E7A4D}
+.hc-line{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.45}
+.hc-line svg{flex:0 0 auto;margin-top:2px;color:var(--accent)}
+.hc-line.v-ok svg{color:#1E8E5A}.hc-line.v-warn{color:#8A5A00}.hc-line.v-warn svg{color:#C98A00}.hc-line.v-bad{color:#9E2F2A}.hc-line.v-bad svg{color:#C9463F}
+.spchips{display:flex;flex-wrap:wrap;gap:6px}
+.spchips span{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:var(--paper);color:var(--ink);font-size:12px;font-weight:600;border:1px solid var(--rule)}
+.spmore{height:26px;padding:0 10px;border-radius:999px;border:0;background:transparent;color:var(--accent);font:700 12px var(--font-body);cursor:pointer}
+.hc-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.hact{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 13px;border-radius:12px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink);font:700 12.5px var(--font-body);text-decoration:none}
+.hact svg{color:var(--accent)}
+.hact.pri{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink);margin-left:auto}.hact.pri svg{color:inherit}
+.hact:focus-visible,.spmore:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hc-ph{margin:0;font-size:12px;color:var(--ink-soft);user-select:all}
+/* ---- Departments ---- */
+.dtools{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin:0 0 14px}.dtools .seg{flex:0 1 320px}
+.dgrid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.dcell{position:relative;align-items:flex-start;gap:6px;padding:16px 14px;border-radius:18px;box-shadow:0 14px 32px -22px rgba(10,20,60,.45),0 0 0 1px var(--rule);transition:transform .15s ease,box-shadow .15s ease}
+.dcell:hover{transform:translateY(-2px)}
+.dmono{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;font:800 13px var(--font-display);background:color-mix(in srgb,var(--accent) 14%,var(--card));color:var(--accent);margin-bottom:4px}
+.dbar{display:block;width:100%;height:5px;border-radius:5px;background:var(--paper);overflow:hidden;margin-top:4px}.dbar i{display:block;height:100%;border-radius:5px;background:var(--accent-fill)}
+.dcell.multi[aria-checked="true"]{box-shadow:0 0 0 2px var(--accent),0 14px 32px -20px color-mix(in srgb,var(--accent) 70%,transparent)}
+.dcell.multi[aria-checked="true"] .dmono{background:var(--accent-fill);color:var(--accent-ink)}
+.dtick{position:absolute;top:10px;right:10px;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid var(--rule);color:transparent;background:var(--card)}
+.dcell.multi[aria-checked="true"] .dtick{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
+.dbarbottom{position:sticky;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding:10px 12px 10px 16px;border-radius:16px;background:var(--card);box-shadow:0 14px 34px -14px rgba(10,20,60,.5),0 0 0 1px var(--rule);font-weight:700;color:var(--ink)}
+.dbarbottom .pdf{margin:0;border:0;cursor:pointer}.dbarbottom .pdf:disabled{opacity:.45;cursor:default}
+.selchips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:-6px 0 14px}
+.chip.on{background:var(--accent-fill);border-color:var(--accent-fill);color:var(--accent-ink)}
+@media (max-width:760px){.hf-grid{grid-template-columns:1fr;padding:12px 14px 14px}.hgrid{grid-template-columns:1fr}.phead{padding:18px}.ph-ic{width:46px;height:46px}.hact.pri{margin-left:0}}
+@media (prefers-reduced-motion:reduce){.sk{animation:none}.hcard2,.dcell{transition:none}}
+
 :root{--night:#17110F;--wall:#221915;--letter:#F3E2C4;--ember:#E8934A;--wax:#9E2F2A;--ink:#F3E2C4;--ink-soft:#A8917B;--paper:#17110F;--card:#221915;--rule:#3A2C25;--accent:#E8934A;--accent-fill:#E8934A;--accent-ink:#17110F;--focus:rgba(232,147,74,.3);--nav-bg:#1B1411;--search-r:4px;--font-display:'Cormorant Garamond',Georgia,serif;--font-body:'Lora',Georgia,serif;--shadow:0 18px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%) var(--night)}
 .lamp{text-align:center;margin-bottom:26px}
@@ -262,7 +319,7 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
 (function (global) {
   var ENDPOINT = (global.RL_CONFIG && global.RL_CONFIG.endpoint) || '';
   var KEY_IDX = 'rl_index_v2', KEY_SAVED = 'rl_saved';
-  var state = { ov: {}, byId: {}, items: [], cats: [], loaded: false, error: '', query: '', cat: '', saved: [], text: {}, route: 'home' };
+  var state = { catSel: [], ov: {}, byId: {}, items: [], cats: [], loaded: false, error: '', query: '', cat: '', saved: [], text: {}, route: 'home' };
 
   function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function fetchJson(url) {
@@ -414,7 +471,9 @@ body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%
   function filtered() {
     var q = norm(state.query).trim(), toks = q ? q.split(/\s+/) : [];
     return state.items.filter(function (x) {
-      if (state.cat && x.category !== state.cat) { var od = state.ov[x.id] && state.ov[x.id].depts; if (!(od && od.indexOf(state.cat) >= 0)) return false; }
+      // One department (chip) or several (picked on the Departments screen).
+      var want = (state.catSel && state.catSel.length) ? state.catSel : (state.cat ? [state.cat] : null);
+      if (want) { var od = (state.ov[x.id] && state.ov[x.id].depts) || []; if (want.indexOf(x.category) < 0 && !od.some(function (d) { return want.indexOf(d) >= 0; })) return false; }
       if (!toks.length) return true;
       var o = state.ov[x.id];
       var hay = (x.hay || norm(x.name + ' ' + x.category + ' ' + x.date)) + (o ? ' ' + norm((o.title || '') + ' ' + (o.omNo || '') + ' ' + (o.summary || '') + ' ' + (o.depts || []).join(' ')) : '');
@@ -483,6 +542,19 @@ window.RL_THEME = {
     }).join('') + '</nav>';
   };
 
+
+  // ---- Shared rich components ----
+  function svgI(d, sz) { return '<svg width="' + (sz || 20) + '" height="' + (sz || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>'; }
+  // Screen header band in the theme colour: icon tile, kicker, title, one line, optional chips.
+  function pageHead(icon, kicker, title, sub, chipsHtml, back) {
+    return (back ? '<div class="topbar"><button class="back" data-act="back">Back</button></div>' : '') +
+      '<header class="phead"><div class="ph-ic">' + svgI(icon, 26) + '</div><div style="min-width:0"><div class="rf-kick">' + esc(kicker) + '</div>' +
+      '<h1 class="ph-t">' + esc(title) + '</h1>' + (sub ? '<p class="ph-s">' + esc(sub) + '</p>' : '') + (chipsHtml ? '<div class="rf-sum">' + chipsHtml + '</div>' : '') + '</div></header>';
+  }
+  function emptyState(icon, title, text, action) {
+    return '<div class="estate"><div class="es-ic">' + svgI(icon, 34) + '</div><b>' + esc(title) + '</b><p>' + esc(text) + '</p>' + (action || '') + '</div>';
+  }
+
   // ---- Profile (same details, saved list and reading history as the classic app) ----
   function initials(p) { var n = String(p.name || p.email || p.mobile || '').trim(); return n ? n.charAt(0).toUpperCase() : ''; }
   function profileBtn() {
@@ -490,7 +562,7 @@ window.RL_THEME = {
     return '<div class="pbar"><a class="pbtn" href="#profile" aria-label="Profile">' + (ini ? esc(ini) :
       '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>') + '</a></div>';
   }
-  var PAGES = { classic: { label: 'Classic', href: 'index.html' }, cozy: { label: 'Cozy', href: 'cozy.html' }, fireside: { label: 'Fireside', href: 'fireside.html' }, sapphire: { label: 'Sapphire', href: 'sapphire.html' } };
+  var PAGES = { classic: { label: 'Classic', href: 'index.html?classic=1' }, cozy: { label: 'Cozy', href: 'cozy.html' }, fireside: { label: 'Fireside', href: 'fireside.html' }, sapphire: { label: 'Sapphire', href: 'sapphire.html' } };
   function currentTheme() { return /fireside/i.test(location.pathname) ? 'fireside' : /sapphire/i.test(location.pathname) ? 'sapphire' : 'cozy'; }
   function profileView() {
     var p = C.profile(), has = !!(p.name || p.mobile || p.email);
@@ -651,7 +723,7 @@ window.RL_THEME = {
   }
   function dkOpenSource(src) {
     if (!src) return;
-    if (src.cghs) { location.href = 'index.html'; return; }
+    if (src.cghs) { location.href = '#cghs'; return; }
     if (src.id) { go('#read/' + encodeURIComponent(src.id)); return; }
     if (src.url) window.open(src.url, '_blank', 'noopener');
   }
@@ -785,7 +857,7 @@ window.RL_THEME = {
       { href: 'pay-fixation.html', title: 'Pay fixation', sub: '7th CPC pay fixation', icon: 'pay' },
       { href: 'https://postalrulings.blogspot.com/', title: 'Blog of Postal Rulings', sub: 'Summaries of every ruling', icon: 'blog', ext: true },
       { href: '#daksi', title: 'Ask DakSi', sub: 'Ask about any ruling', icon: 'ask' },
-      { href: 'index.html', title: 'Admin', sub: 'PIN sign-in in the classic app', icon: 'admin' }];
+      { href: 'index.html?classic=1', title: 'Admin', sub: 'PIN sign-in in the classic app', icon: 'admin' }];
   }
   function toolsRow() {
     if (T.tools) return T.tools(toolList());
@@ -820,8 +892,14 @@ window.RL_THEME = {
   }
 
   function homeView() {
-    var cat = C.state.cat, items, heading, more = '';
-    if (cat) {
+    var cat = C.state.cat, multi = (C.state.catSel || []).length, items, heading, more = '', selbar = '';
+    if (multi) {
+      var allm = C.sortedByDate(C.filtered()), limm = C.state.limit || 40;
+      items = allm.slice(0, limm);
+      heading = multi + ' departments <span class="count">' + allm.length + (allm.length === 1 ? ' ruling' : ' rulings') + '</span>';
+      selbar = '<div class="selchips">' + C.state.catSel.map(function (d) { return '<button class="chip on" data-act="ddrop" data-cat="' + esc(d) + '" aria-label="Remove ' + esc(d) + '">' + esc(d) + ' ×</button>'; }).join('') + '<button class="hlink" data-act="dclear">Clear all</button><a class="hlink" href="#depts">Change</a></div>';
+      if (allm.length > limm) more = '<button class="more" data-act="more">Show more (' + (allm.length - limm) + ' left)</button>';
+    } else if (cat) {
       var all = C.sortedByDate(C.filtered());
       var lim = C.state.limit || 40;
       items = all.slice(0, lim);
@@ -836,7 +914,7 @@ window.RL_THEME = {
     return (T.ownProfileBtn ? '' : profileBtn()) + T.header(hctx) +
       '<label class="sr" for="q">Search rulings</label>' +
       '<input id="q" class="search" type="search" placeholder="Search a subject, OM No. or ruling" value="' + esc(C.state.query) + '" data-act="q">' +
-      toolsRow() + chips() + '<h2 class="sec">' + heading + '</h2>' + status() +
+      toolsRow() + chips() + '<h2 class="sec">' + heading + '</h2>' + selbar + status() +
       list(items, cat ? 'No rulings in this department yet.' : 'No rulings yet.') + more;
   }
   function searchView() {
@@ -1010,12 +1088,28 @@ window.RL_THEME = {
   function deptsView() {
     var counts = {};
     C.state.items.forEach(function (x) { counts[x.category] = (counts[x.category] || 0) + 1; });
-    var h = '<h1 class="page">Departments</h1><p class="note">' + C.state.cats.length + ' departments. Tap one to see its rulings.</p>' + status();
+    var sel = C.state.pick || (C.state.pick = (C.state.catSel || []).slice());
+    var h = pageHead('<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+      'Browse', 'Departments', C.state.cats.length + ' departments. Tap one, or tick several and see their rulings together.') + status();
     if (!C.state.loaded) return h;
-    return h + '<div class="dgrid">' + C.state.cats.map(function (c) {
-      return '<button class="dcell" data-act="fav" data-cat="' + esc(c) + '"><b>' + esc(c) + '</b><small>' + counts[c] + (counts[c] === 1 ? ' ruling' : ' rulings') + '</small></button>';
+    var max = Math.max.apply(null, C.state.cats.map(function (c) { return counts[c] || 0; }).concat([1]));
+    h += '<div class="dtools"><div class="seg" role="group" aria-label="Choose"><button class="segb" data-act="dmode" data-v="one" aria-pressed="' + !C.state.multi + '">One at a time</button><button class="segb" data-act="dmode" data-v="many" aria-pressed="' + !!C.state.multi + '">Select several</button></div>' +
+      (C.state.multi ? '<div class="pbtns" style="margin:0"><button class="hlink" data-act="dall">Select all</button><button class="hlink" data-act="dnone">Clear</button></div>' : '') + '</div>';
+    h += '<div class="dgrid">' + C.state.cats.map(function (c) {
+      var on = sel.indexOf(c) >= 0, n = counts[c] || 0;
+      return '<button class="dcell' + (C.state.multi ? ' multi' : '') + '" data-act="' + (C.state.multi ? 'dpick' : 'fav') + '" data-cat="' + esc(c) + '"' + (C.state.multi ? ' role="checkbox" aria-checked="' + on + '"' : '') + '>' +
+        '<span class="dmono">' + esc(c.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || '•') + '</span>' +
+        '<b>' + esc(c) + '</b><small>' + n + (n === 1 ? ' ruling' : ' rulings') + '</small><span class="dbar"><i style="width:' + Math.max(4, Math.round(n / max * 100)) + '%"></i></span>' +
+        (C.state.multi ? '<span class="dtick" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>' : '') + '</button>';
     }).join('') + '</div>';
+    if (C.state.multi) {
+      var tot = 0; sel.forEach(function (c) { tot += counts[c] || 0; });
+      h += '<div class="dbarbottom' + (sel.length ? ' on' : '') + '"><span>' + (sel.length ? sel.length + ' selected · about ' + tot + ' rulings' : 'Tick the departments you want') + '</span>' +
+        '<button class="pdf" data-act="dshow"' + (sel.length ? '' : ' disabled') + '>Show rulings</button></div>';
+    }
+    return h;
   }
+
 
   // Summary: the app's table of every ruling (title, OM No., dates, status, department, summary),
   // with the same views, column widths and PDF as the classic app.
@@ -1300,15 +1394,40 @@ window.RL_THEME = {
     return u ? '<a class="hlink" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + ' certificate</a>' : '';
   }
 
-  var HS = { state: '', city: '', acc: '', q: '', show: 30 };
+  var HS = { state: '', city: '', acc: '', q: '', show: 24, open: {} };
+  function parseDay(v) {
+    var m = /^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/.exec(String(v || '')); if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+    m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || '')); if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+    var t = Date.parse(v); return isNaN(t) ? null : new Date(t);
+  }
+  function validity(r) {
+    var to = parseDay(r.t); if (!to) return r.v ? { cls: 'v-ok', label: String(r.v) } : null;
+    var days = Math.round((to - new Date()) / 86400000);
+    var d = to.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (days < 0) return { cls: 'v-bad', label: 'Expired ' + d };
+    if (days <= 60) return { cls: 'v-warn', label: 'Valid till ' + d + ' · ' + days + ' days left' };
+    return { cls: 'v-ok', label: 'Valid till ' + d };
+  }
+  var HI = {
+    hosp: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 7v6M9 10h6M9 21v-4h6v4"/>',
+    pin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    state: '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>',
+    acc: '<path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+    search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+    phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>',
+    map: '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
+    cert: '<circle cx="12" cy="9" r="5"/><path d="m9 13-2 8 5-3 5 3-2-8"/>',
+    rate: '<path d="M7 4h10M7 8h10M7 4c4 0 6 2 6 4s-2 4-6 4l7 8"/>',
+    cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'
+  };
   function cghsView() {
     loadHosp();
-    var h = '<div class="topbar"><button class="back" data-act="back">Back</button></div><h1 class="page">CGHS empanelled hospitals</h1>' +
-      '<p class="note">From the CGHS site\'s own hospital list, refreshed every night.</p>';
-    if (!CG.hosp) return h + '<p class="empty show">' + esc(CG.hospErr || 'Loading hospitals…') + '</p>' + (CG.hospErr ? '<button class="more" data-act="cg-retry">Try again</button>' : '');
+    var h = '<div class="topbar"><button class="back" data-act="back">Back</button></div>';
+    if (!CG.hosp) return h + pageHead(HI.hosp, 'CGHS', 'Empanelled hospitals', 'From the CGHS site\'s own hospital list, refreshed every night.') + (CG.hospErr ? emptyState(HI.hosp, 'Hospitals could not be loaded', CG.hospErr, '<button class="pdf" data-act="cg-retry">Try again</button>')
+      : '<div class="skel">' + [0, 1, 2].map(function () { return '<div class="sk"></div>'; }).join('') + '</div>');
     var recs = CG.hosp.map(hRec);
     var states = {}, cities = {}, accs = {};
-    recs.forEach(function (r) { var s = stateOf(r.cs); if (s) states[s] = 1; if (!HS.state || s === HS.state) { var c = cityOf(r.cs); if (c) cities[c] = 1; } if (r.a) accs[r.a] = 1; });
+    recs.forEach(function (r) { var s2 = stateOf(r.cs); if (s2) states[s2] = 1; if (!HS.state || s2 === HS.state) { var c = cityOf(r.cs); if (c) cities[c] = 1; } if (r.a) accs[r.a] = 1; });
     var q = HS.q.toLowerCase().trim();
     var hits = recs.filter(function (r) {
       if (HS.state && stateOf(r.cs) !== HS.state) return false;
@@ -1316,22 +1435,41 @@ window.RL_THEME = {
       if (HS.acc && r.a !== HS.acc) return false;
       return !q || (r.n + ' ' + r.ad + ' ' + r.sp + ' ' + r.cs).toLowerCase().indexOf(q) >= 0;
     });
-    var sel = function (id, act, label, val, opts) {
-      return '<label class="fl"><span>' + label + '</span><select id="' + id + '" data-act="' + act + '"><option value="">All</option>' +
-        opts.sort().map(function (o) { return '<option' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select></label>';
+    var nabh = hits.filter(function (r) { return /nabh/i.test(r.a) && !/non/i.test(r.a); }).length;
+    var sel = function (id, act, icon, label, val, opts) {
+      return '<div class="ifield"><label class="sr" for="' + id + '">' + label + '</label><span class="if-ic">' + svgI(icon) + '</span><select id="' + id + '" data-act="' + act + '"><option value="">' + label + ': all</option>' +
+        opts.sort().map(function (o) { return '<option value="' + esc(o) + '"' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select></div>';
     };
-    h += '<div class="filters">' + sel('hsState', 'hs-state', 'State', HS.state, Object.keys(states)) + sel('hsCity', 'hs-city', 'City', HS.city, Object.keys(cities)) +
-      sel('hsAcc', 'hs-acc', 'Accreditation', HS.acc, Object.keys(accs)) + '</div>' +
-      '<label class="sr" for="hsq">Search hospitals</label><input id="hsq" class="search" type="search" data-act="hsq" placeholder="Search hospital, area or speciality" value="' + esc(HS.q) + '">' +
-      '<p class="note">' + hits.length + (hits.length === 1 ? ' hospital' : ' hospitals') + (CG.hospBusy ? ' · updating…' : '') + '</p>';
-    h += '<div class="srows">' + hits.slice(0, HS.show).map(function (r) {
-      var valid = r.f || r.t ? (r.f || '?') + ' to ' + (r.t || '?') : (r.v || '');
-      return '<article class="hcard"><div class="srow-top">' + (r.a ? '<span class="st">' + esc(r.a) + '</span>' : '') + (r.st ? '<span class="dept">' + esc(r.st) + '</span>' : '') + '</div>' +
-        '<h2 class="srow-title">' + esc(r.n) + '</h2><p class="hmeta">' + esc(r.ad) + (r.cs ? ' · ' + esc(r.cs) : '') + '</p>' +
-        (r.sp ? '<p class="hsp">' + esc(String(r.sp).slice(0, 260)) + (String(r.sp).length > 260 ? '…' : '') + '</p>' : '') +
-        (valid ? '<p class="hmeta">Valid ' + esc(valid) + '</p>' : '') +
-        '<div class="hlinks">' + (r.ph ? '<span class="hlink sel">' + esc(r.ph) + '</span>' : '') + (r.m && /^https?:/.test(r.m) ? '<a class="hlink" href="' + esc(r.m) + '" target="_blank" rel="noopener">Map</a>' : '') +
-        certLink(r.nabh, 'NABH') + certLink(r.nabl, 'NABL') + '<a class="hlink" href="#rates" data-act="rt-hosp" data-n="' + esc(r.n) + '">Package rates</a></div></article>';
+    h += '<section class="rfinder"><div class="rf-head"><div class="rf-h-ic">' + svgI(HI.hosp, 26) + '</div><div style="min-width:0"><div class="rf-kick">CGHS · Hospital finder</div><h1 class="ph-t">Empanelled hospitals</h1><p class="ph-s">From the CGHS site\'s own hospital list, refreshed every night.</p><div class="rf-sum" style="margin-top:10px">' +
+      '<span class="rf-chip">' + hits.length + ' hospitals</span><span class="rf-chip">' + nabh + ' NABH</span>' +
+      (HS.state ? '<span class="rf-chip">' + esc(HS.state) + '</span>' : '') + (HS.city ? '<span class="rf-chip city">' + svgI(HI.pin, 14) + esc(HS.city) + '</span>' : '') +
+      (CG.hospBusy ? '<span class="rf-chip">Updating…</span>' : '') + '</div></div></div>' +
+      '<div class="hf-grid">' + sel('hsState', 'hs-state', HI.state, 'State', HS.state, Object.keys(states)) + sel('hsCity', 'hs-city', HI.pin, 'City', HS.city, Object.keys(cities)) +
+      sel('hsAcc', 'hs-acc', HI.acc, 'Accreditation', HS.acc, Object.keys(accs)) +
+      '<div class="ifield hf-q"><label class="sr" for="hsq">Search hospitals</label><span class="if-ic">' + svgI(HI.search) + '</span><input id="hsq" type="search" data-act="hsq" autocomplete="off" placeholder="Hospital, area or speciality" value="' + esc(HS.q) + '"></div>' +
+      '</div></section>';
+    if (!hits.length) return h + emptyState(HI.hosp, 'No hospital matches', 'Try another city, clear the accreditation filter or search a shorter word.', '');
+    h += '<div class="hgrid">' + hits.slice(0, HS.show).map(function (r) {
+      var va = validity(r), isN = /nabh/i.test(r.a) && !/non/i.test(r.a);
+      var sps = String(r.sp || '').split(/\s*[,;]\s*/).filter(Boolean), openAll = HS.open[r.id], showSp = openAll ? sps : sps.slice(0, 5);
+      var mono = String(r.n || '').replace(/[^A-Za-z ]/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase() || 'H';
+      var tel = String(r.ph || '').split(/[,\/;]/)[0].replace(/[^\d+]/g, '');
+      var certU = function (c) { return Array.isArray(c) ? c.filter(function (x) { return /^https?:/.test(String(x)); })[0] : (/^https?:/.test(String(c || '')) ? c : ''); };
+      var nabhU = certU(r.nabh), nablU = certU(r.nabl);
+      return '<article class="hcard2">' +
+        '<div class="hc-top"><span class="hc-mono' + (isN ? ' n' : '') + '">' + esc(mono) + '</span><div style="min-width:0;flex:1"><h2 class="hc-name">' + esc(r.n) + '</h2>' +
+        '<div class="hc-tags">' + (r.a ? '<span class="acc' + (isN ? ' n' : '') + '">' + svgI(HI.acc, 13) + esc(r.a) + '</span>' : '') + (r.st ? '<span class="st">' + esc(r.st) + '</span>' : '') + '</div></div></div>' +
+        '<p class="hc-line">' + svgI(HI.pin, 16) + '<span>' + esc(r.ad) + (r.cs ? ', ' + esc(r.cs) : '') + '</span></p>' +
+        (va ? '<p class="hc-line ' + va.cls + '">' + svgI(HI.cal, 16) + '<span>' + esc(va.label) + '</span></p>' : '') +
+        (sps.length ? '<div class="spchips">' + showSp.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('') +
+          (sps.length > 5 ? '<button class="spmore" data-act="hs-sp" data-id="' + esc(r.id) + '">' + (openAll ? 'Show less' : '+' + (sps.length - 5) + ' more') + '</button>' : '') + '</div>' : '') +
+        '<div class="hc-acts">' +
+        (tel ? '<a class="hact" href="tel:' + esc(tel) + '">' + svgI(HI.phone, 16) + '<span>Call</span></a>' : '') +
+        (r.m && /^https?:/.test(r.m) ? '<a class="hact" href="' + esc(r.m) + '" target="_blank" rel="noopener">' + svgI(HI.map, 16) + '<span>Map</span></a>' : '') +
+        (nabhU ? '<a class="hact" href="' + esc(nabhU) + '" target="_blank" rel="noopener">' + svgI(HI.cert, 16) + '<span>NABH</span></a>' : '') +
+        (nablU ? '<a class="hact" href="' + esc(nablU) + '" target="_blank" rel="noopener">' + svgI(HI.cert, 16) + '<span>NABL</span></a>' : '') +
+        '<a class="hact pri" href="#rates" data-act="rt-hosp" data-n="' + esc(r.n) + '">' + svgI(HI.rate, 16) + '<span>Package rates</span></a></div>' +
+        (r.ph ? '<p class="hc-ph">' + esc(r.ph) + '</p>' : '') + '</article>';
     }).join('') + '</div>';
     if (hits.length > HS.show) h += '<button class="more" data-act="hs-more">Show more (' + (hits.length - HS.show) + ' left)</button>';
     return h;
@@ -1587,6 +1725,13 @@ window.RL_THEME = {
   function putBreakups(l) { try { localStorage.setItem('rl_rt_saved_v2', JSON.stringify(l)); } catch (e) {} }
 
   function screens2Click(act, el) {
+    if (act === 'dmode') { C.state.multi = el.getAttribute('data-v') === 'many'; C.state.pick = (C.state.catSel || []).slice(); render(); return true; }
+    if (act === 'dpick') { var dc = el.getAttribute('data-cat'), pk = C.state.pick || (C.state.pick = []), pi = pk.indexOf(dc); if (pi >= 0) pk.splice(pi, 1); else pk.push(dc); render(); return true; }
+    if (act === 'dall') { C.state.pick = C.state.cats.slice(); render(); return true; }
+    if (act === 'dnone') { C.state.pick = []; render(); return true; }
+    if (act === 'dshow') { C.state.catSel = (C.state.pick || []).slice(); C.state.cat = ''; C.state.limit = 40; go('#home'); return true; }
+    if (act === 'dclear') { C.state.catSel = []; C.state.pick = []; C.state.cat = ''; render(); return true; }
+    if (act === 'ddrop') { var dd = el.getAttribute('data-cat'); C.state.catSel = C.state.catSel.filter(function (x) { return x !== dd; }); C.state.pick = C.state.catSel.slice(); render(); return true; }
     if (act === 'cg-retry') { CG.hospTried = CG.ratesTried = false; CG.hospErr = CG.ratesErr = ''; render(); return true; }
     if (act === 'sumsort' && SUM.dragEnd && Date.now() - SUM.dragEnd < 300) return true;
     if (act === 'sumview') { SUM.group = el.getAttribute('data-v') === 'group'; if (!SUM.group) SUM.om = ''; SUM.cap = 100; render(); return true; }
@@ -1597,7 +1742,8 @@ window.RL_THEME = {
     if (act === 'sumsort') { var k = el.getAttribute('data-k'); if (SUM.sort === k) SUM.dir = -SUM.dir; else { SUM.sort = k; SUM.dir = k === 'date' ? -1 : 1; } render(); return true; }
     if (act === 'sumcat') { SUM.cat = el.getAttribute('data-cat') || ''; SUM.cap = 100; render(); return true; }
     if (act === 'summore') { SUM.cap += 100; render(); return true; }
-    if (act === 'hs-more') { HS.show += 30; render(); return true; }
+    if (act === 'hs-more') { HS.show += 24; render(); return true; }
+    if (act === 'hs-sp') { var hid = el.getAttribute('data-id'); HS.open[hid] = !HS.open[hid]; render(); return true; }
     if (act === 'rt-type' || act === 'rt-tier' || act === 'rt-ward') { RT[act.slice(3)] = el.getAttribute('data-v'); rtSave(); render(); return true; }
     if (act === 'rt-loc') { rtLocate(false); return true; }
     if (act === 'rt-more') { RT.show += 40; render(); return true; }
@@ -1620,7 +1766,7 @@ window.RL_THEME = {
     var rerender = function (focusId) { clearTimeout(s2Typing); s2Typing = setTimeout(function () { render(); var f = document.getElementById(focusId); if (f) { f.focus(); try { f.setSelectionRange(f.value.length, f.value.length); } catch (e) {} } }, 220); };
     if (act === 'sumom') { var ov2 = el.value.trim(); if (!ov2 || omChoices().some(function (o) { return omKey(o.om) === omKey(ov2); })) { SUM.om = ov2; SUM.cap = 100; render(); var f2 = document.getElementById('sumOm'); if (f2) f2.focus(); } return true; }
     if (act === 'sumq') { SUM.q = el.value; SUM.cap = 100; rerender('sumq'); return true; }
-    if (act === 'hsq') { HS.q = el.value; HS.show = 30; rerender('hsq'); return true; }
+    if (act === 'hsq') { HS.q = el.value; HS.show = 24; rerender('hsq'); return true; }
     if (act === 'rt-q') { RT.q = el.value; RT.show = 40; rerender('rtQ'); return true; }
     if (act === 'rt-city') { var v = el.value.trim(); var hit = RT_T1.concat(RT_T2).filter(function (c) { return rtKey(c) === rtKey(v); })[0];
       if (hit || !v) { rtPickCity(hit || '', hit ? null : RT.tier); RT.msg = ''; render(); var f3 = document.getElementById('rtCity'); if (f3) { f3.focus(); f3.setSelectionRange(f3.value.length, f3.value.length); } } else { RT.city = v; } return true; }
@@ -1629,9 +1775,9 @@ window.RL_THEME = {
     return false;
   }
   function screens2Change(act, el) {
-    if (act === 'hs-state') { HS.state = el.value; HS.city = ''; HS.show = 30; render(); return true; }
-    if (act === 'hs-city') { HS.city = el.value; HS.show = 30; render(); return true; }
-    if (act === 'hs-acc') { HS.acc = el.value; HS.show = 30; render(); return true; }
+    if (act === 'hs-state') { HS.state = el.value; HS.city = ''; HS.show = 24; render(); return true; }
+    if (act === 'hs-city') { HS.city = el.value; HS.show = 24; render(); return true; }
+    if (act === 'hs-acc') { HS.acc = el.value; HS.show = 24; render(); return true; }
     if (act === 'rt-sp') { RT.sp = el.value; RT.show = 40; render(); return true; }
     if (act === 'rt-city') { var v = el.value.trim(); rtPickCity(v); RT.msg = ''; render(); return true; }
     return false;
@@ -1652,7 +1798,7 @@ window.RL_THEME = {
     else if (r === 'rates') { route = 'rates'; view = ratesView(); }
     else view = homeView();
     app.innerHTML = '<main class="wrap">' + view + '</main>' + T.nav(route === 'read' ? '' : route) +
-      (route === 'home' || route === 'search' || route === 'saved' || route === 'depts' || route === 'alerts' ? '<a class="dk-fab" href="#daksi" aria-label="Ask DakSi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></a>' : '');
+      (route === 'home' || route === 'search' || route === 'saved' || route === 'alerts' ? '<a class="dk-fab" href="#daksi" aria-label="Ask DakSi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg></a>' : '');
     document.body.setAttribute('data-route', route);
     var on = document.querySelector('.chip[aria-pressed="true"]');
     // Bring the chosen chip into view inside its row only; the page itself must not move.
@@ -1699,7 +1845,7 @@ window.RL_THEME = {
       return;
     }
     if (act === 'open') { go('#read/' + encodeURIComponent(el.getAttribute('data-id'))); }
-    else if (act === 'cat') { C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; render(); var h = document.querySelector('.sec'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+    else if (act === 'cat') { C.state.catSel = []; C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; render(); var h = document.querySelector('.sec'); if (h && h.scrollIntoView) h.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     else if (act === 'more') { C.state.limit = (C.state.limit || 40) + 40; render(); }
     else if (act === 'back') { history.length > 1 ? history.back() : go('#home'); }
     else if (act === 'save') {
@@ -1723,8 +1869,8 @@ window.RL_THEME = {
     }
     else if (act === 'id-later') { try { localStorage.setItem('rl_idasked', '1'); } catch (x) {} closeSheet(); visitPing(); }
     else if (act === 'signout') { C.signOut(); render(); idSheet(); }
-    else if (act === 'fav') { C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; go('#home'); }
-    else if (act === 'theme') { var k = el.getAttribute('data-theme'); try { localStorage.setItem('rl_front', k); } catch (x) {} if (k !== currentTheme()) location.href = PAGES[k].href; }
+    else if (act === 'fav') { C.state.catSel = []; C.state.cat = el.getAttribute('data-cat') || ''; C.state.limit = 40; go('#home'); }
+    else if (act === 'theme') { var k = el.getAttribute('data-theme'); try { localStorage.setItem('rl_front', k); if (k === 'classic') sessionStorage.removeItem('rl_classic'); } catch (x) {} if (k !== currentTheme()) location.href = k === 'classic' ? 'index.html' : PAGES[k].href; }
     else if (act === 'dl-close') { try { localStorage.setItem('rl_dl_dismissed', '1'); } catch (x) {} var b = document.querySelector('.dlbar'); if (b) b.remove(); }
   });
   document.addEventListener('change', function (e) { if (e.target && e.target.getAttribute) screens2Change(e.target.getAttribute('data-act'), e.target); });
