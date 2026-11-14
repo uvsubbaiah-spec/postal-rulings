@@ -170,6 +170,19 @@ body[data-route="read"]{padding-bottom:40px}
 .saved-bk summary{cursor:pointer;font:700 15px var(--font-display);color:var(--ink)}
 .bk{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--rule);flex-wrap:wrap}
 .bk b{display:block}.bk small{color:var(--ink-soft)}
+.sumbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px}
+.sumbar .seg{flex:0 1 280px}.sumtools{display:flex;flex-wrap:wrap;gap:8px}
+.ompick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.ompick label{font-size:12.5px;font-weight:700;color:var(--ink-soft)}.ompick .search{flex:1 1 200px;margin:0;height:42px}
+.sumtable{table-layout:fixed}.sumtable th{position:relative}
+.sumtable td{overflow-wrap:anywhere}
+.rz{position:absolute;top:0;right:-4px;width:9px;height:100%;cursor:col-resize;touch-action:none;z-index:2}
+.rz::after{content:"";position:absolute;top:20%;bottom:20%;left:4px;width:2px;border-radius:2px;background:var(--rule)}
+.rz:hover::after,.rz:focus-visible::after{background:var(--accent)}
+.rz:focus-visible{outline:none}
+.sumtable tr.grp td{background:var(--paper);font-size:12.5px;border-top:2px solid var(--accent)}
+.sumtable tr.grp{cursor:default}
+.sumtable .st{white-space:nowrap;overflow-wrap:normal;font-size:10px;padding:2px 7px;letter-spacing:.03em}
 
 :root{--paper:#FBF1DF;--card:#FFF8EC;--paper-2:#F5E4C6;--ink:#2E1F1A;--ink-soft:#6B5346;--plum:#6A2C5A;--plum-ink:#FFF8EC;--marigold:#E9A23B;--sage:#6F8F6A;--rule:#E2CBA8;--accent:#6A2C5A;--accent-fill:#6A2C5A;--accent-ink:#FFF8EC;--focus:rgba(106,44,90,.25);--nav-bg:#FFF8EC;--search-r:999px;--font-display:'Fraunces',Georgia,serif;--font-body:'Figtree',system-ui,sans-serif;--shadow:0 10px 24px -14px rgba(106,44,90,.35);color-scheme:light}
 body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transparent 0);background-size:22px 22px}
@@ -958,36 +971,212 @@ window.RL_THEME = {
     }).join('') + '</div>';
   }
 
-  // Summary: the app's table of every ruling (title, OM No., dates, status, department, summary).
-  var SUM = { cat: '', sort: 'date', dir: -1, cap: 100, q: '' };
-  function summaryRows() {
+  // Summary: the app's table of every ruling (title, OM No., dates, status, department, summary),
+  // with the same views, column widths and PDF as the classic app.
+  var SUM = { cat: '', sort: 'date', dir: -1, cap: 100, q: '', group: false, om: '' };
+  var SUM_KEYS = ['title', 'om', 'omDate', 'eff', 'status', 'dept', 'summary'];
+  var SUM_DEF = { title: 29, om: 14, omDate: 10, eff: 10, status: 11, dept: 12, summary: 26 };
+  function omKey(v) { return String(v || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+  function sumCols() { try { return JSON.parse(localStorage.getItem('rulings_sum_cols') || 'null'); } catch (e) { return null; } }
+  function putSumCols(v) { try { if (v) localStorage.setItem('rulings_sum_cols', JSON.stringify(v)); else localStorage.removeItem('rulings_sum_cols'); } catch (e) {} }
+  function summaryRows(all) {
     var q = SUM.q.toLowerCase().trim();
     var rows = C.state.items.map(function (x) {
       var v = C.view(x);
-      return { id: x.id, t: v.title, om: v.omNo, d: v.issueDate || x.date, e: v.effective, s: v.status || 'Active', c: v.depts.join(', '), m: v.summary };
+      return { id: x.id, t: v.title, om: v.omNo, d: v.issueDate || x.date, e: v.effective, s: v.status || 'Active', c: v.depts.join(', '), m: v.summary, b: v.blogUrl };
     }).filter(function (r) {
       if (SUM.cat && r.c.split(', ').indexOf(SUM.cat) < 0) return false;
+      if (SUM.om && omKey(r.om) !== omKey(SUM.om)) return false;
       return !q || (r.t + ' ' + r.om + ' ' + r.m + ' ' + r.c).toLowerCase().indexOf(q) >= 0;
     });
-    var key = { date: 'd', title: 't', om: 'om', eff: 'e', status: 's', dept: 'c' }[SUM.sort] || 'd';
+    var key = { date: 'd', title: 't', om: 'om', eff: 'e', status: 's', dept: 'c', summary: 'm' }[SUM.sort] || 'd';
     rows.sort(function (a, b) { return String(a[key] || '').localeCompare(String(b[key] || '')) * SUM.dir; });
+    if (SUM.group) {
+      // Same OM No.: only posts that share an OM No., grouped under it.
+      var by = {};
+      rows.forEach(function (r) { var k = omKey(r.om); if (k.length >= 3) (by[k] = by[k] || []).push(r); });
+      var out = [];
+      Object.keys(by).filter(function (k) { return by[k].length > 1 || SUM.om; }).sort().forEach(function (k) {
+        out.push({ head: true, om: by[k][0].om, n: by[k].length });
+        by[k].forEach(function (r) { out.push(r); });
+      });
+      rows = out;
+    }
     return rows;
   }
+  function omChoices() {
+    var by = {};
+    C.state.items.forEach(function (x) { var v = C.view(x), k = omKey(v.omNo); if (k.length >= 3) { by[k] = by[k] || { om: v.omNo, n: 0 }; by[k].n++; } });
+    return Object.keys(by).map(function (k) { return by[k]; }).filter(function (o) { return o.n > 1; }).sort(function (a, b) { return b.n - a.n; });
+  }
   function summaryView() {
-    var h = '<h1 class="page">Summary</h1><p class="note">Every ruling at a glance. Tap a column to sort, tap a row to open it.</p>' + status();
+    var h = '<h1 class="page">Summary</h1><p class="note">Every ruling at a glance. Tap a column to sort, drag a column edge to resize, tap a row to open it.</p>' + status();
     if (!C.state.loaded) return h;
-    var rows = summaryRows();
+    var rows = summaryRows(), real = rows.filter(function (r) { return !r.head; }).length;
+    var allDepts = !SUM.cat;
     h += '<label class="sr" for="sumq">Filter the summary</label><input id="sumq" class="search" type="search" data-act="sumq" placeholder="Filter by title, OM No. or summary" value="' + esc(SUM.q) + '">';
     h += '<div class="chips"><button class="chip" data-act="sumcat" data-cat="" aria-pressed="' + (!SUM.cat) + '">All</button>' +
       C.state.cats.map(function (c) { return '<button class="chip" data-act="sumcat" data-cat="' + esc(c) + '" aria-pressed="' + (SUM.cat === c) + '">' + esc(c) + '</button>'; }).join('') + '</div>';
-    var th = function (k, label) { return '<th scope="col"><button class="th" data-act="sumsort" data-k="' + k + '">' + label + (SUM.sort === k ? (SUM.dir > 0 ? ' ▲' : ' ▼') : '') + '</button></th>'; };
-    h += '<p class="note">' + rows.length + (rows.length === 1 ? ' ruling' : ' rulings') + '</p><div class="tablewrap"><table class="sumtable"><thead><tr>' +
-      th('title', 'Title') + th('om', 'OM No.') + th('date', 'OM Date') + th('eff', 'Effective') + th('status', 'Status') + th('dept', 'Dept.') + '<th scope="col">Summary</th></tr></thead><tbody>' +
+    h += '<div class="sumbar"><div class="seg" role="group" aria-label="View"><button class="segb" data-act="sumview" data-v="list" aria-pressed="' + !SUM.group + '">All posts</button>' +
+      '<button class="segb" data-act="sumview" data-v="group" aria-pressed="' + SUM.group + '" title="Posts that share an OM No., grouped together">Same OM No.</button></div>' +
+      '<div class="sumtools"><button class="hlink" data-act="sumpdf">PDF</button><button class="hlink" data-act="sumw" data-f="0.85" title="Make all columns narrower">Columns −</button>' +
+      '<button class="hlink" data-act="sumw" data-f="1.15" title="Make all columns wider">Columns +</button>' + (sumCols() ? '<button class="hlink" data-act="sumwreset" title="Back to the default widths">Reset widths</button>' : '') + '</div></div>';
+    if (SUM.group) {
+      var ch = omChoices();
+      h += '<div class="ompick"><label for="sumOm">Posts with OM No.</label><input id="sumOm" class="search" list="sumOms" data-act="sumom" placeholder="Type or pick an OM No." value="' + esc(SUM.om) + '">' +
+        '<datalist id="sumOms">' + ch.slice(0, 400).map(function (o) { return '<option value="' + esc(o.om) + '">' + o.n + ' posts</option>'; }).join('') + '</datalist>' +
+        (SUM.om ? '<button class="hlink" data-act="sumomclear">Show all</button>' : '') + '</div>';
+    }
+    var c = sumCols(), keys = SUM_KEYS.filter(function (k) { return k !== 'dept' || allDepts; });
+    var colw = function (k) { return c && c[k] ? c[k] + 'px' : SUM_DEF[k] + '%'; };
+    var tblW = c ? keys.reduce(function (a, k) { return a + (c[k] || 80); }, 0) + 'px' : '100%';
+    var th = function (k, sortKey, label) {
+      return '<th scope="col" data-sum-col="' + k + '"><button class="th" data-act="sumsort" data-k="' + sortKey + '">' + label + (SUM.sort === sortKey ? (SUM.dir > 0 ? ' ▲' : ' ▼') : '') + '</button>' +
+        '<span class="rz" data-rz="' + k + '" role="separator" aria-orientation="vertical" aria-label="Resize ' + label + ' column" tabindex="0"></span></th>';
+    };
+    h += '<p class="note">' + real + (real === 1 ? ' ruling' : ' rulings') + '</p><div class="tablewrap"><table class="sumtable" style="width:' + tblW + ';min-width:' + (c ? '0' : '860px') + '"><colgroup>' +
+      keys.map(function (k) { return '<col data-col="' + k + '" style="width:' + colw(k) + '">'; }).join('') + '</colgroup><thead><tr>' +
+      th('title', 'title', 'Title') + th('om', 'om', 'OM No.') + th('omDate', 'date', 'OM Date') + th('eff', 'eff', 'Effective') + th('status', 'status', 'Status') +
+      (allDepts ? th('dept', 'dept', 'Dept.') : '') + th('summary', 'summary', 'Summary') + '</tr></thead><tbody>' +
       rows.slice(0, SUM.cap).map(function (r) {
-        return '<tr data-act="open" data-id="' + esc(r.id) + '" tabindex="0"><td class="tt">' + esc(r.t) + '</td><td class="mono">' + esc(r.om) + '</td><td>' + esc(fmtDate(r.d)) + '</td><td>' + esc(r.e ? fmtDate(r.e) : '') + '</td><td>' + statusPill(r.s) + '</td><td>' + esc(r.c) + '</td><td class="sm">' + esc(r.m) + '</td></tr>';
+        if (r.head) return '<tr class="grp"><td colspan="' + keys.length + '">OM No. <b>' + esc(r.om) + '</b> · ' + r.n + ' posts</td></tr>';
+        return '<tr data-act="open" data-id="' + esc(r.id) + '" tabindex="0"><td class="tt">' + esc(r.t) + '</td><td class="mono">' + esc(r.om) + '</td><td>' + esc(fmtDate(r.d)) + '</td><td>' + esc(r.e ? fmtDate(r.e) : '') + '</td><td>' + statusPill(r.s) + '</td>' +
+          (allDepts ? '<td>' + esc(r.c) + '</td>' : '') + '<td class="sm">' + esc(r.m) + '</td></tr>';
       }).join('') + '</tbody></table></div>';
     if (rows.length > SUM.cap) h += '<button class="more" data-act="summore">Show more (' + (rows.length - SUM.cap) + ' left)</button>';
+    if (SUM.group && !rows.length) h += '<p class="empty show">No posts share an OM No.' + (SUM.cat ? ' in this department' : '') + '.</p>';
     return h;
+  }
+  // Drag a column edge to resize it (mouse, touch or pen); widths are kept on this device.
+  document.addEventListener('pointerdown', function (e) {
+    var hnd = e.target.closest && e.target.closest('.rz'); if (!hnd) return;
+    e.preventDefault(); e.stopPropagation();
+    var k = hnd.getAttribute('data-rz'), row = hnd.closest('tr'), table = hnd.closest('table');
+    var start = {}; row.querySelectorAll('th[data-sum-col]').forEach(function (t) { start[t.getAttribute('data-sum-col')] = Math.round(t.getBoundingClientRect().width); });
+    var cur = Object.assign({}, sumCols() || {}, start), x0 = e.clientX, w0 = start[k];
+    var apply = function () {
+      var total = 0;
+      table.querySelectorAll('col[data-col]').forEach(function (col) { var ck = col.getAttribute('data-col'); col.style.width = cur[ck] + 'px'; total += cur[ck]; });
+      table.style.width = total + 'px'; table.style.minWidth = '0';
+    };
+    var mv = function (ev) { cur[k] = Math.max(48, Math.round(w0 + ev.clientX - x0)); apply(); };
+    var up = function () { window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); SUM.dragEnd = Date.now(); putSumCols(cur); render(); };
+    window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+  }, true);
+  document.addEventListener('keydown', function (e) {
+    var hnd = e.target && e.target.classList && e.target.classList.contains('rz') ? e.target : null;
+    if (!hnd || (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight')) return;
+    e.preventDefault();
+    var k = hnd.getAttribute('data-rz'), row = hnd.closest('tr'), cur = Object.assign({}, sumCols() || {});
+    row.querySelectorAll('th[data-sum-col]').forEach(function (t) { var ck = t.getAttribute('data-sum-col'); if (!cur[ck]) cur[ck] = Math.round(t.getBoundingClientRect().width); });
+    cur[k] = Math.max(48, cur[k] + (e.key === 'ArrowRight' ? 20 : -20)); putSumCols(cur); render();
+    var again = document.querySelector('.rz[data-rz="' + k + '"]'); if (again) again.focus();
+  });
+  function sumScale(f) {
+    var row = document.querySelector('.sumtable thead tr'); if (!row) return;
+    var cur = Object.assign({}, sumCols() || {});
+    row.querySelectorAll('th[data-sum-col]').forEach(function (t) { cur[t.getAttribute('data-sum-col')] = Math.max(48, Math.round(t.getBoundingClientRect().width * f)); });
+    putSumCols(cur); render();
+  }
+
+  // Summary PDF: a real PDF file (A4 landscape, header row on every page, titles link to each ruling).
+  function summaryPdf() {
+    var saveCap = SUM.cap; SUM.cap = 1e9; var rows = summaryRows(); SUM.cap = saveCap;
+    var allDepts = !SUM.cat, base = location.origin + location.pathname;
+    var title = 'Summary of rulings' + (allDepts ? '' : ' - ' + SUM.cat) + (SUM.om ? ' - OM No. ' + SUM.om : (SUM.group ? ' - same OM No.' : ''));
+    var W = 842, H = 595, M = 28, FS = 7.5, LH = 9.2;
+    var spec = [['t', 'Title', 22], ['om', 'OM No.', 14], ['d', 'OM Date', 8], ['e', 'Effective', 8], ['s', 'Status', 7]].concat(allDepts ? [['c', 'Dept.', 10]] : []).concat([['m', 'Summary', allDepts ? 31 : 41]]);
+    var totalPct = spec.reduce(function (a, c2) { return a + c2[2]; }, 0), inner = W - 2 * M;
+    var cols = spec.map(function (c2) { return { k: c2[0], label: c2[1], w: inner * c2[2] / totalPct }; });
+    var clean = function (t) { return String(t == null ? '' : t).replace(/[\t\r\n\u00a0]+/g, ' ').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-').replace(/₹/g, 'Rs.').replace(/·/g, '-').replace(/[^\x20-\x7e]/g, '?'); };
+    var pesc = function (t) { return clean(t).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)'); };
+    var cw = function (ch) { return /[0-9]/.test(ch) ? 0.556 : /[ ,.:;'|!ijlI]/.test(ch) ? 0.278 : /[mMW]/.test(ch) ? 0.85 : /[A-Z]/.test(ch) ? 0.68 : 0.52; };
+    var tw = function (t, sz, bold) { return clean(t).split('').reduce(function (a, ch) { return a + cw(ch); }, 0) * sz * (bold ? 1.06 : 1); };
+    var wrap = function (t, sz, maxW, bold) {
+      var out = [], line = '';
+      clean(t).split(/\s+/).filter(Boolean).forEach(function (w) {
+        while (tw(w, sz, bold) > maxW && w.length > 1) { var cut = w.length - 1; while (cut > 1 && tw(w.slice(0, cut), sz, bold) > maxW) cut--; if (line) { out.push(line); line = ''; } out.push(w.slice(0, cut)); w = w.slice(cut); }
+        var tryL = line ? line + ' ' + w : w;
+        if (tw(tryL, sz, bold) <= maxW || !line) line = tryL; else { out.push(line); line = w; }
+      });
+      if (line) out.push(line);
+      return out.length ? out : [''];
+    };
+    var pages = [], annots = [], page, y;
+    var op = function (str) { page.push(str); };
+    var T = function (x, yy, t, sz, bold, rgb) { op('BT /F' + (bold ? 2 : 1) + ' ' + sz + ' Tf ' + (rgb || '0 0 0') + ' rg ' + x.toFixed(1) + ' ' + yy.toFixed(1) + ' Td (' + pesc(t) + ') Tj ET'); };
+    var rect = function (x, yy, w, h2, rgb) { op(rgb + ' rg ' + x.toFixed(1) + ' ' + yy.toFixed(1) + ' ' + w.toFixed(1) + ' ' + h2.toFixed(1) + ' re f'); };
+    var hline = function (yy) { op('0.86 0.81 0.75 RG 0.5 w ' + M + ' ' + yy.toFixed(1) + ' m ' + (W - M) + ' ' + yy.toFixed(1) + ' l S'); };
+    var header = function () {
+      var hh = 16; rect(M, y - hh, inner, hh, '0.18 0.32 0.75');
+      var x = M; cols.forEach(function (c2) { T(x + 4, y - 11, c2.label, 8, true, '1 1 1'); x += c2.w; });
+      y -= hh;
+    };
+    var newPage = function (first) {
+      page = []; pages.push(page); annots.push([]); y = H - M;
+      if (first) {
+        T(M, y - 14, title, 14, true, '0.12 0.18 0.40'); y -= 20;
+        T(M, y - 9, 'Department of Posts - Postal Rulings - ' + rows.filter(function (r) { return !r.head; }).length + ' rulings - ' + new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), 8.5, false, '0.35 0.35 0.35'); y -= 16;
+      }
+      header();
+    };
+    newPage(true);
+    rows.forEach(function (r) {
+      if (r.head) {
+        if (y - 14 < M + 20) newPage(false);
+        rect(M, y - 13, inner, 13, '1 0.97 0.88'); T(M + 4, y - 9.5, 'OM No. ' + r.om + ' - ' + r.n + ' posts', 8, true); y -= 13; return;
+      }
+      var vals = { t: r.t, om: r.om, d: fmtDate(r.d), e: r.e ? fmtDate(r.e) : '', s: r.s, c: r.c, m: r.m };
+      var lines = cols.map(function (c2) { return wrap(vals[c2.k], FS, c2.w - 8, c2.k === 't'); });
+      var n = Math.max.apply(null, lines.map(function (l) { return l.length; })), rh = n * LH + 6;
+      if (y - rh < M + 20) newPage(false);
+      var x = M;
+      cols.forEach(function (c2, ci) {
+        lines[ci].forEach(function (ln, li) { T(x + 4, y - 9 - li * LH, ln, FS, c2.k === 't', c2.k === 't' ? '0.12 0.30 0.85' : '0 0 0'); });
+        if (c2.k === 't') annots[annots.length - 1].push({ x: x, y: y - rh, w: c2.w, h: rh, url: r.b || (base + '?doc=' + encodeURIComponent(r.id)) });
+        x += c2.w;
+      });
+      y -= rh; hline(y);
+    });
+    var np2 = pages.length;
+    pages.forEach(function (p2, i) { p2.push('BT /F1 7 Tf 0.4 0.4 0.4 rg ' + M + ' 16 Td (' + pesc('Source: Postal Rulings - links open each ruling') + ') Tj ET'); p2.push('BT /F1 7 Tf 0.4 0.4 0.4 rg ' + (W - M - 50) + ' 16 Td (' + pesc('Page ' + (i + 1) + ' of ' + np2) + ') Tj ET'); });
+    var objs = ['<< /Type /Catalog /Pages 2 0 R >>', null, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>', '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>'];
+    var kids = [];
+    pages.forEach(function (p2, i) {
+      var body = p2.join('\n'), pid = objs.length + 1, cid = pid + 1;
+      var annRefs = [];
+      objs.push(null); objs.push('<< /Length ' + body.length + ' >>\nstream\n' + body + '\nendstream');
+      annots[i].forEach(function (a) {
+        objs.push('<< /Type /Annot /Subtype /Link /Rect [' + a.x.toFixed(1) + ' ' + a.y.toFixed(1) + ' ' + (a.x + a.w).toFixed(1) + ' ' + (a.y + a.h).toFixed(1) + '] /Border [0 0 0] /A << /S /URI /URI (' + pesc(a.url) + ') >> >>');
+        annRefs.push(objs.length + ' 0 R');
+      });
+      objs[pid - 1] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ' + cid + ' 0 R' + (annRefs.length ? ' /Annots [' + annRefs.join(' ') + ']' : '') + ' >>';
+      kids.push(pid + ' 0 R');
+    });
+    objs[1] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + pages.length + ' >>';
+    var out = '%PDF-1.4\n', offs = [];
+    objs.forEach(function (o, i) { offs.push(out.length); out += (i + 1) + ' 0 obj\n' + o + '\nendobj\n'; });
+    var xr = out.length;
+    out += 'xref\n0 ' + (objs.length + 1) + '\n0000000000 65535 f \n' + offs.map(function (o) { return ('0000000000' + o).slice(-10) + ' 00000 n \n'; }).join('') +
+      'trailer\n<< /Size ' + (objs.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xr + '\n%%EOF';
+    var bytes = new Uint8Array(out.length); for (var bi = 0; bi < out.length; bi++) bytes[bi] = out.charCodeAt(bi) & 255;
+    var name = clean(title).replace(/[^A-Za-z0-9._ -]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/[. ]+$/, '') + '.pdf';
+    savePdfBytes(bytes, name, title, function (m) { var el = document.getElementById('sumNote'); if (!el) { el = document.createElement('p'); el.id = 'sumNote'; el.className = 'muted small'; var bar = document.querySelector('.sumbar'); if (bar) bar.parentNode.insertBefore(el, bar.nextSibling); } el.textContent = m; });
+  }
+  // Same delivery as the breakup PDF: the Android app saves to Downloads, phones share, computers download.
+  function savePdfBytes(bytes, name, title, note) {
+    try {
+      if (window.RLApp && typeof window.RLApp.savePdf === 'function') {
+        var bin = ''; for (var i = 0; i < bytes.length; i += 8192) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+        if (window.RLApp.savePdf(name, btoa(bin))) { note('PDF saved to your Downloads folder.'); return; }
+      }
+    } catch (e0) {}
+    if (/PostalRulingsApp/.test(navigator.userAgent || '')) { note('Could not save the PDF. Update the app from the menu (About › Update) and try again.'); return; }
+    var blob = new Blob([bytes], { type: 'application/pdf' });
+    var download = function () { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.rel = 'noopener'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000); note('PDF downloaded: ' + name); };
+    var file = null; try { file = new File([blob], name, { type: 'application/pdf' }); } catch (e1) {}
+    var phone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+    if (phone && file && navigator.canShare && navigator.canShare({ files: [file] })) navigator.share({ files: [file], title: title }).catch(download); else download();
   }
 
   // Alerts: newly added rulings and rulings the administrator has corrected, newest first.
@@ -1311,6 +1500,12 @@ window.RL_THEME = {
 
   function screens2Click(act, el) {
     if (act === 'cg-retry') { CG.hospTried = CG.ratesTried = false; CG.hospErr = CG.ratesErr = ''; render(); return true; }
+    if (act === 'sumsort' && SUM.dragEnd && Date.now() - SUM.dragEnd < 300) return true;
+    if (act === 'sumview') { SUM.group = el.getAttribute('data-v') === 'group'; if (!SUM.group) SUM.om = ''; SUM.cap = 100; render(); return true; }
+    if (act === 'sumpdf') { summaryPdf(); return true; }
+    if (act === 'sumw') { sumScale(+el.getAttribute('data-f')); return true; }
+    if (act === 'sumwreset') { putSumCols(null); render(); return true; }
+    if (act === 'sumomclear') { SUM.om = ''; render(); return true; }
     if (act === 'sumsort') { var k = el.getAttribute('data-k'); if (SUM.sort === k) SUM.dir = -SUM.dir; else { SUM.sort = k; SUM.dir = k === 'date' ? -1 : 1; } render(); return true; }
     if (act === 'sumcat') { SUM.cat = el.getAttribute('data-cat') || ''; SUM.cap = 100; render(); return true; }
     if (act === 'summore') { SUM.cap += 100; render(); return true; }
@@ -1335,6 +1530,7 @@ window.RL_THEME = {
   var s2Typing = null;
   function screens2Input(act, el) {
     var rerender = function (focusId) { clearTimeout(s2Typing); s2Typing = setTimeout(function () { render(); var f = document.getElementById(focusId); if (f) { f.focus(); try { f.setSelectionRange(f.value.length, f.value.length); } catch (e) {} } }, 220); };
+    if (act === 'sumom') { var ov2 = el.value.trim(); if (!ov2 || omChoices().some(function (o) { return omKey(o.om) === omKey(ov2); })) { SUM.om = ov2; SUM.cap = 100; render(); var f2 = document.getElementById('sumOm'); if (f2) f2.focus(); } return true; }
     if (act === 'sumq') { SUM.q = el.value; SUM.cap = 100; rerender('sumq'); return true; }
     if (act === 'hsq') { HS.q = el.value; HS.show = 30; rerender('hsq'); return true; }
     if (act === 'rt-q') { RT.q = el.value; RT.show = 40; rerender('rtQ'); return true; }
