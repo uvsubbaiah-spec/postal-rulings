@@ -308,15 +308,19 @@ body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transpar
 .mast p{margin:6px 0 0;color:var(--ink-soft);max-width:46ch}
 .env{position:relative;background:var(--card);border-radius:14px;padding:22px 20px 18px;box-shadow:var(--shadow);border-top:12px solid transparent;display:block;transition:transform .2s ease}
 .env:hover{transform:translateY(-2px)}
-.pm{position:absolute;top:14px;right:14px;width:54px;height:54px;border-radius:50%;border:2px solid var(--sage);color:var(--sage);display:grid;place-items:center;font:800 9px/1.1 'JetBrains Mono',monospace;text-align:center;transform:rotate(-12deg)}
+
 .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--paper-2);color:var(--ink-soft)}
 .env h2{font-size:20px;font-weight:600;margin:12px 0 6px;padding-right:60px;line-height:1.2;color:var(--ink)}
 .meta{font:500 12px 'JetBrains Mono',monospace;color:var(--ink-soft);display:flex;gap:10px;flex-wrap:wrap}
 .saved{color:var(--plum);font-weight:700}
 .open{display:inline-flex;align-items:center;margin-top:14px;height:38px;padding:0 16px;border-radius:999px;background:var(--plum);color:var(--plum-ink);font:700 13px var(--font-body)}
 .mast .logo{width:70px;height:70px;box-shadow:none}
-.pm small{display:block;font-size:7px;letter-spacing:.1em;opacity:.85}
 @media (max-width:400px){.nav a{font-size:9.5px;padding-left:0;padding-right:0}}
+.env{overflow:hidden}
+.pm{position:absolute;top:6px;right:-20px;width:142px;height:auto;max-width:none;color:#56204B;opacity:.8;mix-blend-mode:multiply;pointer-events:none}
+.env h2{padding-right:104px}
+.env .tag{position:relative}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pm{mix-blend-mode:normal;opacity:.75}}
 
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -501,6 +505,53 @@ body{background-image:radial-gradient(circle at 1px 1px,var(--rule) 1px,transpar
 
 </script>
 <script>
+// Circular postmark impression for the Cozy cards: double ring, curved lettering, date band,
+// wavy cancellation lines and a worn-ink texture. Drawn here, not copied from any artwork.
+(function () {
+  function defs() {
+    if (document.getElementById('pm-defs')) return;
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('id', 'pm-defs'); svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
+    svg.style.position = 'absolute';
+    svg.innerHTML = '<defs>' +
+      '<path id="pm-top" d="M 13 40 A 27 27 0 0 1 67 40"/>' +
+      '<path id="pm-bot" d="M 11 40 A 29 29 0 0 0 69 40"/>' +
+      '<filter id="pm-ink" x="-10%" y="-10%" width="120%" height="120%">' +
+        '<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="n"/>' +
+        '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.25 1.48" result="holes"/>' +
+        '<feComposite in="SourceGraphic" in2="holes" operator="in" result="worn"/>' +
+        '<feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="w"/>' +
+        '<feDisplacementMap in="worn" in2="w" scale="1.1" xChannelSelector="R" yChannelSelector="G"/>' +
+      '</filter></defs>';
+    (document.body || document.documentElement).appendChild(svg);
+  }
+  function hash(s) { var h = 0; s = String(s); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+  window.RL_POSTMARK = function (id, dayMon, year, label) {
+    defs();
+    var h = hash(id), rot = (h % 23) - 13, wave = (h >> 3) % 2;
+    var waves = '';
+    for (var k = 0; k < 4; k++) {
+      var y = 25 + k * 10, ph = wave ? 3 : -3;
+      waves += '<path d="M ' + (y === 40 || y === 44 ? 76 : 73) + ' ' + y + ' q 6 ' + ph + ' 12 0 t 12 0 t 12 0 t 12 0" />';
+    }
+    return '<svg class="pm" viewBox="0 0 128 80" role="img" aria-label="' + label + '" style="transform:rotate(' + rot + 'deg)">' +
+      '<title>' + label + '</title>' +
+      '<g filter="url(#pm-ink)" fill="none" stroke="currentColor">' +
+        '<g stroke-width="2.3" stroke-linecap="round">' + waves + '</g>' +
+        '<circle cx="40" cy="40" r="35" stroke-width="3.2"/>' +
+        '<circle cx="40" cy="40" r="22" stroke-width="1.9"/>' +
+        '<path d="M 18.5 33.5 H 61.5 M 18.5 46.5 H 61.5" stroke-width="1.7"/>' +
+        '<g fill="currentColor" stroke="none" font-family="Figtree, system-ui, sans-serif" font-weight="900">' +
+          '<text font-size="6.3" letter-spacing=".55"><textPath href="#pm-top" startOffset="50%" text-anchor="middle">POSTAL RULINGS</textPath></text>' +
+          '<text font-size="6.3" letter-spacing=".55"><textPath href="#pm-bot" startOffset="50%" text-anchor="middle">DEPT OF POSTS</textPath></text>' +
+          '<path d="M13.2 37.7l.9 2.1 2.2.2-1.7 1.4.5 2.2-1.9-1.2-1.9 1.2.5-2.2-1.7-1.4 2.2-.2z M66.8 37.7l.9 2.1 2.2.2-1.7 1.4.5 2.2-1.9-1.2-1.9 1.2.5-2.2-1.7-1.4 2.2-.2z" />' +
+          '<text x="40" y="43.2" font-size="10.5" text-anchor="middle" letter-spacing=".3">' + dayMon + '</text>' +
+          '<text x="40" y="29.5" font-size="5.6" text-anchor="middle" letter-spacing="1">ADDED</text>' +
+          '<text x="40" y="55" font-size="7" text-anchor="middle" letter-spacing="1.2">' + year + '</text>' +
+        '</g>' +
+      '</g></svg>';
+  };
+})();
 window.RL_THEME = {
   header: function () {
     return '<header class="mast"><div class="stamp" aria-hidden="true"><img class="logo" src="icons/icon-192.png" alt=""></div>' +
@@ -511,14 +562,16 @@ window.RL_THEME = {
   card: function (x, saved) {
     var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
     var d = (x.date || '').replace(/^(\d{4})-(\d{2})-(\d{2}).*$/, '$3.$2.$1');
-    var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']; var mm = /^(\d{4})-(\d{2})-(\d{2})/.exec(x.date || ''); var stampTxt = mm ? (+mm[3]) + ' ' + MON[+mm[2] - 1] + '<br>' + mm[1] : ''; var stampLbl = mm ? 'Added ' + (+mm[3]) + ' ' + MON[+mm[2] - 1] + ' ' + mm[1] : '';
-        return '<article class="env" data-act="open" data-id="' + esc(x.id) + '" role="button" tabindex="0">' +
-      (stampTxt ? '<span class="pm" title="' + stampLbl + '" aria-label="' + stampLbl + '"><small>ADDED</small>' + stampTxt + '</span>' : '') +
+    var MON = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']; var mm = /^(\d{4})-(\d{2})-(\d{2})/.exec(x.date || '');
+    var stampLbl = mm ? 'Added ' + (+mm[3]) + ' ' + MON[+mm[2] - 1] + ' ' + mm[1] : '';
+    return '<article class="env" data-act="open" data-id="' + esc(x.id) + '" role="button" tabindex="0">' +
+      (mm ? window.RL_POSTMARK(x.id, (+mm[3]) + ' ' + MON[+mm[2] - 1], mm[1], stampLbl) : '') +
       '<span class="tag">' + esc(x.category) + '</span>' +
       '<h2>' + esc(x.name) + '</h2>' +
       '<div class="meta">' + (x.omNo ? '<span>' + esc(x.omNo) + '</span>' : '') + '<span>' + esc(d || '') + '</span>' + (x.status ? '<span class="saved">' + esc(x.status) + '</span>' : '') + (saved ? '<span class="saved">Saved</span>' : '') + '</div>' +
       '<span class="open">Open ruling</span></article>';
   },
+
   nav: function (route) { return window.RL_NAV(route); }
 };
 
