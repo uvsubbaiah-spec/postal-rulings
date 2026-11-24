@@ -2472,7 +2472,7 @@ select.inp{font-family:var(--font-ui,inherit);font-size:16px;appearance:auto}
   }
   function keepPublished(d, url) { if (!d) return; d.published = Date.now(); d.pubUrl = url || ''; keepDraft(d, true); if (d.uid) srcToDrive(d.uid, srcKeyOf(d), true); }
   function blogPublish(pz, draft) {
-    U.busy = 'publish'; U.status = { kind: 'wait', text: 'ఈ తేదీ పోస్ట్ బ్లాగ్‌లో ఇప్పటికే ఉందో చూస్తున్నాం…' }; render();
+    U.busy = 'publish'; U.status = { kind: 'wait', text: 'ఈ తేదీ ' + paperOf(pz.paper).te + ' పోస్ట్ బ్లాగ్‌లో ఇప్పటికే ఉందో చూస్తున్నాం…' }; render();
     var title = postTitle(pz);
     // an older admin script (before version 5) lost post bodies: do not publish through it
     var myPaper = paperOf(pz.paper).id;
@@ -4971,7 +4971,8 @@ select.inp{font-family:var(--font-ui,inherit);font-size:16px;appearance:auto}
       case 'publish-blog':
         var bp = draftToPuzzle(D, false), why = v === 'draft' ? (bp.date && /^\d{2}\.\d{2}\.\d{4}$/.test(bp.date) ? '' : 'ముందు తేదీ (DD.MM.YYYY) ఇవ్వండి.') : draftReadyForBlog(bp);
         if (why) { U.status = { kind: 'err', text: why }; render(); toast(why); break; }
-        if (PUZZLES.some(function (p) { return p.date === bp.date && p.postId; }) && U.confirm !== 'dup') { U.confirm = 'dup'; toast(bp.date + ' తేదీతో బ్లాగ్‌లో ఇప్పటికే పోస్ట్ ఉంది. అయినా కొత్తగా వేయాలంటే మళ్ళీ నొక్కండి.'); break; }
+        // the same paper's post of that date only: another paper's puzzle of the same date (ఈనాడు and సాక్షి on 01.11) is a post of its own
+        if (PUZZLES.some(function (p) { return p.postId && pkey(p) === pkey(bp); }) && U.confirm !== 'dup') { U.confirm = 'dup'; toast(bp.date + ' ' + paperOf(bp.paper).te + ' పోస్ట్ బ్లాగ్‌లో ఇప్పటికే ఉంది. అయినా వేయాలంటే మళ్ళీ నొక్కండి (అదే పోస్ట్ సరిదిద్దుతాం).'); break; }
         U.confirm = ''; blogPublish(bp, v === 'draft'); break;
       case 'update-blog':
         var up = draftToPuzzle(D, false), why2 = draftReadyForBlog(up);

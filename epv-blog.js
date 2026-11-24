@@ -1584,7 +1584,7 @@
   }
   function keepPublished(d, url) { if (!d) return; d.published = Date.now(); d.pubUrl = url || ''; keepDraft(d, true); if (d.uid) srcToDrive(d.uid, srcKeyOf(d), true); }
   function blogPublish(pz, draft) {
-    U.busy = 'publish'; U.status = { kind: 'wait', text: '\u0c08 \u0c24\u0c47\u0c26\u0c40 \u0c2a\u0c4b\u0c38\u0c4d\u0c1f\u0c4d \u0c2c\u0c4d\u0c32\u0c3e\u0c17\u0c4d\u200c\u0c32\u0c4b \u0c07\u0c2a\u0c4d\u0c2a\u0c1f\u0c3f\u0c15\u0c47 \u0c09\u0c02\u0c26\u0c4b \u0c1a\u0c42\u0c38\u0c4d\u0c24\u0c41\u0c28\u0c4d\u0c28\u0c3e\u0c02\u2026' }; render();
+    U.busy = 'publish'; U.status = { kind: 'wait', text: '\u0c08 \u0c24\u0c47\u0c26\u0c40 ' + paperOf(pz.paper).te + ' \u0c2a\u0c4b\u0c38\u0c4d\u0c1f\u0c4d \u0c2c\u0c4d\u0c32\u0c3e\u0c17\u0c4d\u200c\u0c32\u0c4b \u0c07\u0c2a\u0c4d\u0c2a\u0c1f\u0c3f\u0c15\u0c47 \u0c09\u0c02\u0c26\u0c4b \u0c1a\u0c42\u0c38\u0c4d\u0c24\u0c41\u0c28\u0c4d\u0c28\u0c3e\u0c02\u2026' }; render();
     var title = postTitle(pz);
     // an older admin script (before version 5) lost post bodies: do not publish through it
     var myPaper = paperOf(pz.paper).id;
@@ -4083,7 +4083,8 @@
       case 'publish-blog':
         var bp = draftToPuzzle(D, false), why = v === 'draft' ? (bp.date && /^\d{2}\.\d{2}\.\d{4}$/.test(bp.date) ? '' : '\u0c2e\u0c41\u0c02\u0c26\u0c41 \u0c24\u0c47\u0c26\u0c40 (DD.MM.YYYY) \u0c07\u0c35\u0c4d\u0c35\u0c02\u0c21\u0c3f.') : draftReadyForBlog(bp);
         if (why) { U.status = { kind: 'err', text: why }; render(); toast(why); break; }
-        if (PUZZLES.some(function (p) { return p.date === bp.date && p.postId; }) && U.confirm !== 'dup') { U.confirm = 'dup'; toast(bp.date + ' \u0c24\u0c47\u0c26\u0c40\u0c24\u0c4b \u0c2c\u0c4d\u0c32\u0c3e\u0c17\u0c4d\u200c\u0c32\u0c4b \u0c07\u0c2a\u0c4d\u0c2a\u0c1f\u0c3f\u0c15\u0c47 \u0c2a\u0c4b\u0c38\u0c4d\u0c1f\u0c4d \u0c09\u0c02\u0c26\u0c3f. \u0c05\u0c2f\u0c3f\u0c28\u0c3e \u0c15\u0c4a\u0c24\u0c4d\u0c24\u0c17\u0c3e \u0c35\u0c47\u0c2f\u0c3e\u0c32\u0c02\u0c1f\u0c47 \u0c2e\u0c33\u0c4d\u0c33\u0c40 \u0c28\u0c4a\u0c15\u0c4d\u0c15\u0c02\u0c21\u0c3f.'); break; }
+        // the same paper's post of that date only: another paper's puzzle of the same date (\u0c08\u0c28\u0c3e\u0c21\u0c41 and \u0c38\u0c3e\u0c15\u0c4d\u0c37\u0c3f on 01.11) is a post of its own
+        if (PUZZLES.some(function (p) { return p.postId && pkey(p) === pkey(bp); }) && U.confirm !== 'dup') { U.confirm = 'dup'; toast(bp.date + ' ' + paperOf(bp.paper).te + ' \u0c2a\u0c4b\u0c38\u0c4d\u0c1f\u0c4d \u0c2c\u0c4d\u0c32\u0c3e\u0c17\u0c4d\u200c\u0c32\u0c4b \u0c07\u0c2a\u0c4d\u0c2a\u0c1f\u0c3f\u0c15\u0c47 \u0c09\u0c02\u0c26\u0c3f. \u0c05\u0c2f\u0c3f\u0c28\u0c3e \u0c35\u0c47\u0c2f\u0c3e\u0c32\u0c02\u0c1f\u0c47 \u0c2e\u0c33\u0c4d\u0c33\u0c40 \u0c28\u0c4a\u0c15\u0c4d\u0c15\u0c02\u0c21\u0c3f (\u0c05\u0c26\u0c47 \u0c2a\u0c4b\u0c38\u0c4d\u0c1f\u0c4d \u0c38\u0c30\u0c3f\u0c26\u0c3f\u0c26\u0c4d\u0c26\u0c41\u0c24\u0c3e\u0c02).'); break; }
         U.confirm = ''; blogPublish(bp, v === 'draft'); break;
       case 'update-blog':
         var up = draftToPuzzle(D, false), why2 = draftReadyForBlog(up);
