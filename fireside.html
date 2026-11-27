@@ -349,6 +349,22 @@ body[data-route="read"]{padding-bottom:40px}
 .sumtable tr.grp td{background:color-mix(in srgb,var(--accent-fill) 14%,var(--card));color:var(--ink);font:700 12.5px var(--font-body);border-top:2px solid var(--accent);padding:10px 12px}
 .sumtable .muted{color:var(--ink-soft)}
 
+/* Breakup: number of times */
+.cart li.cline{flex-wrap:wrap;gap:8px 10px;padding:10px 0}
+.cl-name{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cl-name small{color:var(--ink-soft);font-size:12px}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--card)}
+.qb{width:34px;height:34px;border:0;background:transparent;color:var(--accent);font:800 18px/1 var(--font-body);cursor:pointer}
+.qb:disabled{opacity:.35;cursor:default}
+.qin{width:52px;height:34px;border:0;border-left:1px solid var(--rule);border-right:1px solid var(--rule);background:transparent;color:var(--ink);font:800 15px var(--font-body);text-align:center;-moz-appearance:textfield}
+.qin::-webkit-outer-spin-button,.qin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.qin:focus-visible,.qb:focus-visible{outline:3px solid var(--focus);outline-offset:-2px}
+.cl-amt{min-width:92px;text-align:right;font-variant-numeric:tabular-nums}
+.carttotal{justify-content:flex-end;gap:6px;align-items:baseline}.carttotal span{color:var(--ink-soft);font-size:13px;margin-right:auto}
+/* CGHS tier badge on hospital cards */
+.tierb{display:inline-block;padding:2px 9px;border-radius:999px;font:800 10.5px var(--font-body);letter-spacing:.06em;text-transform:uppercase;background:color-mix(in srgb,var(--accent-fill) 14%,var(--card));color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+.srcb{display:inline-block;padding:2px 8px;border-radius:999px;font:700 10.5px var(--font-body);background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink-soft)}
+
 :root{--night:#17110F;--wall:#221915;--letter:#F3E2C4;--ember:#E8934A;--wax:#9E2F2A;--ink:#F3E2C4;--ink-soft:#A8917B;--paper:#17110F;--card:#221915;--rule:#3A2C25;--accent:#E8934A;--accent-fill:#E8934A;--accent-ink:#17110F;--focus:rgba(232,147,74,.3);--nav-bg:#1B1411;--search-r:4px;--font-display:'Cormorant Garamond',Georgia,serif;--font-body:'Lora',Georgia,serif;--shadow:0 18px 30px -18px rgba(0,0,0,.8);color-scheme:dark}
 body{background:radial-gradient(120% 60% at 50% -10%,#3A2316 0%,var(--night) 60%) var(--night)}
 .lamp{text-align:center;margin-bottom:26px}
@@ -2948,17 +2964,56 @@ window.RLDocFix = (function () {
   }
   function cacheGet(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function cachePut(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  // The CGHS site's own list of empanelled HCOs (all 24 AD cities, with the tier CGHS gives each one),
+  // saved in the repo as cghs-hospitals.json. It is merged with the server's detailed list (address, phone,
+  // specialities, validity): a hospital on both gets the CGHS tier; one only on the CGHS site is added.
+  var CGT = {}, CGS = null, CGSP = null;
+  function loadCghsStatic() {
+    if (CGSP) return CGSP;
+    CGSP = fetch('cghs-hospitals.json', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (d) { CGS = d; CGT = {}; Object.keys(d.cityTier || {}).forEach(function (k) { CGT[rtKey(k)] = d.cityTier[k]; }); return d; })
+      .catch(function () { return null; });
+    return CGSP;
+  }
+  function mergeHosp(srv, st) {
+    srv = srv || [];
+    if (!st || !st.rows) return srv;
+    var byId = {}; st.rows.forEach(function (o) { if (o[6]) byId[o[6]] = o; });
+    var out = srv.map(function (r) {
+      var o = byId[r[0]], x = r.slice(0, 14); while (x.length < 14) x.push('');
+      if (o) { if (o[1] && !/^n\/?a$/i.test(o[1])) x[2] = o[1]; if (o[3]) x[4] = o[3] + ', ' + (stateOf(r[4]) || o[4] || ''); x[14] = o[2]; x[15] = o[5]; x[16] = 'both'; }
+      else { x[14] = CGT[rtKey(cityOf(r[4]))] || ''; x[15] = ''; x[16] = 'app'; }
+      return x;
+    });
+    st.rows.forEach(function (o, i) {
+      if (o[6] && srv.some(function (r) { return r[0] === o[6]; })) return;
+      out.push(['cg' + i, o[0], /^n\/?a$/i.test(o[1]) ? '' : o[1], '', o[3] + (o[4] ? ', ' + o[4] : ''), '', '', '', '', '', 'Empanelled', '', null, null, o[2], o[5], 'cghs']);
+    });
+    out.sort(function (a, b) { return String(a[1]).localeCompare(String(b[1])); });
+    return out;
+  }
   function loadHosp() {
-    if (CG.hosp || CG.hospBusy || CG.hospTried) return;
+    if (CG.hospBusy || CG.hospTried) return;
     CG.hospTried = true;
     var c = cacheGet('rl_cghs_hosp_v2'); if (c && c.rows) CG.hosp = c.rows;
     CG.hospBusy = true;
+    var redraw = function () { var r = (location.hash || '').replace('#', ''); if (r === 'cghs' || r === 'rates') render(); };
+    var srvRows = null;
+    loadCghsStatic().then(function (st) { if (st && !srvRows) { CG.hosp = mergeHosp(c && c.srv ? c.srv : [], st); redraw(); } });
     allPages('cghsList').then(function (parts) {
       var rows = []; parts.forEach(function (p) { rows = rows.concat(p.rows || []); });
-      if (rows.length) { CG.hosp = rows; cachePut('rl_cghs_hosp_v2', { at: parts[0].at, rows: rows }); }
-      else if (!CG.hosp) CG.hospErr = 'The hospital list is empty on the server right now. Try again later.';
-    }).catch(function (e) { if (!CG.hosp) CG.hospErr = 'Could not load the hospital list (' + String(e.message || e).slice(0, 80) + '). Check your connection and try again.'; })
-      .then(function () { CG.hospBusy = false; var r = (location.hash || '').replace('#', ''); if (r === 'cghs' || r === 'rates') render(); });
+      srvRows = rows;
+      return loadCghsStatic().then(function (st) {
+        var m = mergeHosp(rows, st);
+        if (m.length) { CG.hosp = m; cachePut('rl_cghs_hosp_v2', { at: parts[0].at, srv: rows, rows: m }); }
+        else if (!CG.hosp) CG.hospErr = 'The hospital list is empty on the server right now. Try again later.';
+      });
+    }).catch(function (e) {
+      return loadCghsStatic().then(function (st) {
+        if (st && (!CG.hosp || !CG.hosp.length)) CG.hosp = mergeHosp([], st);
+        if (!CG.hosp || !CG.hosp.length) CG.hospErr = 'Could not load the hospital list (' + String(e.message || e).slice(0, 80) + '). Check your connection and try again.';
+      });
+    }).then(function () { CG.hospBusy = false; redraw(); });
   }
   function loadRates() {
     if (CG.rates || CG.ratesBusy || CG.ratesTried) return;
@@ -2973,7 +3028,7 @@ window.RLDocFix = (function () {
       .then(function () { CG.ratesBusy = false; if ((location.hash || '') === '#rates') render(); });
   }
   // Hospital row: [id, name, category, address, city/state, phone, specialities, from, to, validity, status, map, NABH cert, NABL cert]
-  function hRec(r) { return { id: r[0], n: r[1], a: r[2], ad: r[3], cs: r[4], ph: r[5], sp: r[6], f: r[7], t: r[8], v: r[9], st: r[10], m: r[11], nabh: r[12], nabl: r[13] }; }
+  function hRec(r) { return { id: r[0], n: r[1], a: r[2], ad: r[3], cs: r[4], ph: r[5], sp: r[6], f: r[7], t: r[8], v: r[9], st: r[10], m: r[11], nabh: r[12], nabl: r[13], tier: r[14] || '', adc: r[15] || '', src: r[16] || '' }; }
   function cityOf(cs) { var p = String(cs || '').split(','); return p.length > 1 ? p.slice(0, -1).join(',').trim() : String(cs || '').trim(); }
   function stateOf(cs) { var p = String(cs || '').split(','); return p.length > 1 ? p[p.length - 1].trim() : ''; }
   function certLink(c, label) {
@@ -3010,7 +3065,7 @@ window.RLDocFix = (function () {
   function cghsView() {
     loadHosp();
     var h = '<div class="topbar"><button class="back" data-act="back">Back</button></div>';
-    if (!CG.hosp) return h + pageHead(HI.hosp, 'CGHS', 'Empanelled hospitals', 'From the CGHS site\'s own hospital list, refreshed every night.') + (CG.hospErr ? emptyState(HI.hosp, 'Hospitals could not be loaded', CG.hospErr, '<button class="pdf" data-act="cg-retry">Try again</button>')
+    if (!CG.hosp) return h + pageHead(HI.hosp, 'CGHS', 'Empanelled hospitals', 'All HCOs on the CGHS site\'s list (all 24 AD cities) with the tier CGHS gives each, plus address, phone and specialities where known.') + (CG.hospErr ? emptyState(HI.hosp, 'Hospitals could not be loaded', CG.hospErr, '<button class="pdf" data-act="cg-retry">Try again</button>')
       : '<div class="skel">' + [0, 1, 2].map(function () { return '<div class="sk"></div>'; }).join('') + '</div>');
     var recs = CG.hosp.map(hRec);
     var states = {}, cities = {}, accs = {};
@@ -3027,7 +3082,7 @@ window.RLDocFix = (function () {
       return '<div class="ifield"><label class="sr" for="' + id + '">' + label + '</label><span class="if-ic">' + svgI(icon) + '</span><select id="' + id + '" data-act="' + act + '"><option value="">' + label + ': all</option>' +
         opts.sort().map(function (o) { return '<option value="' + esc(o) + '"' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select></div>';
     };
-    h += '<section class="rfinder"><div class="rf-head"><div class="rf-h-ic">' + svgI(HI.hosp, 26) + '</div><div style="min-width:0"><div class="rf-kick">CGHS · Hospital finder</div><h1 class="ph-t">Empanelled hospitals</h1><p class="ph-s">From the CGHS site\'s own hospital list, refreshed every night.</p><div class="rf-sum" style="margin-top:10px">' +
+    h += '<section class="rfinder"><div class="rf-head"><div class="rf-h-ic">' + svgI(HI.hosp, 26) + '</div><div style="min-width:0"><div class="rf-kick">CGHS · Hospital finder</div><h1 class="ph-t">Empanelled hospitals</h1><p class="ph-s">All HCOs on the CGHS site\'s list (all 24 AD cities) with the tier CGHS gives each, plus address, phone and specialities where known.</p><div class="rf-sum" style="margin-top:10px">' +
       '<span class="rf-chip">' + hits.length + ' hospitals</span><span class="rf-chip">' + nabh + ' NABH</span>' +
       (HS.state ? '<span class="rf-chip">' + esc(HS.state) + '</span>' : '') + (HS.city ? '<span class="rf-chip city">' + svgI(HI.pin, 14) + esc(HS.city) + '</span>' : '') +
       (CG.hospBusy ? '<span class="rf-chip">Updating…</span>' : '') + '</div></div></div>' +
@@ -3045,8 +3100,9 @@ window.RLDocFix = (function () {
       var nabhU = certU(r.nabh), nablU = certU(r.nabl);
       return '<article class="hcard2">' +
         '<div class="hc-top"><span class="hc-mono' + (isN ? ' n' : '') + '">' + esc(mono) + '</span><div style="min-width:0;flex:1"><h2 class="hc-name">' + esc(r.n) + '</h2>' +
-        '<div class="hc-tags">' + (r.a ? '<span class="acc' + (isN ? ' n' : '') + '">' + svgI(HI.acc, 13) + esc(r.a) + '</span>' : '') + (r.st ? '<span class="st">' + esc(r.st) + '</span>' : '') + '</div></div></div>' +
-        '<p class="hc-line">' + svgI(HI.pin, 16) + '<span>' + esc(r.ad) + (r.cs ? ', ' + esc(r.cs) : '') + '</span></p>' +
+        '<div class="hc-tags">' + (r.a ? '<span class="acc' + (isN ? ' n' : '') + '">' + svgI(HI.acc, 13) + esc(r.a) + '</span>' : '') + (r.st ? '<span class="st">' + esc(r.st) + '</span>' : '') + (r.tier ? '<span class="tierb" title="Tier as given by CGHS">CGHS Tier ' + { i: 'I', ii: 'II', iii: 'III' }[r.tier] + '</span>' : '') + '</div></div></div>' +
+        '<p class="hc-line">' + svgI(HI.pin, 16) + '<span>' + esc([r.ad, r.cs].filter(Boolean).join(', ')) + (r.adc ? ' <span class="srcb">AD ' + esc(r.adc) + '</span>' : '') + '</span></p>' +
+        (r.src === 'cghs' ? '<p class="hc-line muted small"><span>Listed on the CGHS site. Address, phone and specialities are not published there yet.</span></p>' : '') +
         (va ? '<p class="hc-line ' + va.cls + '">' + svgI(HI.cal, 16) + '<span>' + esc(va.label) + '</span></p>' : '') +
         (sps.length ? '<div class="spchips">' + showSp.map(function (x) { return '<span>' + esc(x) + '</span>'; }).join('') +
           (sps.length > 5 ? '<button class="spmore" data-act="hs-sp" data-id="' + esc(r.id) + '">' + (openAll ? 'Show less' : '+' + (sps.length - 5) + ' more') + '</button>' : '') + '</div>' : '') +
@@ -3071,11 +3127,19 @@ window.RLDocFix = (function () {
   
   
   var rtKey = function (c) { var k = String(c || '').toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z]/g, ''); return RT_ALIAS[k] || k; };
-  var rtTierOf = function (c, region) { var k = rtKey(c); if (RT_T1.some(function (x) { return rtKey(x) === k; })) return 'i'; if (RT_T2.some(function (x) { return rtKey(x) === k; })) return 'ii'; if (RT_REGION.test(String(c || '') + ' ' + String(region || ''))) return 'ii'; return 'iii'; };
+  var rtTierOf = function (c, region) { var k = rtKey(c); if (CGT[k]) return CGT[k]; if (RT_T1.some(function (x) { return rtKey(x) === k; })) return 'i'; if (RT_T2.some(function (x) { return rtKey(x) === k; })) return 'ii'; if (RT_REGION.test(String(c || '') + ' ' + String(region || ''))) return 'ii'; return 'iii'; };
   var RT = { type: 'nabh', tier: 'i', ward: 'general', sp: '', q: '', city: '', hosp: '', show: 40, msg: '', auto: false, cart: [] };
   try { var rsv = JSON.parse(localStorage.getItem('rl_rt_pref_v2') || 'null'); if (rsv) { RT.city = rsv.city || ''; RT.tier = rsv.tier || RT.tier; RT.type = rsv.type || RT.type; RT.ward = rsv.ward || RT.ward; } } catch (e) {}
   try { RT.cart = JSON.parse(localStorage.getItem('rl_rt_cart_v2') || '[]') || []; } catch (e) {}
-  function rtSave() { try { localStorage.setItem('rl_rt_pref_v2', JSON.stringify({ city: RT.city, tier: RT.tier, type: RT.type, ward: RT.ward })); localStorage.setItem('rl_rt_cart_v2', JSON.stringify(RT.cart)); } catch (e) {} }
+  // How many times each package/procedure is billed (e.g. 3 days of ICU, 2 dialysis sessions).
+  RT.qty = {}; try { RT.qty = JSON.parse(localStorage.getItem('rl_rt_qty_v2') || '{}') || {}; } catch (e) {}
+  function rtQ(code, qty) { var q = Math.floor(Number((qty || RT.qty)[code])); return q >= 1 ? Math.min(q, 999) : 1; }
+  function rtSave() { try { localStorage.setItem('rl_rt_pref_v2', JSON.stringify({ city: RT.city, tier: RT.tier, type: RT.type, ward: RT.ward })); localStorage.setItem('rl_rt_cart_v2', JSON.stringify(RT.cart)); localStorage.setItem('rl_rt_qty_v2', JSON.stringify(RT.qty)); } catch (e) {} }
+  function rtTotals() {
+    var total = 0, items = 0;
+    RT.cart.forEach(function (code) { var it = CG.rates && CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return; var v = rtVal(it); items += rtQ(code); if (v != null) total += v * rtQ(code); });
+    return { total: total, items: items };
+  }
   function rtPickCity(c, t) { RT.city = c; RT.tier = c ? (t || rtTierOf(c)) : RT.tier; rtSave(); }
   function rtLocate(silent) {
     if (!navigator.geolocation) { if (!silent) { RT.msg = 'Location is not available on this device. Type your city instead.'; render(); } return; }
@@ -3174,10 +3238,14 @@ window.RLDocFix = (function () {
       return !q || (it[0] + ' ' + it[1]).toLowerCase().indexOf(q) >= 0;
     });
     if (RT.cart.length) {
-      var total = 0;
-      var lines = RT.cart.map(function (code) { var it = CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return ''; var v = rtVal(it); total += v || 0;
-        return '<li><span>' + esc(it[1]) + '</span><b>' + inr(v) + '</b><button class="x" data-act="rt-del" data-code="' + esc(code) + '" aria-label="Remove">×</button></li>'; }).join('');
-      h += '<section class="pcard"><h2 class="rsec-h">Your breakup</h2><ul class="cart">' + lines + '</ul><p class="carttotal">Total <b>' + inr(total) + '</b></p>' +
+      var tt = rtTotals();
+      var lines = RT.cart.map(function (code) { var it = CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return ''; var v = rtVal(it), q = rtQ(code);
+        return '<li class="cline"><div class="cl-name"><span>' + esc(it[1]) + '</span><small>' + esc(it[0]) + ' · ' + inr(v) + ' each</small></div>' +
+          '<div class="qty" role="group" aria-label="Number of times for ' + esc(it[1]) + '"><button class="qb" data-act="rt-qty-step" data-code="' + esc(code) + '" data-d="-1" aria-label="One less"' + (q <= 1 ? ' disabled' : '') + '>−</button>' +
+          '<label class="sr" for="q_' + esc(code) + '">Number of times</label><input id="q_' + esc(code) + '" class="qin" type="number" inputmode="numeric" min="1" max="999" step="1" data-act="rt-qty" data-code="' + esc(code) + '" value="' + q + '">' +
+          '<button class="qb" data-act="rt-qty-step" data-code="' + esc(code) + '" data-d="1" aria-label="One more">+</button></div>' +
+          '<b class="cl-amt" id="amt_' + esc(code) + '">' + inr(v == null ? null : v * q) + '</b><button class="x" data-act="rt-del" data-code="' + esc(code) + '" aria-label="Remove">×</button></li>'; }).join('');
+      h += '<section class="pcard"><h2 class="rsec-h">Your breakup</h2><p class="muted small">Set <b>No. of times</b> for anything billed more than once (days, sessions, units). Amount = rate × times.</p><ul class="cart">' + lines + '</ul><p class="carttotal"><span id="rtItems">' + tt.items + ' item' + (tt.items === 1 ? '' : 's') + '</span> · Total <b id="rtTotal">' + inr(tt.total) + '</b></p>' +
         '<label class="sr" for="rtName">Breakup name</label><input id="rtName" class="search" data-act="rt-name" placeholder="Name this breakup, e.g. patient or bill" value="' + esc(RT.name || '') + '">' +
         '<div class="pbtns"><button class="pdf" data-act="rt-pdf">Download PDF</button><button class="back" data-act="rt-save">Save breakup</button><button class="back" data-act="rt-copy">Copy</button><button class="back" data-act="rt-clear">Clear</button></div>' +
         '<p class="muted small" id="rtNote"' + (RT.note ? '' : ' hidden') + '>' + esc(RT.note || '') + '</p></section>';
@@ -3185,7 +3253,7 @@ window.RLDocFix = (function () {
     var sb = savedBreakups();
     h += '<details class="pcard saved-bk"' + (RT.savedOpen ? ' open' : '') + '><summary data-act="rt-savedtoggle">Saved breakups (' + sb.length + ')</summary>' +
       (sb.length ? sb.map(function (b, i) {
-        return '<div class="bk"><div style="min-width:0"><b>' + esc(b.name) + '</b><small>' + b.codes.length + ' item' + (b.codes.length === 1 ? '' : 's') + ' · Tier ' + esc(String(b.tier).toUpperCase()) + (b.city ? ', ' + esc(b.city) : '') + '</small></div>' +
+        return '<div class="bk"><div style="min-width:0"><b>' + esc(b.name) + '</b><small>' + b.codes.length + ' item' + (b.codes.length === 1 ? '' : 's') + (b.qty && Object.keys(b.qty).some(function (k) { return b.codes.indexOf(k) >= 0 && rtQ(k, b.qty) > 1; }) ? ' (with times)' : '') + ' · Tier ' + esc(String(b.tier).toUpperCase()) + (b.city ? ', ' + esc(b.city) : '') + '</small></div>' +
           '<div class="pbtns" style="margin:0"><button class="hlink" data-act="rt-bk-load" data-i="' + i + '">Load</button><button class="hlink" data-act="rt-bk-pdf" data-i="' + i + '">PDF</button><button class="hlink" data-act="rt-bk-del" data-i="' + i + '">Delete</button></div></div>';
       }).join('') : '<p class="muted">No saved breakups yet. Add packages, name the breakup and tap Save breakup.</p>') + '</details>';
     h += '<p class="note">' + hits.length + ' rates · ' + (RT.city ? esc(RT.city) + ' · ' : '') + 'Tier ' + RT.tier.toUpperCase() + ' · ' + { nabh: 'NABH', non_nabh: 'Non-NABH', superspeciality: 'Super Speciality' }[RT.type] + ' · ' + { general: 'General', semi_private: 'Semi-private', private: 'Private' }[RT.ward] + ' ward</p>';
@@ -3199,7 +3267,7 @@ window.RLDocFix = (function () {
   }
   function rtCopy() {
     if (!CG.rates) return;
-    var total = 0, lines = RT.cart.map(function (code) { var it = CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return ''; var v = rtVal(it); total += v || 0; return it[0] + '  ' + it[1] + '  ' + inr(v); }).filter(Boolean);
+    var total = 0, lines = RT.cart.map(function (code) { var it = CG.rates.items.filter(function (x) { return x[0] === code; })[0]; if (!it) return ''; var v = rtVal(it), q = rtQ(code); total += (v || 0) * q; return it[0] + '  ' + it[1] + '  ' + (q > 1 ? inr(v) + ' x ' + q + ' = ' : '') + inr(v == null ? null : v * q); }).filter(Boolean);
     var txt = 'CGHS rate breakup (' + (RT.city ? RT.city + ', ' : '') + 'Tier ' + RT.tier.toUpperCase() + ', ' + RT.type.replace('_', '-') + ', ' + RT.ward.replace('_', '-') + ' ward)\n' + lines.join('\n') + '\nTotal  ' + inr(total);
     var b = document.querySelector('[data-act="rt-copy"]');
     var ok = function () { if (b) b.textContent = 'Copied'; };
@@ -3236,9 +3304,9 @@ window.RLDocFix = (function () {
     var c = hospCity(r);
     if (c) {
       var hit = RT_T1.concat(RT_T2).filter(function (x) { return rtKey(x) === rtKey(c); })[0];
-      var t = rtTierOf(hit || c, (r.ad || '') + ' ' + (r.cs || ''));
+      var t = r.tier || rtTierOf(hit || c, (r.ad || '') + ' ' + (r.cs || ''));
       rtPickCity(hit || c, t);
-      RT.msg = 'City and tier set from ' + r.n + ' (' + (hit || c) + ', Tier ' + { i: 'I', ii: 'II', iii: 'III' }[t] + (!hit && t === 'ii' ? ': North-East / J&K / Ladakh rule' : '') + ').';
+      RT.msg = 'City and tier set from ' + r.n + ' (' + (hit || c) + ', Tier ' + { i: 'I', ii: 'II', iii: 'III' }[t] + (r.tier ? ' as given by CGHS' : !hit && t === 'ii' ? ': North-East / J&K / Ladakh rule' : '') + ').';
     }
     if (/super/i.test(r.a)) RT.type = 'superspeciality'; else if (/non/i.test(r.a)) RT.type = 'non_nabh'; else if (/nabh/i.test(r.a)) RT.type = 'nabh';
     rtSave(); return true;
@@ -3302,21 +3370,21 @@ window.RLDocFix = (function () {
     const bytes = new Uint8Array(out.length); for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 255;
     return bytes;
   }
-  function breakupRows(codes, type, tier, ward) {
+  function breakupRows(codes, type, tier, ward, qty) {
     var cols = (CG.rates && CG.rates.cols) || [], ci = cols.indexOf('tier_' + tier + '_' + type + '_' + ward + '_ward');
     var by = {}; ((CG.rates && CG.rates.items) || []).forEach(function (x) { by[x[0]] = x; });
     var total = 0, missing = 0, fmt = function (v) { return 'Rs. ' + Number(v).toLocaleString('en-IN', { maximumFractionDigits: 2 }); };
     var rows = codes.map(function (k, i) {
-      var x = by[k], v = x && ci >= 0 && x[4] ? x[4][ci] : null;
-      if (v == null) missing++; else total += Number(v);
-      return { no: (i + 1) + '.', name: x ? x[1] : k, meta: x ? [x[0], x[2]].filter(Boolean).join(' - ') : '', rate: v == null ? 'No rate' : fmt(v) };
+      var x = by[k], v = x && ci >= 0 && x[4] ? x[4][ci] : null, q = rtQ(k, qty || {});
+      if (v == null) missing++; else total += Number(v) * q;
+      return { no: (i + 1) + '.', name: x ? x[1] : k, meta: (x ? [x[0], x[2]].filter(Boolean).join(' - ') : '') + (v != null && q > 1 ? '   (' + fmt(v) + ' x ' + q + ' times)' : ''), rate: v == null ? 'No rate' : fmt(Number(v) * q) };
     });
     return { rows: rows, total: fmt(total), missing: missing };
   }
   function rtNote(m) { RT.note = m || ''; var el = document.getElementById('rtNote'); if (el) { el.textContent = RT.note; el.hidden = !RT.note; } }
   function breakupPdf(b) {
     try {
-      var r = breakupRows(b.codes, b.type, b.tier, b.ward);
+      var r = breakupRows(b.codes, b.type, b.tier, b.ward, b.qty);
       var typeName = { nabh: 'NABH', non_nabh: 'Non-NABH', superspeciality: 'Super Speciality' }[b.type] || b.type;
       var wardName = { general: 'General', semi_private: 'Semi-private', private: 'Private' }[b.ward] || b.ward;
       var sub = typeName + ' - Tier ' + String(b.tier).toUpperCase() + ' - ' + wardName + ' ward' + (b.city ? ' - ' + b.city : '');
@@ -3370,13 +3438,14 @@ window.RLDocFix = (function () {
     if (act === 'rt-loc') { rtLocate(false); return true; }
     if (act === 'rt-more') { RT.show += 40; render(); return true; }
     if (act === 'rt-add') { var c = el.getAttribute('data-code'), i = RT.cart.indexOf(c); if (i >= 0) RT.cart.splice(i, 1); else RT.cart.push(c); rtSave(); render(); return true; }
-    if (act === 'rt-del') { RT.cart = RT.cart.filter(function (x) { return x !== el.getAttribute('data-code'); }); rtSave(); render(); return true; }
-    if (act === 'rt-clear') { RT.cart = []; rtSave(); render(); return true; }
+    if (act === 'rt-del') { var dc0 = el.getAttribute('data-code'); RT.cart = RT.cart.filter(function (x) { return x !== dc0; }); delete RT.qty[dc0]; rtSave(); render(); return true; }
+    if (act === 'rt-clear') { RT.cart = []; RT.qty = {}; rtSave(); render(); return true; }
+    if (act === 'rt-qty-step') { var qc = el.getAttribute('data-code'); RT.qty[qc] = Math.max(1, Math.min(999, rtQ(qc) + (+el.getAttribute('data-d') || 0))); rtSave(); render(); var qf = document.getElementById('q_' + qc); if (qf) qf.focus(); return true; }
     if (act === 'rt-copy') { rtCopy(); return true; }
-    if (act === 'rt-pdf') { if (RT.cart.length) breakupPdf({ name: (RT.name || '').trim() || 'CGHS breakup', codes: RT.cart.slice(), type: RT.type, tier: RT.tier, ward: RT.ward, city: RT.city }); return true; }
+    if (act === 'rt-pdf') { if (RT.cart.length) breakupPdf({ name: (RT.name || '').trim() || 'CGHS breakup', codes: RT.cart.slice(), qty: Object.assign({}, RT.qty), type: RT.type, tier: RT.tier, ward: RT.ward, city: RT.city }); return true; }
     if (act === 'rt-save') { var nm = (RT.name || '').trim(); if (!nm) { rtNote('Type a name for the breakup first.'); var ni = document.getElementById('rtName'); if (ni) ni.focus(); return true; }
-      var l = savedBreakups().filter(function (b) { return b.name !== nm; }); l.unshift({ name: nm, codes: RT.cart.slice(), type: RT.type, tier: RT.tier, ward: RT.ward, city: RT.city, at: Date.now() }); putBreakups(l.slice(0, 50)); RT.note = 'Saved "' + nm + '".'; RT.savedOpen = true; render(); return true; }
-    if (act === 'rt-bk-load') { var b = savedBreakups()[+el.getAttribute('data-i')]; if (b) { RT.cart = b.codes.slice(); RT.type = b.type; RT.tier = b.tier; RT.ward = b.ward; RT.city = b.city || ''; RT.name = b.name; RT.note = 'Loaded "' + b.name + '".'; rtSave(); render(); } return true; }
+      var l = savedBreakups().filter(function (b) { return b.name !== nm; }); l.unshift({ name: nm, codes: RT.cart.slice(), qty: Object.assign({}, RT.qty), type: RT.type, tier: RT.tier, ward: RT.ward, city: RT.city, at: Date.now() }); putBreakups(l.slice(0, 50)); RT.note = 'Saved "' + nm + '".'; RT.savedOpen = true; render(); return true; }
+    if (act === 'rt-bk-load') { var b = savedBreakups()[+el.getAttribute('data-i')]; if (b) { RT.cart = b.codes.slice(); RT.qty = Object.assign({}, b.qty || {}); RT.type = b.type; RT.tier = b.tier; RT.ward = b.ward; RT.city = b.city || ''; RT.name = b.name; RT.note = 'Loaded "' + b.name + '".'; rtSave(); render(); } return true; }
     if (act === 'rt-bk-pdf') { var b2 = savedBreakups()[+el.getAttribute('data-i')]; if (b2) breakupPdf(b2); return true; }
     if (act === 'rt-bk-del') { var l2 = savedBreakups(); l2.splice(+el.getAttribute('data-i'), 1); putBreakups(l2); render(); return true; }
     if (act === 'rt-savedtoggle') { RT.savedOpen = !el.parentNode.open; return false; }
@@ -3394,6 +3463,17 @@ window.RLDocFix = (function () {
       if (hit || !v) { rtPickCity(hit || '', hit ? null : RT.tier); RT.msg = ''; render(); var f3 = document.getElementById('rtCity'); if (f3) { f3.focus(); f3.setSelectionRange(f3.value.length, f3.value.length); } } else { RT.city = v; } return true; }
     if (act === 'rt-hospin') { if (hospPick(el.value)) render(); return true; }
     if (act === 'rt-name') { RT.name = el.value; return true; }
+    if (act === 'rt-qty') {
+      var qcode = el.getAttribute('data-code'), qv = Math.floor(Number(el.value));
+      if (!(qv >= 1)) return true;                       // let the field be empty while typing
+      RT.qty[qcode] = Math.min(999, qv); rtSave();
+      var it2 = CG.rates && CG.rates.items.filter(function (x) { return x[0] === qcode; })[0], v2 = it2 ? rtVal(it2) : null;
+      var a2 = document.getElementById('amt_' + qcode); if (a2) a2.textContent = inr(v2 == null ? null : v2 * rtQ(qcode));
+      var tt2 = rtTotals(), t2 = document.getElementById('rtTotal'), n2 = document.getElementById('rtItems');
+      if (t2) t2.textContent = inr(tt2.total); if (n2) n2.textContent = tt2.items + ' item' + (tt2.items === 1 ? '' : 's');
+      var mb = el.parentNode && el.parentNode.querySelector('[data-d="-1"]'); if (mb) mb.disabled = rtQ(qcode) <= 1;
+      return true;
+    }
     return false;
   }
   function screens2Change(act, el) {
